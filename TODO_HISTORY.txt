@@ -1,0 +1,42 @@
+HISTORY - BUGFIXES
+=======================================================================
+v0.1: 2023/04/01: Erstversion
+
+
+BUGS
+=======================================================================
++ B-1: Aktualisieren Bauteil funktioniert nicht
++ B-2: Baugruppenliste führt Lagerelmente auf -> SELECT FROM Lager statt Baugruppen
+- B-3: Assert when CAPS is pressed
++ B-4: GuiDatabase:713: Add Item To Assemble: adds new Item to Storage -> go direct to state 5 
++ B-5: Item.cpp:addItemToAssemble: Doesnt check if a item already exists -> done
+- B-6: Imgui moves if window not active
++ B-7: Item wurde zu Lager aber nicht zu Baugruppe hinzugefügt -> Item muss erst wieder zurückgelesen werden
+
+
+TODO
+=======================================================================
++ Farbgebung bei null und negativem Lagerbestand
++ Farbgebung wenn bei BOM Teile fehlen
++ Wenn keine Datenbank gewählt, keine aktionen möglich
++ Save last database (ini)
++ Transaction (commit())
++ Filter für Datenbank
++ remove progress Baugruppen
++ remove imgui::demowindow
++ neue Schriftart
++ Link table
+
+
+-------------------------v0.1---------------------------
++ überprüfen ob bauteil bereits in baugruppe exisiert
+x Neue datenbank erstellen selektiert diese direkt (auch in ini file)
++ BOM Tabelle exportieren (csv)
++ Bauteil bereits in Lager vorhanden (merge-Dialog)
+- Bauteil hinzufügen: direkt auch mit Baugruppenverknüpfung
++ Lagerliste Eigenschaften: Value, Package, Beschreibung
++ Darkmode-Umschaltung
++ automatische Aktualisierung der Datenbanken
++ Vorschlag für Bauteileigenschaften eintragung pro Gruppe
+- Vorschlag pro Rubrik anpassen 
+- Bestelliste
