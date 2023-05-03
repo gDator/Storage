@@ -40,17 +40,17 @@ void GuiDatabase::draw(GLFWwindow *w)
                 // std::filesystem::path selected_path = std::filesystem::absolute(std::filesystem::current_path());
                 // file_explorer.PickFile(std::filesystem::absolute(std::filesystem::current_path()), [&](const std::filesystem::path& selected_path) {/*Store data*/});
             }
-            ImGui::Separator();
-            if(ImGui::BeginMenu("Import From"))
-            {
-                if(ImGui::MenuItem("CSV")) {}
-                ImGui::EndMenu();
-            }
-            if(ImGui::BeginMenu("Export As"))
-            {
-                if(ImGui::MenuItem("CSV")) {}
-                ImGui::EndMenu();
-            }
+            // ImGui::Separator();
+            // if(ImGui::BeginMenu("Import From"))
+            // {
+            //     if(ImGui::MenuItem("CSV")) {}
+            //     ImGui::EndMenu();
+            // }
+            // if(ImGui::BeginMenu("Export As"))
+            // {
+            //     if(ImGui::MenuItem("CSV")) {}
+            //     ImGui::EndMenu();
+            // }
             ImGui::EndMenu();
         }
 
@@ -232,7 +232,7 @@ void GuiDatabase::showSearch(GLFWwindow *w)
         ImGui::SameLine();
         if(ImGui::Button("Auflösen"))
         {
-            cmsg("Not implemented yet");
+            cmsg("[warning] Not implemented yet");
         }
         ImGui::SameLine();
         ImGui::Text(status.c_str());
@@ -253,9 +253,10 @@ void GuiDatabase::showSearch(GLFWwindow *w)
                 }
                 ImGui::EndCombo();
             }
-            ImGui::InputText("Value", &filter.value);
+            ImGui::InputText("Value 1", &filter.value);
+            ImGui::InputText("Value 2", &filter.value_2);
             ImGui::InputText("Package", &filter.package);
-            ImGui::InputText("Beschreibung", &filter.properties);
+            ImGui::InputText("Beschreibung", &filter.description);
             ImGui::InputText("Hersteller", &filter.manufactor);
             ImGui::InputText("Hersteller-Nr.", &filter.manufactor_number);
             ImGui::InputText("Distributor", &filter.distributor);
@@ -301,12 +302,13 @@ void GuiDatabase::showSearch(GLFWwindow *w)
             }
             ImGui::TreePop();
         }
-        if(ImGui::BeginTable("search_results", 14, table_flags))
+        if(ImGui::BeginTable("search_results", 15, table_flags))
         {
             ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_NoSort);
             
             ImGui::TableSetupColumn("Kategorie", ImGuiTableColumnFlags_DefaultSort);
-            ImGui::TableSetupColumn("Wert ", ImGuiTableColumnFlags_NoSort);
+            ImGui::TableSetupColumn("Value 1", ImGuiTableColumnFlags_NoSort);
+            ImGui::TableSetupColumn("Value 2", ImGuiTableColumnFlags_NoSort);
             ImGui::TableSetupColumn("Package ", ImGuiTableColumnFlags_NoSort);
             ImGui::TableSetupColumn("Beschreibung ", ImGuiTableColumnFlags_NoSort);
             ImGui::TableSetupColumn("Anzahl", ImGuiTableColumnFlags_NoSort);
@@ -378,28 +380,29 @@ void GuiDatabase::showSearch(GLFWwindow *w)
                         ImGui::TableSetColumnIndex(2);
                         ImGui::TextUnformatted(content[row_n].value.c_str());
                         ImGui::TableSetColumnIndex(3);
-                        ImGui::TextUnformatted(content[row_n].package.c_str());
+                        ImGui::TextUnformatted(content[row_n].value_2.c_str());
                         ImGui::TableSetColumnIndex(4);
-                        ImGui::TextUnformatted(content[row_n].properties.c_str());
+                        ImGui::TextUnformatted(content[row_n].package.c_str());
                         ImGui::TableSetColumnIndex(5);
-                        ImGui::TextUnformatted(std::to_string(content[row_n].count).c_str());
+                        ImGui::TextUnformatted(content[row_n].description.c_str());
                         ImGui::TableSetColumnIndex(6);
-                        ImGui::TextUnformatted(content[row_n].manufactor.c_str());
+                        ImGui::TextUnformatted(std::to_string(content[row_n].count).c_str());
                         ImGui::TableSetColumnIndex(7);
-                        ImGui::TextUnformatted(content[row_n].manufactor_number.c_str());
+                        ImGui::TextUnformatted(content[row_n].manufactor.c_str());
                         ImGui::TableSetColumnIndex(8);
-                        ImGui::TextUnformatted(content[row_n].distributor.c_str());
+                        ImGui::TextUnformatted(content[row_n].manufactor_number.c_str());
                         ImGui::TableSetColumnIndex(9);
-                        ImGui::TextUnformatted(content[row_n].shop_number.c_str());
+                        ImGui::TextUnformatted(content[row_n].distributor.c_str());
                         ImGui::TableSetColumnIndex(10);
-                        ImGui::TextUnformatted(content[row_n].vpe.c_str());
+                        ImGui::TextUnformatted(content[row_n].shop_number.c_str());
                         ImGui::TableSetColumnIndex(11);
-                        ImGui::TextUnformatted(std::to_string(content[row_n].price).c_str());
+                        ImGui::TextUnformatted(content[row_n].vpe.c_str());
                         ImGui::TableSetColumnIndex(12);
-                        ImGui::TextUnformatted(content[row_n].storage_place.c_str());
+                        ImGui::TextUnformatted(std::to_string(content[row_n].price).c_str());
                         ImGui::TableSetColumnIndex(13);
+                        ImGui::TextUnformatted(content[row_n].storage_place.c_str());
+                        ImGui::TableSetColumnIndex(14);
                         ImGui::TextUnformatted(content[row_n].datasheet.c_str());
-                        
                     }
             }
             ImGui::EndTable();
@@ -458,15 +461,17 @@ void GuiDatabase::showItem(GLFWwindow *w)
         }
         if(g_filter_hints.count(g_categories[item_current_idx]) > 0) //if there is an hint entry
         {
-            ImGui::InputTextWithHint("Value", std::get<0>(g_filter_hints.at(g_categories[item_current_idx])).c_str(), &item.value);
-            ImGui::InputTextWithHint("Package", std::get<1>(g_filter_hints.at(g_categories[item_current_idx])).c_str() ,&item.package);
-            ImGui::InputTextWithHint("Beschreibung", std::get<2>(g_filter_hints.at(g_categories[item_current_idx])).c_str(), &item.properties);
+            ImGui::InputTextWithHint("Value 1", std::get<0>(g_filter_hints.at(g_categories[item_current_idx])).c_str(), &item.value);
+            ImGui::InputTextWithHint("Value 2", std::get<1>(g_filter_hints.at(g_categories[item_current_idx])).c_str(), &item.value_2);
+            ImGui::InputTextWithHint("Package", std::get<2>(g_filter_hints.at(g_categories[item_current_idx])).c_str() ,&item.package);
+            ImGui::InputTextWithHint("Beschreibung", std::get<3>(g_filter_hints.at(g_categories[item_current_idx])).c_str(), &item.description);
         }
         else
         {
-            ImGui::InputText("Value", &item.value);
+            ImGui::InputText("Value 1", &item.value);
+            ImGui::InputText("Value 2", &item.value_2);
             ImGui::InputText("Package" ,&item.package);
-            ImGui::InputText("Beschreibung", &item.properties);
+            ImGui::InputText("Beschreibung", &item.description);
         }
         
         ImGui::InputText("Hersteller", &item.manufactor);
@@ -530,6 +535,7 @@ void GuiDatabase::showItem(GLFWwindow *w)
         ImGui::SameLine();
         if(ImGui::Button("Schließen")) 
         {
+            item.clear();
             show_item = false;
         }
     }
@@ -544,9 +550,10 @@ void GuiDatabase::showChangeItem(GLFWwindow *w)
     if(ImGui::Begin("Bauteil"))
     {
         ImGui::Text(p_selected_item->category.c_str());
-        ImGui::InputText("Value", &p_selected_item->value);
+        ImGui::InputText("Value 1", &p_selected_item->value);
+        ImGui::InputText("Value 2", &p_selected_item->value_2);
         ImGui::InputText("Package", &p_selected_item->package);
-        ImGui::InputText("Beschreibung", &p_selected_item->properties);
+        ImGui::InputText("Beschreibung", &p_selected_item->description);
         ImGui::Text(p_selected_item->manufactor.c_str());
         ImGui::InputText("Hersteller-Nr.", &p_selected_item->manufactor_number);
         ImGui::InputText("Distributor", &p_selected_item->distributor);
@@ -648,7 +655,7 @@ void GuiDatabase::showInfo(GLFWwindow *w)
             ImGui::SameLine();
             ImGui::Text("]: ");
             ImGui::SameLine();
-            ImGui::Text(p_selected_item->properties.c_str());
+            ImGui::Text(p_selected_item->description.c_str());
         }
         else
             ImGui::Text("Ausgewähltes Bauteil: -");
@@ -863,10 +870,11 @@ void GuiDatabase::showBOM(GLFWwindow *w)
                 std::vector<std::string> result;
                 for(size_t i = 0; i < content.size(); i++)
                 {
+                    LOG_TRACE("Description" << std::get<0>(content[i]).description);
                     if(export_csv[i])
                         result.push_back(std::get<0>(content[i]).serializeCSV());
                 }
-                CSV::exportCSV(path, result, {"Kategorie", "Value", "Package", "Beschreibung", "Hersteller", "Hersteller-Nr.", "Distributor", "Bestellnummer", "Verpackungseinheit", "Preis", "Anzahl"});
+                CSV::exportCSV(path, result, {"Kategorie", "Value 1", "Value 2", "Package", "Beschreibung", "Hersteller", "Hersteller-Nr.", "Distributor", "Bestellnummer", "Verpackungseinheit", "Preis", "Anzahl"});
             }
             
         }
@@ -900,12 +908,13 @@ void GuiDatabase::showBOM(GLFWwindow *w)
         ImGui::SameLine();
         ImGui::Text(status.c_str());
         
-        if(ImGui::BeginTable("search_results", 16, table_flags))
+        if(ImGui::BeginTable("search_results", 17, table_flags))
         {
             ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_NoSort);
             ImGui::TableSetupColumn("Exp?", ImGuiTableColumnFlags_NoSort);
             ImGui::TableSetupColumn("Kategorie", ImGuiTableColumnFlags_DefaultSort);
-            ImGui::TableSetupColumn("Wert ", ImGuiTableColumnFlags_NoSort);
+            ImGui::TableSetupColumn("Value 1", ImGuiTableColumnFlags_NoSort);
+            ImGui::TableSetupColumn("Value 2", ImGuiTableColumnFlags_NoSort);
             ImGui::TableSetupColumn("Package ", ImGuiTableColumnFlags_NoSort);
             ImGui::TableSetupColumn("Beschreibung ", ImGuiTableColumnFlags_NoSort);
             ImGui::TableSetupColumn("Anzahl (benötigt)", ImGuiTableColumnFlags_NoSort);
@@ -972,28 +981,30 @@ void GuiDatabase::showBOM(GLFWwindow *w)
                         ImGui::TableSetColumnIndex(3);
                         ImGui::TextUnformatted(std::get<0>(content[row_n]).value.c_str());
                         ImGui::TableSetColumnIndex(4);
-                        ImGui::TextUnformatted(std::get<0>(content[row_n]).package.c_str());
+                        ImGui::TextUnformatted(std::get<0>(content[row_n]).value_2.c_str());
                         ImGui::TableSetColumnIndex(5);
-                        ImGui::TextUnformatted(std::get<0>(content[row_n]).properties.c_str());
+                        ImGui::TextUnformatted(std::get<0>(content[row_n]).package.c_str());
                         ImGui::TableSetColumnIndex(6);
-                        ImGui::Text(std::to_string(std::get<1>(content[row_n])).c_str());
+                        ImGui::TextUnformatted(std::get<0>(content[row_n]).description.c_str());
                         ImGui::TableSetColumnIndex(7);
-                        ImGui::Text(std::to_string(std::get<0>(content[row_n]).count).c_str());
+                        ImGui::Text(std::to_string(std::get<1>(content[row_n])).c_str());
                         ImGui::TableSetColumnIndex(8);
-                        ImGui::Text(std::get<0>(content[row_n]).manufactor.c_str());
+                        ImGui::Text(std::to_string(std::get<0>(content[row_n]).count).c_str());
                         ImGui::TableSetColumnIndex(9);
-                        ImGui::Text(std::get<0>(content[row_n]).manufactor_number.c_str());
+                        ImGui::Text(std::get<0>(content[row_n]).manufactor.c_str());
                         ImGui::TableSetColumnIndex(10);
-                        ImGui::Text(std::get<0>(content[row_n]).distributor.c_str());
+                        ImGui::Text(std::get<0>(content[row_n]).manufactor_number.c_str());
                         ImGui::TableSetColumnIndex(11);
-                        ImGui::Text(std::get<0>(content[row_n]).shop_number.c_str());
+                        ImGui::Text(std::get<0>(content[row_n]).distributor.c_str());
                         ImGui::TableSetColumnIndex(12);
-                        ImGui::Text(std::get<0>(content[row_n]).vpe.c_str());
+                        ImGui::Text(std::get<0>(content[row_n]).shop_number.c_str());
                         ImGui::TableSetColumnIndex(13);
-                        ImGui::Text(std::to_string(std::get<0>(content[row_n]).price).c_str());
+                        ImGui::Text(std::get<0>(content[row_n]).vpe.c_str());
                         ImGui::TableSetColumnIndex(14);
-                        ImGui::Text(std::get<0>(content[row_n]).storage_place.c_str());
+                        ImGui::Text(std::to_string(std::get<0>(content[row_n]).price).c_str());
                         ImGui::TableSetColumnIndex(15);
+                        ImGui::Text(std::get<0>(content[row_n]).storage_place.c_str());
+                        ImGui::TableSetColumnIndex(16);
                         ImGui::Text(std::get<0>(content[row_n]).datasheet.c_str());
                     }
             }
@@ -1055,7 +1066,7 @@ void GuiDatabase::addItemToStorageWithCheck()
             ImGui::SameLine();
             ImGui::Text("'");
             ImGui::Separator();
-            if (ImGui::Button("OK", ImVec2(120, 0))) 
+            if (ImGui::Button("Abbrechen", ImVec2(120, 0))) 
             { 
                 ImGui::CloseCurrentPopup(); 
                 show_check_item = StateAlternativePicking::NONE; 
@@ -1093,7 +1104,27 @@ void GuiDatabase::addItemToStorageWithCheck()
         {
             if (ImGui::BeginPopupModal("Bauteilvorschläge", NULL, ImGuiWindowFlags_AlwaysAutoResize))
             {
-                ImGui::Text("Es existiern ähnliche Bauteile im Lager");
+                ImGui::Text("Es existiern ähnliche Bauteile im Lager (");
+                ImGui::SameLine();
+                ImGui::Text(item_to_check.category.c_str());
+                ImGui::SameLine();
+                ImGui::Text(", ");
+                ImGui::SameLine();
+                ImGui::Text(item_to_check.value.c_str());
+                ImGui::SameLine();
+                ImGui::Text(", ");
+                ImGui::SameLine();
+                ImGui::Text(item_to_check.value_2.c_str());
+                ImGui::SameLine();
+                ImGui::Text(", ");
+                ImGui::SameLine();
+                ImGui::Text(item_to_check.package.c_str());
+                ImGui::SameLine();
+                ImGui::Text(", ");
+                ImGui::SameLine();
+                ImGui::Text(item_to_check.description.c_str());
+                ImGui::SameLine();
+                ImGui::Text(")");
                 ImGui::Separator();
                 if (ImGui::Button("OK", ImVec2(120, 0))) 
                 { 
@@ -1129,12 +1160,13 @@ void GuiDatabase::addItemToStorageWithCheck()
                 | ImGuiTableFlags_Sortable | ImGuiTableFlags_SortMulti
                 | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_NoBordersInBody
                 | ImGuiTableFlags_ScrollX | ImGuiTableFlags_ScrollY;
-                if(ImGui::BeginTable("search_results", 14, table_flags))
+                if(ImGui::BeginTable("search_results", 15, table_flags))
                 {
                     ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_NoSort);
                     
                     ImGui::TableSetupColumn("Kategorie", ImGuiTableColumnFlags_DefaultSort);
-                    ImGui::TableSetupColumn("Wert ", ImGuiTableColumnFlags_NoSort);
+                    ImGui::TableSetupColumn("Value 1", ImGuiTableColumnFlags_NoSort);
+                    ImGui::TableSetupColumn("Value 2", ImGuiTableColumnFlags_NoSort);
                     ImGui::TableSetupColumn("Package ", ImGuiTableColumnFlags_NoSort);
                     ImGui::TableSetupColumn("Beschreibung ", ImGuiTableColumnFlags_NoSort);
                     ImGui::TableSetupColumn("Anzahl", ImGuiTableColumnFlags_NoSort);
@@ -1206,26 +1238,28 @@ void GuiDatabase::addItemToStorageWithCheck()
                                 ImGui::TableSetColumnIndex(2);
                                 ImGui::TextUnformatted(content[row_n].value.c_str());
                                 ImGui::TableSetColumnIndex(3);
-                                ImGui::TextUnformatted(content[row_n].package.c_str());
+                                ImGui::TextUnformatted(content[row_n].value_2.c_str());
                                 ImGui::TableSetColumnIndex(4);
-                                ImGui::TextUnformatted(content[row_n].properties.c_str());
+                                ImGui::TextUnformatted(content[row_n].package.c_str());
                                 ImGui::TableSetColumnIndex(5);
-                                ImGui::TextUnformatted(std::to_string(content[row_n].count).c_str());
+                                ImGui::TextUnformatted(content[row_n].description.c_str());
                                 ImGui::TableSetColumnIndex(6);
-                                ImGui::TextUnformatted(content[row_n].manufactor.c_str());
+                                ImGui::TextUnformatted(std::to_string(content[row_n].count).c_str());
                                 ImGui::TableSetColumnIndex(7);
-                                ImGui::TextUnformatted(content[row_n].manufactor_number.c_str());
+                                ImGui::TextUnformatted(content[row_n].manufactor.c_str());
                                 ImGui::TableSetColumnIndex(8);
-                                ImGui::TextUnformatted(content[row_n].distributor.c_str());
+                                ImGui::TextUnformatted(content[row_n].manufactor_number.c_str());
                                 ImGui::TableSetColumnIndex(9);
-                                ImGui::TextUnformatted(content[row_n].shop_number.c_str());
+                                ImGui::TextUnformatted(content[row_n].distributor.c_str());
                                 ImGui::TableSetColumnIndex(10);
-                                ImGui::TextUnformatted(content[row_n].vpe.c_str());
+                                ImGui::TextUnformatted(content[row_n].shop_number.c_str());
                                 ImGui::TableSetColumnIndex(11);
-                                ImGui::TextUnformatted(std::to_string(content[row_n].price).c_str());
+                                ImGui::TextUnformatted(content[row_n].vpe.c_str());
                                 ImGui::TableSetColumnIndex(12);
-                                ImGui::TextUnformatted(content[row_n].storage_place.c_str());
+                                ImGui::TextUnformatted(std::to_string(content[row_n].price).c_str());
                                 ImGui::TableSetColumnIndex(13);
+                                ImGui::TextUnformatted(content[row_n].storage_place.c_str());
+                                ImGui::TableSetColumnIndex(14);
                                 ImGui::TextUnformatted(content[row_n].datasheet.c_str());
                                 
                             }
@@ -1248,7 +1282,6 @@ void GuiDatabase::addItemToAssembleWithCheck()
 {
     static Item search;
     static std::deque<Item> content;
-
     //Catcher: when adding an unit it 
     //if the process was started withot adding it to an assembly the Function addItemWithCheck()
     //ends up here. The following if-statement does the reset of the state machine 
@@ -1291,7 +1324,27 @@ void GuiDatabase::addItemToAssembleWithCheck()
         {
             if (ImGui::BeginPopupModal("Bauteilvorschläge", NULL, ImGuiWindowFlags_AlwaysAutoResize))
             {
-                ImGui::Text("Es existiern ähnliche Bauteile in dieser Baugruppe");
+                ImGui::Text("Es existiern ähnliche Bauteile im Lager (");
+                ImGui::SameLine();
+                ImGui::Text(item_to_check.category.c_str());
+                ImGui::SameLine();
+                ImGui::Text(", ");
+                ImGui::SameLine();
+                ImGui::Text(item_to_check.value.c_str());
+                ImGui::SameLine();
+                ImGui::Text(", ");
+                ImGui::SameLine();
+                ImGui::Text(item_to_check.value_2.c_str());
+                ImGui::SameLine();
+                ImGui::Text(", ");
+                ImGui::SameLine();
+                ImGui::Text(item_to_check.package.c_str());
+                ImGui::SameLine();
+                ImGui::Text(", ");
+                ImGui::SameLine();
+                ImGui::Text(item_to_check.description.c_str());
+                ImGui::SameLine();
+                ImGui::Text(")");
                 ImGui::Separator();
                 if (ImGui::Button("OK", ImVec2(120, 0))) 
                 { 
@@ -1337,11 +1390,12 @@ void GuiDatabase::addItemToAssembleWithCheck()
                 | ImGuiTableFlags_Sortable | ImGuiTableFlags_SortMulti
                 | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_NoBordersInBody
                 | ImGuiTableFlags_ScrollX | ImGuiTableFlags_ScrollY;
-                if(ImGui::BeginTable("search_results", 14, table_flags))
+                if(ImGui::BeginTable("search_results", 15, table_flags))
                 {
                     ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_NoSort);
                     ImGui::TableSetupColumn("Kategorie", ImGuiTableColumnFlags_DefaultSort);
-                    ImGui::TableSetupColumn("Wert ", ImGuiTableColumnFlags_NoSort);
+                    ImGui::TableSetupColumn("Value 1", ImGuiTableColumnFlags_NoSort);
+                    ImGui::TableSetupColumn("Value 2", ImGuiTableColumnFlags_NoSort);
                     ImGui::TableSetupColumn("Package ", ImGuiTableColumnFlags_NoSort);
                     ImGui::TableSetupColumn("Beschreibung ", ImGuiTableColumnFlags_NoSort);
                     ImGui::TableSetupColumn("Anzahl", ImGuiTableColumnFlags_NoSort);
@@ -1413,28 +1467,29 @@ void GuiDatabase::addItemToAssembleWithCheck()
                                 ImGui::TableSetColumnIndex(2);
                                 ImGui::TextUnformatted(content[row_n].value.c_str());
                                 ImGui::TableSetColumnIndex(3);
-                                ImGui::TextUnformatted(content[row_n].package.c_str());
+                                ImGui::TextUnformatted(content[row_n].value_2.c_str());
                                 ImGui::TableSetColumnIndex(4);
-                                ImGui::TextUnformatted(content[row_n].properties.c_str());
+                                ImGui::TextUnformatted(content[row_n].package.c_str());
                                 ImGui::TableSetColumnIndex(5);
-                                ImGui::TextUnformatted(std::to_string(content[row_n].count).c_str());
+                                ImGui::TextUnformatted(content[row_n].description.c_str());
                                 ImGui::TableSetColumnIndex(6);
-                                ImGui::TextUnformatted(content[row_n].manufactor.c_str());
+                                ImGui::TextUnformatted(std::to_string(content[row_n].count).c_str());
                                 ImGui::TableSetColumnIndex(7);
-                                ImGui::TextUnformatted(content[row_n].manufactor_number.c_str());
+                                ImGui::TextUnformatted(content[row_n].manufactor.c_str());
                                 ImGui::TableSetColumnIndex(8);
-                                ImGui::TextUnformatted(content[row_n].distributor.c_str());
+                                ImGui::TextUnformatted(content[row_n].manufactor_number.c_str());
                                 ImGui::TableSetColumnIndex(9);
-                                ImGui::TextUnformatted(content[row_n].shop_number.c_str());
+                                ImGui::TextUnformatted(content[row_n].distributor.c_str());
                                 ImGui::TableSetColumnIndex(10);
-                                ImGui::TextUnformatted(content[row_n].vpe.c_str());
+                                ImGui::TextUnformatted(content[row_n].shop_number.c_str());
                                 ImGui::TableSetColumnIndex(11);
-                                ImGui::TextUnformatted(std::to_string(content[row_n].price).c_str());
+                                ImGui::TextUnformatted(content[row_n].vpe.c_str());
                                 ImGui::TableSetColumnIndex(12);
-                                ImGui::TextUnformatted(content[row_n].storage_place.c_str());
+                                ImGui::TextUnformatted(std::to_string(content[row_n].price).c_str());
                                 ImGui::TableSetColumnIndex(13);
-                                ImGui::TextUnformatted(content[row_n].datasheet.c_str());
-                                
+                                ImGui::TextUnformatted(content[row_n].storage_place.c_str());
+                                ImGui::TableSetColumnIndex(14);
+                                ImGui::TextUnformatted(content[row_n].datasheet.c_str());                                
                             }
                     }
                     ImGui::EndTable();

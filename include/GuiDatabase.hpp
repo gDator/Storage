@@ -18,7 +18,7 @@ class GuiDatabase
     //old state was int: 0, 1, 2, 3, 4 | 1, 2, 3
     enum class StateAlternativePicking {NONE, CHECK_EXISTANCE, ERROR_EXISTS, CHECK_ALTERNATIVES, SELECT_ALTERNATIVE, FINISHED, CHECK_ALTERNATIVES_ASSEMBLE, SELECT_ALTERNATIVE_ASSEMBLE};
     private:
-        bool show_console = false;
+        bool show_console = true;
         bool show_item = false;
         bool show_assemble = false;
         bool show_search = false;
@@ -38,7 +38,7 @@ class GuiDatabase
         Item item_to_check;
         int count_to_check;
 
-        std::map<std::string, std::tuple<std::string, std::string, std::string>> g_filter_hints;
+        std::map<std::string, std::tuple<std::string, std::string, std::string, std::string>> g_filter_hints;
 
         Action m_action;
         Item* p_selected_item = nullptr;
@@ -81,6 +81,8 @@ class GuiDatabase
                 {
                     p_database = std::make_unique<ItemDatabase>(std::string(result));
                     p_database->initStorage(false);
+                    show_search = true;
+                    show_assemble_list = true;
                 }
                 else
                     LOG_ERROR("No Database on this path");
@@ -98,14 +100,14 @@ class GuiDatabase
                     continue;
                 std::string::size_type position = 0;
                 std::string::size_type last_position = 0;
-                std::vector<std::string> hint(3);
+                std::vector<std::string> hint(4);
                 int index = 0;
                 LOG_INFO(result);
                 while(position < result.size())
                 {
                     last_position = position;
                     position = result.find(";", position);
-                    if(index <= 2) // ignore more than 3 entries
+                    if(index <= 3) // ignore more than 4 entries
                     {
                         hint[index] = result.substr(last_position, position - last_position);
                         index++;
@@ -115,16 +117,8 @@ class GuiDatabase
                     position++; // jump over semikolon
                 }
                 LOG_INFO("found hints: " << hint[0] << ", " << hint[1]<< "," <<hint[2]);
-                g_filter_hints.emplace(entry, std::make_tuple(hint[0], hint[1], hint[2]));
+                g_filter_hints.emplace(entry, std::make_tuple(hint[0], hint[1], hint[2], hint[3]));
             }
-            
-            // g_filter_hints.emplace("C", std::make_tuple("100n", "0603", "1% X7R"));
-            // g_filter_hints.emplace("L", std::make_tuple("100n", "0603", "1% X7R"));
-            // g_filter_hints.emplace("J", std::make_tuple("100n", "0603", "1% X7R"));
-            // g_filter_hints.emplace("U", std::make_tuple("100n", "0603", "1% X7R"));
-            // g_filter_hints.emplace("D", std::make_tuple("100n", "0603", "1% X7R"));
-            // g_filter_hints.emplace("K", std::make_tuple("100n", "0603", "1% X7R"));
-            // g_filter_hints.emplace("Q", std::make_tuple("100n", "0603", "1% X7R"));
         }
 };
 

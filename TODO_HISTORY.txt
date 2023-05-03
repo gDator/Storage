@@ -51,5 +51,6 @@ x Neue datenbank erstellen selektiert diese direkt (auch in ini file)
 + B-6
 + B-3
 + rebuild state machine for Alterntive-Pick-Dialog
-- csv importieren
++ csv importieren
 + B-9
++ Neue BOM-Liste

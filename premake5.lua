@@ -52,7 +52,7 @@ project "STORAGE"
 		symbols "On"
 		buildoptions{"-g3", "-fdata-sections", "-ffunction-sections"}
 	filter "configurations:Release"
-		defines {}
+		defines {"DEBUG"} -- for logging
 		optimize "On"
 		linkoptions {"-fno-exceptions", "-fno-rtti", "-fPIC"}
 		buildoptions {"-fdata-sections", "-ffunction-sections", "-m64", "-Wall", "-Wextra", "-pthread"}

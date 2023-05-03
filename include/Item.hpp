@@ -23,8 +23,8 @@ struct Item
     double price;
 
     std::string value;
+    std::string value_2;
     std::string package;
-    std::string properties;
     std::string description;
     std::string vpe;
     std::string manufactor;
@@ -41,6 +41,7 @@ struct Item
         count = 0;
         price = 0.0;
         value = "";
+        value_2 = "";
         package = "";
         description = "";
         vpe = "";
@@ -58,6 +59,7 @@ struct Item
         std::string csv;
         csv += category + ";";
         csv += value + ";";
+        csv += value_2 + ";";
         csv += package + ";";
         csv += description + ";";
         csv += manufactor + ";";
@@ -73,7 +75,7 @@ struct Item
     static bool deserializeCSV(Item& i, std::vector<std::string> data)
     {
         i.clear();
-        if(data.size() != 11)
+        if(data.size() != 12)
         {
             LOG_ERROR("CSV data has not right amount of columns");
             return false;
@@ -81,15 +83,16 @@ struct Item
             
         i.category = data[0];
         i.value = data[1];
-        i.package = data[2];
-        i.description = data[3];
-        i.manufactor = data[4];
-        i.manufactor_number = data[5];
-        i.distributor = data[6];
-        i.shop_number = data[7];
-        i.vpe = data[8];
-        i.price = std::stof(data[9]);
-        i.count = std::stoi(data[10]);
+        i.value_2 = data[2];
+        i.package = data[3];
+        i.description = data[4];
+        i.manufactor = data[5];
+        i.manufactor_number = data[6];
+        i.distributor = data[7];
+        i.shop_number = data[8];
+        i.vpe = data[9];
+        i.price = std::stof(data[10]);
+        i.count = std::stoi(data[11]);
         return true;
     }
 
@@ -122,7 +125,7 @@ class ItemDatabase
         const std::deque<Item>& searchItemByID(int id);
         void addAssemble(Assemble a);
         void updateItemInAssemble(Assemble a, Item i, int count);
-        int itemExistsInAssemble(Assemble a, Item i);
+        bool itemExistsInAssemble(Assemble a, Item i);
         const std::deque<Item>& searchItemInAssemble(Assemble a, Item i);
         const std::deque<Item>& searchItemInAssembleByID(Assemble a, Item i);
         void addItemToAssemble(Assemble a, Item i, int count);

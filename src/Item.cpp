@@ -8,7 +8,7 @@ void ItemDatabase::initStorage(bool new_database)
         try
         {
             SQLite::Transaction transaction(m_database);
-            m_database.exec("CREATE TABLE IF NOT EXISTS Lager (id INTEGER PRIMARY KEY, Value TEXT, Kategorie TEXT, Package TEXT, Eigenschaften TEXT,Anzahl INTEGER, Hersteller TEXT, Herstellernummer TEXT,\
+            m_database.exec("CREATE TABLE IF NOT EXISTS Lager (id INTEGER PRIMARY KEY, Value TEXT, Value2 TEXT, Kategorie TEXT, Package TEXT, Eigenschaften TEXT,Anzahl INTEGER, Hersteller TEXT, Herstellernummer TEXT,\
                             Distributor TEXT, Bestellnummer TEXT, Verpackungseinheit TEXT, Preis FLOAT, Lagerort TEXT, Datenblatt TEXT)");
             m_database.exec("CREATE TABLE IF NOT EXISTS Baugruppen (id_bg INTEGER PRIMARY KEY, Name TEXT)");
             m_database.exec("CREATE TABLE IF NOT EXISTS Link_Lager_Baugruppen (id INTEGER , id_bg INTEGER , Anzahl INTEGER, FOREIGN KEY (id) REFERENCES Lager (id) ON UPDATE CASCADE, FOREIGN KEY (id_bg) REFERENCES Baugruppen (id_bg) ON UPDATE CASCADE)");
@@ -40,12 +40,13 @@ int ItemDatabase::addItem(Item item)
     try
     {
         SQLite::Transaction transaction(m_database);
-        SQLite::Statement query(m_database, "INSERT INTO Lager VALUES(:id, :value, :cat ,:package, :prop ,:n ,:hrst ,:hrstnr ,:dist ,:bstnr ,:vpe, :price, :storage_place, :datasheet)");
+        SQLite::Statement query(m_database, "INSERT INTO Lager VALUES(:id, :value, :value2, :cat ,:package, :prop ,:n ,:hrst ,:hrstnr ,:dist ,:bstnr ,:vpe, :price, :storage_place, :datasheet)");
         query.bind(":id", id);
         query.bind(":value", item.value);
+        query.bind(":value2", item.value_2);
         query.bind(":package", item.package);
         query.bind(":cat", item.category);
-        query.bind(":prop", item.properties);
+        query.bind(":prop", item.description);
         query.bind(":n", item.count);
         query.bind(":hrst", item.manufactor);
         query.bind(":hrstnr", item.manufactor_number);
@@ -75,12 +76,13 @@ void ItemDatabase::updateItem(Item item)
     {
         LOG_TRACE("Update Item " << item.id << ": " << item.count);
         SQLite::Transaction transaction(m_database);
-        SQLite::Statement query(m_database, "UPDATE Lager SET Value = :value, Kategorie = :cat , Package = :package, Eigenschaften = :prop , Anzahl = :n , Hersteller = :hrst , Herstellernummer = :hrstnr , Distributor = :dist , Bestellnummer = :bstnr , Verpackungseinheit = :vpe, Preis = :price , Lagerort = :storage_place, Datenblatt = :datasheet WHERE id = :id");
+        SQLite::Statement query(m_database, "UPDATE Lager SET Value = :value, Value2 = :value2, Kategorie = :cat , Package = :package, Eigenschaften = :prop , Anzahl = :n , Hersteller = :hrst , Herstellernummer = :hrstnr , Distributor = :dist , Bestellnummer = :bstnr , Verpackungseinheit = :vpe, Preis = :price , Lagerort = :storage_place, Datenblatt = :datasheet WHERE id = :id");
         query.bind(":id", item.id);
         query.bind(":value", item.value);
+        query.bind(":value2", item.value_2);
         query.bind(":cat", item.category);
         query.bind(":package", item.package);
-        query.bind(":prop", item.properties);
+        query.bind(":prop", item.description);
         query.bind(":n", item.count);
         query.bind(":hrst", item.manufactor);
         query.bind(":hrstnr", item.manufactor_number);
@@ -113,18 +115,19 @@ const std::deque<Item>& ItemDatabase::searchItem()
             Item i;
             i.id                = query.getColumn(0).getInt();
             i.value             = query.getColumn(1).getText();
-            i.category          = query.getColumn(2).getText();
-            i.package           = query.getColumn(3).getText();
-            i.properties         = query.getColumn(4).getText();
-            i.count             = query.getColumn(5).getInt();
-            i.manufactor        = query.getColumn(6).getText();
-            i.manufactor_number = query.getColumn(7).getText();
-            i.distributor       = query.getColumn(8).getText();
-            i.shop_number       = query.getColumn(9).getText();
-            i.vpe               = query.getColumn(10).getText();
-            i.price             = query.getColumn(11).getDouble();
-            i.storage_place     = query.getColumn(12).getText();
-            i.datasheet         = query.getColumn(13).getText();
+            i.value_2           = query.getColumn(2).getText();
+            i.category          = query.getColumn(3).getText();
+            i.package           = query.getColumn(4).getText();
+            i.description        = query.getColumn(5).getText();
+            i.count             = query.getColumn(6).getInt();
+            i.manufactor        = query.getColumn(7).getText();
+            i.manufactor_number = query.getColumn(8).getText();
+            i.distributor       = query.getColumn(9).getText();
+            i.shop_number       = query.getColumn(10).getText();
+            i.vpe               = query.getColumn(11).getText();
+            i.price             = query.getColumn(12).getDouble();
+            i.storage_place     = query.getColumn(13).getText();
+            i.datasheet         = query.getColumn(14).getText();
             m_list.push_back(i);
         }        
     }
@@ -148,18 +151,19 @@ const std::deque<Item>& ItemDatabase::searchItemByID(int id)
             Item i;
             i.id                = query.getColumn(0).getInt();
             i.value             = query.getColumn(1).getText();
-            i.category          = query.getColumn(2).getText();
-            i.package           = query.getColumn(3).getText();
-            i.properties         = query.getColumn(4).getText();
-            i.count             = query.getColumn(5).getInt();
-            i.manufactor        = query.getColumn(6).getText();
-            i.manufactor_number = query.getColumn(7).getText();
-            i.distributor       = query.getColumn(8).getText();
-            i.shop_number       = query.getColumn(9).getText();
-            i.vpe               = query.getColumn(10).getText();
-            i.price             = query.getColumn(11).getDouble();
-            i.storage_place     = query.getColumn(12).getText();
-            i.datasheet         = query.getColumn(13).getText();
+            i.value_2             = query.getColumn(2).getText();
+            i.category          = query.getColumn(3).getText();
+            i.package           = query.getColumn(4).getText();
+            i.description         = query.getColumn(5).getText();
+            i.count             = query.getColumn(6).getInt();
+            i.manufactor        = query.getColumn(7).getText();
+            i.manufactor_number = query.getColumn(8).getText();
+            i.distributor       = query.getColumn(9).getText();
+            i.shop_number       = query.getColumn(10).getText();
+            i.vpe               = query.getColumn(11).getText();
+            i.price             = query.getColumn(12).getDouble();
+            i.storage_place     = query.getColumn(13).getText();
+            i.datasheet         = query.getColumn(14).getText();
             m_list.push_back(i);
         }        
     }
@@ -182,7 +186,12 @@ const std::deque<Item>& ItemDatabase::searchItem(Item i)
             condition += i.value;
             condition += std::string("'");
         }
-            
+        if(i.value_2.compare("") != 0)
+        {
+            condition += std::string(" AND Value2 LIKE '");
+            condition += i.value_2;
+            condition += std::string("'");
+        }            
         if(i.category.compare("None") != 0)
         {
             condition += std::string(" AND Kategorie LIKE '");
@@ -195,10 +204,10 @@ const std::deque<Item>& ItemDatabase::searchItem(Item i)
             condition += i.package;
             condition += std::string("'");
         }
-        if(i.properties.compare("") != 0)
+        if(i.description.compare("") != 0)
         {
             condition += std::string(" AND Eigenschaften LIKE '");
-            condition += i.properties;
+            condition += i.description;
             condition += std::string("'");
         }
         if(i.manufactor.compare("") != 0)
@@ -252,18 +261,19 @@ const std::deque<Item>& ItemDatabase::searchItem(Item i)
             Item i;
             i.id                = query.getColumn(0).getInt();
             i.value             = query.getColumn(1).getText();
-            i.category          = query.getColumn(2).getText();
-            i.package           = query.getColumn(3).getText();
-            i.properties         = query.getColumn(4).getText();
-            i.count             = query.getColumn(5).getInt();
-            i.manufactor        = query.getColumn(6).getText();
-            i.manufactor_number = query.getColumn(7).getText();
-            i.distributor       = query.getColumn(8).getText();
-            i.shop_number       = query.getColumn(9).getText();
-            i.vpe               = query.getColumn(10).getText();
-            i.price             = query.getColumn(11).getDouble();
-            i.storage_place     = query.getColumn(12).getText();
-            i.datasheet         = query.getColumn(13).getText();
+            i.value_2           = query.getColumn(2).getText();
+            i.category          = query.getColumn(3).getText();
+            i.package           = query.getColumn(4).getText();
+            i.description         = query.getColumn(5).getText();
+            i.count             = query.getColumn(6).getInt();
+            i.manufactor        = query.getColumn(7).getText();
+            i.manufactor_number = query.getColumn(8).getText();
+            i.distributor       = query.getColumn(9).getText();
+            i.shop_number       = query.getColumn(10).getText();
+            i.vpe               = query.getColumn(11).getText();
+            i.price             = query.getColumn(12).getDouble();
+            i.storage_place     = query.getColumn(13).getText();
+            i.datasheet         = query.getColumn(14).getText();
             m_list.push_back(i);
         }        
     }
@@ -293,7 +303,7 @@ void ItemDatabase::addAssemble(Assemble a)
     }
 }
 
-int ItemDatabase::itemExistsInAssemble(Assemble a, Item i)
+bool ItemDatabase::itemExistsInAssemble(Assemble a, Item i)
 {
     int count = searchItemInAssembleByID(a, i).size();
     // Assemble assemble = 
@@ -305,16 +315,16 @@ int ItemDatabase::itemExistsInAssemble(Assemble a, Item i)
     if(count > 1)
         LOG_ERROR("Multiple existance of same Element");
     if(count == 1)
-        return 1;
+        return true;
     LOG_INFO("Item " << i.id << "does not exist in " << a.name);
-    return -1;
+    return false;
 }
 
 const std::deque<Item>& ItemDatabase::searchItemInAssemble(Assemble a, Item i)
 {
     try
     {
-        std::string condition("SELECT Lager.id, Lager.Value, Lager.Kategorie, Lager.Package, Lager.Eigenschaften, Lager.Anzahl, Lager.Hersteller, Lager.Herstellernummer, Lager.Distributor, Lager.Bestellnummer, Lager.Verpackungseinheit, Lager.Preis, Lager.Datenblatt, Link_Lager_Baugruppen.Anzahl ");
+        std::string condition("SELECT Lager.id, Lager.Value, Lager.Value2, Lager.Kategorie, Lager.Package, Lager.Eigenschaften, Lager.Anzahl, Lager.Hersteller, Lager.Herstellernummer, Lager.Distributor, Lager.Bestellnummer, Lager.Verpackungseinheit, Lager.Preis, Lager.Datenblatt, Link_Lager_Baugruppen.Anzahl ");
         condition += "FROM Link_Lager_Baugruppen ";
         condition += "INNER JOIN Lager ON Link_Lager_baugruppen.id = Lager.id ";
         condition += "INNER JOIN Baugruppen ON Baugruppen.id_bg = Link_Lager_Baugruppen.id_bg ";
@@ -324,6 +334,12 @@ const std::deque<Item>& ItemDatabase::searchItemInAssemble(Assemble a, Item i)
         {
             condition += std::string(" AND Lager.Value LIKE '");
             condition += i.value;
+            condition += std::string("'");
+        }
+        if(i.value_2.compare("") != 0)
+        {
+            condition += std::string(" AND Lager.Value2 LIKE '");
+            condition += i.value_2;
             condition += std::string("'");
         }
             
@@ -339,10 +355,10 @@ const std::deque<Item>& ItemDatabase::searchItemInAssemble(Assemble a, Item i)
             condition += i.package;
             condition += std::string("'");
         }
-        if(i.properties.compare("") != 0)
+        if(i.description.compare("") != 0)
         {
             condition += std::string(" AND Lager.Eigenschaften LIKE '");
-            condition += i.properties;
+            condition += i.description;
             condition += std::string("'");
         }
         if(i.manufactor.compare("") != 0)
@@ -396,18 +412,19 @@ const std::deque<Item>& ItemDatabase::searchItemInAssemble(Assemble a, Item i)
             Item i;
             i.id                = query.getColumn(0).getInt();
             i.value             = query.getColumn(1).getText();
-            i.category          = query.getColumn(2).getText();
-            i.package           = query.getColumn(3).getText();
-            i.properties         = query.getColumn(4).getText();
-            i.count             = query.getColumn(5).getInt();
-            i.manufactor        = query.getColumn(6).getText();
-            i.manufactor_number = query.getColumn(7).getText();
-            i.distributor       = query.getColumn(8).getText();
-            i.shop_number       = query.getColumn(9).getText();
-            i.vpe               = query.getColumn(10).getText();
-            i.price             = query.getColumn(11).getDouble();
-            i.storage_place     = query.getColumn(12).getText();
-            i.datasheet         = query.getColumn(13).getText();
+            i.value_2            = query.getColumn(2).getText();
+            i.category          = query.getColumn(3).getText();
+            i.package           = query.getColumn(4).getText();
+            i.description         = query.getColumn(5).getText();
+            i.count             = query.getColumn(6).getInt();
+            i.manufactor        = query.getColumn(7).getText();
+            i.manufactor_number = query.getColumn(8).getText();
+            i.distributor       = query.getColumn(9).getText();
+            i.shop_number       = query.getColumn(10).getText();
+            i.vpe               = query.getColumn(11).getText();
+            i.price             = query.getColumn(12).getDouble();
+            i.storage_place     = query.getColumn(13).getText();
+            i.datasheet         = query.getColumn(14).getText();
             m_list.push_back(i);
         }        
     }
@@ -423,7 +440,7 @@ const std::deque<Item>& ItemDatabase::searchItemInAssembleByID(Assemble a, Item 
 {
     try
     {
-        std::string condition("SELECT Lager.id, Lager.Value, Lager.Kategorie, Lager.Package, Lager.Eigenschaften, Lager.Anzahl, Lager.Hersteller, Lager.Herstellernummer, Lager.Distributor, Lager.Bestellnummer, Lager.Verpackungseinheit, Lager.Preis, Lager.Datenblatt, Link_Lager_Baugruppen.Anzahl ");
+        std::string condition("SELECT Lager.id, Lager.Value, Lager.Value2, Lager.Kategorie, Lager.Package, Lager.Eigenschaften, Lager.Anzahl, Lager.Hersteller, Lager.Herstellernummer, Lager.Distributor, Lager.Bestellnummer, Lager.Verpackungseinheit, Lager.Preis, Lager.Datenblatt, Link_Lager_Baugruppen.Anzahl ");
         condition += "FROM Link_Lager_Baugruppen ";
         condition += "INNER JOIN Lager ON Link_Lager_baugruppen.id = Lager.id ";
         condition += "INNER JOIN Baugruppen ON Baugruppen.id_bg = Link_Lager_Baugruppen.id_bg ";
@@ -437,18 +454,19 @@ const std::deque<Item>& ItemDatabase::searchItemInAssembleByID(Assemble a, Item 
             Item i;
             i.id                = query.getColumn(0).getInt();
             i.value             = query.getColumn(1).getText();
-            i.category          = query.getColumn(2).getText();
-            i.package           = query.getColumn(3).getText();
-            i.properties         = query.getColumn(4).getText();
-            i.count             = query.getColumn(5).getInt();
-            i.manufactor        = query.getColumn(6).getText();
-            i.manufactor_number = query.getColumn(7).getText();
-            i.distributor       = query.getColumn(8).getText();
-            i.shop_number       = query.getColumn(9).getText();
-            i.vpe               = query.getColumn(10).getText();
-            i.price             = query.getColumn(11).getDouble();
-            i.storage_place     = query.getColumn(12).getText();
-            i.datasheet         = query.getColumn(13).getText();
+            i.value_2             = query.getColumn(2).getText();
+            i.category          = query.getColumn(3).getText();
+            i.package           = query.getColumn(4).getText();
+            i.description         = query.getColumn(5).getText();
+            i.count             = query.getColumn(6).getInt();
+            i.manufactor        = query.getColumn(7).getText();
+            i.manufactor_number = query.getColumn(8).getText();
+            i.distributor       = query.getColumn(9).getText();
+            i.shop_number       = query.getColumn(10).getText();
+            i.vpe               = query.getColumn(11).getText();
+            i.price             = query.getColumn(12).getDouble();
+            i.storage_place     = query.getColumn(13).getText();
+            i.datasheet         = query.getColumn(14).getText();
             m_list.push_back(i);
         }
     }
@@ -502,7 +520,7 @@ void ItemDatabase::addItemToAssemble(Assemble a, Item i, int count)
         query.bind(":count", count);     
         query.exec();
         transaction.commit();
-        cmsg("Added Item to Assemble");
+        cmsg("[info] Added Item to Assemble");
         m_updated = true;
     }
     catch(const std::exception& e)
@@ -519,7 +537,7 @@ const Assemble ItemDatabase::searchAssemble(Assemble a)
     m_assemble_list.clear();
     try
     {
-        std::string s ("SELECT Lager.id, Lager.Value, Lager.Kategorie, Lager.Package, Lager.Eigenschaften, Lager.Anzahl, Lager.Hersteller, Lager.Herstellernummer, Lager.Distributor, Lager.Bestellnummer, Lager.Verpackungseinheit, Lager.Preis, Lager.Lagerort, Lager.Datenblatt, Link_Lager_Baugruppen.Anzahl ");
+        std::string s ("SELECT Lager.id, Lager.Value, Lager.Value2, Lager.Kategorie, Lager.Package, Lager.Eigenschaften, Lager.Anzahl, Lager.Hersteller, Lager.Herstellernummer, Lager.Distributor, Lager.Bestellnummer, Lager.Verpackungseinheit, Lager.Preis, Lager.Lagerort, Lager.Datenblatt, Link_Lager_Baugruppen.Anzahl ");
         s += "FROM Link_Lager_Baugruppen ";
         s += "INNER JOIN Lager ON Link_Lager_baugruppen.id = Lager.id ";
         s += "INNER JOIN Baugruppen ON Baugruppen.id_bg = Link_Lager_Baugruppen.id_bg ";
@@ -533,20 +551,20 @@ const Assemble ItemDatabase::searchAssemble(Assemble a)
             Item i;
             i.id                = query.getColumn(0).getInt();
             i.value             = query.getColumn(1).getText();
-            i.category          = query.getColumn(2).getText();
-            i.package           = query.getColumn(3).getText();
-            i.properties         = query.getColumn(4).getText();
-            i.count             = query.getColumn(5).getInt();
-            i.manufactor        = query.getColumn(6).getText();
-            i.manufactor_number = query.getColumn(7).getText();
-            i.distributor       = query.getColumn(8).getText();
-            i.shop_number       = query.getColumn(9).getText();
-            i.vpe               = query.getColumn(10).getText();
-            i.price             = query.getColumn(11).getDouble();
-            i.storage_place     = query.getColumn(12).getText();
-            i.datasheet         = query.getColumn(13).getText();
-            int amount          = query.getColumn(14).getInt();
-
+            i.value_2             = query.getColumn(2).getText();
+            i.category          = query.getColumn(3).getText();
+            i.package           = query.getColumn(4).getText();
+            i.description         = query.getColumn(5).getText();
+            i.count             = query.getColumn(6).getInt();
+            i.manufactor        = query.getColumn(7).getText();
+            i.manufactor_number = query.getColumn(8).getText();
+            i.distributor       = query.getColumn(9).getText();
+            i.shop_number       = query.getColumn(10).getText();
+            i.vpe               = query.getColumn(11).getText();
+            i.price             = query.getColumn(12).getDouble();
+            i.storage_place     = query.getColumn(13).getText();
+            i.datasheet         = query.getColumn(14).getText();
+            int amount          = query.getColumn(15).getInt();
             a.bom.push_back(std::make_tuple(i, amount));
             LOG_TRACE("Found " << i.id << " in " << a.name);
         }        
