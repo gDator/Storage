@@ -10,11 +10,11 @@ namespace program
     class ProgramState
     {
         public:
-            virtual void draw(const float dt, sf::RenderWindow &window) = 0;
-            virtual void update(const float dt, sf::Time elapsed) = 0;
-            virtual void handleInput(sf::RenderWindow &window) = 0;
-            virtual void handleKeyboard(sf::Event event) = 0;
-            virtual void handleMouse(sf::Event event) = 0;
+            virtual void draw(const float dt, GLFWwindow* window) = 0;
+            virtual void update(const float dt) = 0;
+            virtual void handleInput(GLFWwindow* window) = 0;
+            virtual void handleKeyboard() = 0;
+            virtual void handleMouse() = 0;
     };
 }
 }

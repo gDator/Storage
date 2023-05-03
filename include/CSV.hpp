@@ -11,6 +11,6 @@ class CSV
     public:
         //template needs function serializeCSV wich returns a string
         static void exportCSV(std::string path, std::vector<std::string> data, std::vector <std::string> header);
-        static std::vector<std::string> importCSV(std::string path);
+        static std::vector<std::vector<std::string>> importCSV(std::string path);
 };
 #endif /*CSV_HPP*/

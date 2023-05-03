@@ -7,7 +7,7 @@
 #include <deque>
 #include <filesystem>
 #include <iostream>
-
+#include "logger.hpp"
 
 static std::vector<std::string> g_categories = {"R", "C", "L", "J", "U", "D", "K", "Q"};
 static std::vector<std::string> g_storage_x = {"A", "B", "C", "D", "E", "F", "G", "H"};
@@ -69,6 +69,30 @@ struct Item
         csv += std::to_string(count);
         return csv;
     }
+
+    static bool deserializeCSV(Item& i, std::vector<std::string> data)
+    {
+        i.clear();
+        if(data.size() != 11)
+        {
+            LOG_ERROR("CSV data has not right amount of columns");
+            return false;
+        }
+            
+        i.category = data[0];
+        i.value = data[1];
+        i.package = data[2];
+        i.description = data[3];
+        i.manufactor = data[4];
+        i.manufactor_number = data[5];
+        i.distributor = data[6];
+        i.shop_number = data[7];
+        i.vpe = data[8];
+        i.price = std::stof(data[9]);
+        i.count = std::stoi(data[10]);
+        return true;
+    }
+
 };
 
 struct Assemble
@@ -87,17 +111,20 @@ class ItemDatabase
         std::deque<Assemble> m_assemble_list;
 
         bool m_updated = true;
+        int id; //tracks intern id 
     public:
         const std::string getDatabasePath() {return m_filename;}
-        void initStorage();
-        void addItem(Item i);
+        void initStorage(bool new_database);
+        int addItem(Item i);    //returns the used id
         void updateItem(Item i);
         const std::deque<Item>& searchItem();
         const std::deque<Item>& searchItem(Item i);
+        const std::deque<Item>& searchItemByID(int id);
         void addAssemble(Assemble a);
         void updateItemInAssemble(Assemble a, Item i, int count);
         int itemExistsInAssemble(Assemble a, Item i);
         const std::deque<Item>& searchItemInAssemble(Assemble a, Item i);
+        const std::deque<Item>& searchItemInAssembleByID(Assemble a, Item i);
         void addItemToAssemble(Assemble a, Item i, int count);
         void deleteItemFromAssemble(Assemble a, Item i);
         void updateRecognized() {m_updated = false;}
@@ -109,9 +136,8 @@ class ItemDatabase
 
         ItemDatabase(std::string filename) : m_filename(filename), m_database(m_filename, SQLite::OPEN_READWRITE|SQLite::OPEN_CREATE)
         {
-            
+           
         }
-
         ~ItemDatabase() {}
 };
 #endif /*ITEM_HPP*/

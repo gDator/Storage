@@ -1,17 +1,20 @@
 HISTORY - BUGFIXES
 =======================================================================
 v0.1: 2023/04/01: Erstversion
+v0.2: 2023/04/28: transform to glfw; Deal with csv import
 
 
 BUGS
 =======================================================================
 + B-1: Aktualisieren Bauteil funktioniert nicht
 + B-2: Baugruppenliste führt Lagerelmente auf -> SELECT FROM Lager statt Baugruppen
-- B-3: Assert when CAPS is pressed
++ B-3: Assert when CAPS is pressed -> moved to glfw
 + B-4: GuiDatabase:713: Add Item To Assemble: adds new Item to Storage -> go direct to state 5 
 + B-5: Item.cpp:addItemToAssemble: Doesnt check if a item already exists -> done
-- B-6: Imgui moves if window not active
++ B-6: Imgui moves if window not active: moved to glfw
 + B-7: Item wurde zu Lager aber nicht zu Baugruppe hinzugefügt -> Item muss erst wieder zurückgelesen werden
++ B-8: GuiDatabase.hpp:68: No inifile crashes program:  -> check if ini file exists if(std::filesystem::file) 
++ B-9: Absturz nach erstellung einer Datenbank -> id erst in init Storage  aufrufen
 
 
 TODO
@@ -33,10 +36,20 @@ TODO
 x Neue datenbank erstellen selektiert diese direkt (auch in ini file)
 + BOM Tabelle exportieren (csv)
 + Bauteil bereits in Lager vorhanden (merge-Dialog)
-- Bauteil hinzufügen: direkt auch mit Baugruppenverknüpfung
 + Lagerliste Eigenschaften: Value, Package, Beschreibung
 + Darkmode-Umschaltung
 + automatische Aktualisierung der Datenbanken
 + Vorschlag für Bauteileigenschaften eintragung pro Gruppe
+
+-------------------------v0.2---------------------------
++ go to glfw
 - Vorschlag pro Rubrik anpassen 
++ Vorschläge aus ini einlesen
 - Bestelliste
++ Bauteil hinzufügen: direkt auch mit Baugruppenverknüpfung
++ B-8
++ B-6
++ B-3
++ rebuild state machine for Alterntive-Pick-Dialog
+- csv importieren
++ B-9

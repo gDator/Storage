@@ -9,14 +9,36 @@ void CSV::exportCSV(std::string path, std::vector<std::string> data, std::vector
         if(i != header.size() - 1) //last one
             csv << ";";
     }
-    csv << "\n";
         
     for(auto& d : data)
-        csv << d << "\n";
+        csv << "\n" << d; 
     csv.close();
 }
 
-std::vector<std::string> CSV::importCSV(std::string path)
+std::vector<std::vector<std::string>> CSV::importCSV(std::string path)
 {
-
+    std::ifstream csv(path);
+    std::vector<std::vector<std::string>> data;
+    std::vector<std::string> line;
+    std::string buffer;
+    std::getline(csv, buffer); //dont read header
+    while(!csv.eof())
+    {
+        std::getline(csv, buffer);
+        line.clear();
+        std::string::size_type position = 0;
+        std::string::size_type last_position = 0;
+        while(position < buffer.size())
+        {
+            last_position = position;
+            position = buffer.find(";", position);
+            line.push_back(buffer.substr(last_position, position - last_position));
+            if(position == std::string::npos)
+                break;
+            position++; //jump over semikolon 
+        }
+        data.push_back(line);        
+    }
+    csv.close();
+    return data;
 }

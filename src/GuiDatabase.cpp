@@ -3,7 +3,7 @@
 #include "CSV.hpp"
 
 
-void GuiDatabase::draw(sf::RenderWindow &w)
+void GuiDatabase::draw(GLFWwindow *w)
 {
     ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
     if(ImGui::BeginMainMenuBar())
@@ -16,7 +16,7 @@ void GuiDatabase::draw(sf::RenderWindow &w)
                 if(path != "")
                 {
                     p_database = std::make_unique<ItemDatabase>(path);
-                    p_database->initStorage();
+                    p_database->initStorage(true);
                 }
                 // show_file_explorer = true;
                 // std::filesystem::path selected_path = std::filesystem::absolute(std::filesystem::current_path());
@@ -33,6 +33,7 @@ void GuiDatabase::draw(sf::RenderWindow &w)
                     SI_Error rc = ini.LoadFile("storage.ini");
                     rc = ini.SetValue("Settings", "Database", path.c_str());
 	                ini.SaveFile("storage.ini");
+                    p_database->initStorage(false);
                 }
                     
                 // show_file_explorer = true;
@@ -145,15 +146,7 @@ void GuiDatabase::draw(sf::RenderWindow &w)
         {
             if(ImGui::MenuItem("Fullscreen", NULL, &fullscreen)) 
             {
-                if(fullscreen)
-                {
-                    w.create(sf::VideoMode(1000,1000), "STORAGE", sf::Style::Fullscreen);
-                }                        
-                else
-                {
-                    w.create(sf::VideoMode(1200,800), "STORAGE");
-                }
-                w.setFramerateLimit(144);
+    
             }
             ImGui::Separator();
             if(ImGui::MenuItem("Darkmode", NULL, &m_dark_mode)) {m_dark_mode? ImGui::StyleColorsDark() : ImGui::StyleColorsLight(); }
@@ -170,17 +163,13 @@ void GuiDatabase::draw(sf::RenderWindow &w)
         showConsole(w);
     if(show_info)
         showInfo(w);
-    
-    
-    
-      
-    if(p_database->isUpdated())
-    {
-        m_gui_database_updated = false;
-    }
    
     if(p_database != nullptr)
     {
+        if(p_database->isUpdated())
+        {
+            m_gui_database_updated = false;
+        }
         if(show_search)
         showSearch(w);
         if(show_item)
@@ -195,25 +184,27 @@ void GuiDatabase::draw(sf::RenderWindow &w)
             showAssembleList(w);
         if(show_change_item)
             showChangeItem(w);
-        if(show_check_item > 0)
+        if(show_check_item != StateAlternativePicking::NONE)
             addItemToStorageWithCheck();
-        if(show_check_item > 4)
+        if(show_check_item == StateAlternativePicking::FINISHED)
             addItemToAssembleWithCheck();
+        if(m_gui_database_updated) //updated Database is also updated in Gui
+            p_database->updateRecognized();
+        if(show_import_check)
+            importItemToAssembly();      
     }
-    if(m_gui_database_updated) //updated Database is also updated in Gui
-        p_database->updateRecognized();      
+    
     
 }
 
-void GuiDatabase::showConsole(sf::RenderWindow &w)
+void GuiDatabase::showConsole(GLFWwindow *w)
 {
     p_console->draw();
 }
 
-void GuiDatabase::showSearch(sf::RenderWindow &w)
+void GuiDatabase::showSearch(GLFWwindow *w)
 {
     // ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar;
-    
     if(ImGui::Begin("Lager", &show_search))
     {
         static ImGuiTableFlags table_flags =
@@ -237,6 +228,11 @@ void GuiDatabase::showSearch(sf::RenderWindow &w)
             filter.storage_place = g_filter_storage_x[storage_current_x_idx] + "|" + g_filter_storage_y[storage_current_y_idx];
             content = p_database->searchItem(filter);
             status = "Ready...";
+        }
+        ImGui::SameLine();
+        if(ImGui::Button("Auflösen"))
+        {
+            cmsg("Not implemented yet");
         }
         ImGui::SameLine();
         ImGui::Text(status.c_str());
@@ -414,6 +410,7 @@ void GuiDatabase::showSearch(sf::RenderWindow &w)
             m_gui_database_updated = true;
             filter.category = g_filter_categories[item_current_idx];
             filter.storage_place = g_filter_storage_x[storage_current_x_idx] + "|" + g_filter_storage_y[storage_current_y_idx];
+            content.clear();
             content = p_database->searchItem(filter);
             cmsg("[info] Automated Update");
         }
@@ -426,7 +423,7 @@ void GuiDatabase::showSearch(sf::RenderWindow &w)
  * 
  * @param w 
  */
-void GuiDatabase::showItem(sf::RenderWindow &w)
+void GuiDatabase::showItem(GLFWwindow *w)
 {
     static Item item;
     static unsigned int item_current_idx = 0;
@@ -459,9 +456,19 @@ void GuiDatabase::showItem(sf::RenderWindow &w)
             }
             ImGui::EndCombo();
         }
-        ImGui::InputTextWithHint("Value", std::get<0>(g_filter_hints.at(g_categories[item_current_idx])).c_str(), &item.value);
-        ImGui::InputTextWithHint("Package", std::get<1>(g_filter_hints.at(g_categories[item_current_idx])).c_str() ,&item.package);
-        ImGui::InputTextWithHint("Beschreibung", std::get<2>(g_filter_hints.at(g_categories[item_current_idx])).c_str(), &item.properties);
+        if(g_filter_hints.count(g_categories[item_current_idx]) > 0) //if there is an hint entry
+        {
+            ImGui::InputTextWithHint("Value", std::get<0>(g_filter_hints.at(g_categories[item_current_idx])).c_str(), &item.value);
+            ImGui::InputTextWithHint("Package", std::get<1>(g_filter_hints.at(g_categories[item_current_idx])).c_str() ,&item.package);
+            ImGui::InputTextWithHint("Beschreibung", std::get<2>(g_filter_hints.at(g_categories[item_current_idx])).c_str(), &item.properties);
+        }
+        else
+        {
+            ImGui::InputText("Value", &item.value);
+            ImGui::InputText("Package" ,&item.package);
+            ImGui::InputText("Beschreibung", &item.properties);
+        }
+        
         ImGui::InputText("Hersteller", &item.manufactor);
         ImGui::InputText("Hersteller-Nr.", &item.manufactor_number);
         ImGui::InputText("Distributor", &item.distributor);
@@ -509,13 +516,13 @@ void GuiDatabase::showItem(sf::RenderWindow &w)
             item.category = g_categories[item_current_idx];
             item.storage_place = g_storage_x[storage_current_x_idx] + "|" + g_storage_y[storage_current_y_idx];
             
-            show_check_item = 1;
+            show_check_item = StateAlternativePicking::CHECK_EXISTANCE;
             item_to_check = item;
             if(m_action == Action::ADD_ITEM_TO_ASSEMBLE_AND_STORAGE)
             {
                 item_to_check = item;
                 count_to_check = amount;
-                show_check_item_in_assemble++;
+                show_check_item_in_assemble = StateAlternativePicking::CHECK_ALTERNATIVES_ASSEMBLE;
             }
             item.clear();
             show_item = false; // close if ready?
@@ -529,7 +536,7 @@ void GuiDatabase::showItem(sf::RenderWindow &w)
     ImGui::End();
 }
 
-void GuiDatabase::showChangeItem(sf::RenderWindow &w)
+void GuiDatabase::showChangeItem(GLFWwindow *w)
 {
     static unsigned int item_current_idx = 0;
     static unsigned int storage_current_x_idx = 0;
@@ -599,7 +606,7 @@ void GuiDatabase::showChangeItem(sf::RenderWindow &w)
     ImGui::End();
 }
 
-void GuiDatabase::showAssemble(sf::RenderWindow &w)
+void GuiDatabase::showAssemble(GLFWwindow *w)
 {
     static Assemble assemble;
     if(ImGui::Begin("Bauteil"))
@@ -620,7 +627,7 @@ void GuiDatabase::showAssemble(sf::RenderWindow &w)
     ImGui::End();
 }
 
-void GuiDatabase::showInfo(sf::RenderWindow &w)
+void GuiDatabase::showInfo(GLFWwindow *w)
 {
     if(ImGui::Begin("Info", &show_info))
     {
@@ -667,7 +674,7 @@ void GuiDatabase::showInfo(sf::RenderWindow &w)
     
 }
 
-void GuiDatabase::showRemove(sf::RenderWindow &w)
+void GuiDatabase::showRemove(GLFWwindow *w)
 {
     static int amount = 0;
     static bool add = false;
@@ -686,28 +693,21 @@ void GuiDatabase::showRemove(sf::RenderWindow &w)
         ImGui::InputInt("Anzahl", &amount);
         if(ImGui::Button("OK")) 
         {
-            if(p_selected_item != nullptr && p_selected_item != nullptr)
+            if(p_selected_assemble != nullptr && p_selected_item != nullptr)
             {
+                
                 if(m_action == Action::UPDATE_ITEM)
                 {
+                    LOG_TRACE("Action::UPDATE_ITEM");
                     if(add)
                         (p_selected_item->count) += amount;
                     else
                         (p_selected_item->count) -= amount;
                     p_database->updateItem(*p_selected_item);
                 }
-                    
-                else if (m_action == Action::UPDATE_ASSEMBLE)
-                {
-                    *p_selected_assemble = p_database->searchAssemble(*p_selected_assemble);
-                    for(auto& item : p_selected_assemble->bom)
-                    {
-                        std::get<0>(item).count -= (std::get<1>(item)*amount);
-                        p_database->updateItem(std::get<0>(item));
-                    }
-                }
                 else if (m_action == Action::ADD_ITEM_TO_ASSEMBLE)
                 {
+                    LOG_TRACE("Action::ADD_ITEM_TO_ASSEMBLE");
                     // int i = p_database->itemExistsInAssemble(*p_selected_assemble, *p_selected_item);
                     // if(i > 0)
                     // {
@@ -718,10 +718,20 @@ void GuiDatabase::showRemove(sf::RenderWindow &w)
                     // {
                     item_to_check = *p_selected_item;
                     count_to_check = amount;
-                    show_check_item = 5; 
-                    show_check_item_in_assemble++;
+                    show_check_item = StateAlternativePicking::FINISHED; 
+                    show_check_item_in_assemble =  StateAlternativePicking::CHECK_ALTERNATIVES_ASSEMBLE;
                         //old: p_database->addItemToAssembleWithCheck(*p_selected_assemble, *p_selected_item, amount);
                     // }
+                }
+            }
+            if(p_selected_assemble != nullptr && m_action == Action::UPDATE_ASSEMBLE)
+            {
+                LOG_TRACE("Action::UPDATE_ASSEMBLE");
+                auto product = p_database->searchAssemble(*p_selected_assemble);
+                for(auto& item : product.bom)
+                {
+                    std::get<0>(item).count -= (std::get<1>(item)*amount);
+                    p_database->updateItem(std::get<0>(item));
                 }
             }
             show_remove = false;
@@ -735,7 +745,7 @@ void GuiDatabase::showRemove(sf::RenderWindow &w)
     ImGui::End();
 }
 
-void GuiDatabase::showAssembleList(sf::RenderWindow &w)
+void GuiDatabase::showAssembleList(GLFWwindow *w)
 {
     // ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar;
     if(ImGui::Begin("Baugruppen", &show_assemble_list))
@@ -809,7 +819,7 @@ void GuiDatabase::showAssembleList(sf::RenderWindow &w)
     ImGui::End();   
 }
 
-void GuiDatabase::showBOM(sf::RenderWindow &w)
+void GuiDatabase::showBOM(GLFWwindow *w)
 {
     // ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar;
     if(p_selected_assemble == nullptr)
@@ -859,6 +869,26 @@ void GuiDatabase::showBOM(sf::RenderWindow &w)
                 CSV::exportCSV(path, result, {"Kategorie", "Value", "Package", "Beschreibung", "Hersteller", "Hersteller-Nr.", "Distributor", "Bestellnummer", "Verpackungseinheit", "Preis", "Anzahl"});
             }
             
+        }
+        ImGui::SameLine();
+        if(ImGui::Button("Import CSV"))
+        {
+            std::string path = FileDialog::OpenFile("CSV (*.csv)\0*.csv");
+            if(path != "")
+            {
+                auto item_strings = CSV::importCSV(path);
+                for(auto& string : item_strings)
+                {
+                    Item i;
+                    if(Item::deserializeCSV(i, string))
+                    {
+                        import_csv.push_back(i);
+                        LOG_TRACE(i.manufactor);
+                        
+                    }
+                }
+                show_import_check = true;
+            }
         }
         static ImGuiTableFlags table_flags =
             ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable
@@ -973,6 +1003,7 @@ void GuiDatabase::showBOM(sf::RenderWindow &w)
         {
             cmsg("[info] Automated Update");
             m_gui_database_updated = true;
+            content.clear();
             content = p_database->searchAssemble(*p_selected_assemble).bom;
             export_csv.resize(content.size());
         }
@@ -985,9 +1016,10 @@ void GuiDatabase::addItemToStorageWithCheck()
 {   
     static Item search;
     static std::deque<Item> content;
-    if(show_check_item>4)
+    if(show_check_item == StateAlternativePicking::CHECK_ALTERNATIVES_ASSEMBLE ||
+       show_check_item == StateAlternativePicking::SELECT_ALTERNATIVE_ASSEMBLE) //has a extra function 
         return;
-    if(show_check_item == 1) //state 1: check if already exists
+    if(show_check_item == StateAlternativePicking::CHECK_EXISTANCE) //state 1: check if already exists
     {   
         search.clear();
         search.manufactor = item_to_check.manufactor;
@@ -996,33 +1028,63 @@ void GuiDatabase::addItemToStorageWithCheck()
         if(content.size() > 0)
         {
             ImGui::OpenPopup("Error");
-            show_check_item++;
+            show_check_item = StateAlternativePicking::ERROR_EXISTS;
         }
         else
-            show_check_item = 3; //go direct to stage 3
+            show_check_item = StateAlternativePicking::CHECK_ALTERNATIVES; //go direct to stage 3
     }
-        
-    //Hard Check/ State 2 / PopUp
-    if (ImGui::BeginPopupModal("Error", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+    //not really needed; Popup only shows when this stage is reaches 
+    //but safe is safe  
+    if(show_check_item == StateAlternativePicking::ERROR_EXISTS) 
     {
-        ImGui::Text("Es existiert bereits ein Bauteil vom selben Hersteller\nund mit der selben Herstellernummer");
-        ImGui::Separator();
-        if (ImGui::Button("OK", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); show_check_item = 0;} // go to state 3
-        ImGui::SetItemDefaultFocus();
-        ImGui::EndPopup();
+        //Hard Check/ State 2 / PopUp
+        if (item_to_check.manufactor == "" && item_to_check.manufactor_number == "") 
+        { 
+            ImGui::CloseCurrentPopup(); 
+            show_check_item = StateAlternativePicking::CHECK_ALTERNATIVES;
+        } // go to state 0
+        if (ImGui::BeginPopupModal("Error", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            ImGui::Text("Es existiert bereits ein Bauteil vom Hersteller '");
+            ImGui::SameLine();
+            ImGui::Text(item_to_check.manufactor.c_str());
+            ImGui::SameLine();
+            ImGui::Text("'\nund mit der Herstellernummer'");
+            ImGui::SameLine();
+            ImGui::Text(item_to_check.manufactor_number.c_str());
+            ImGui::SameLine();
+            ImGui::Text("'");
+            ImGui::Separator();
+            if (ImGui::Button("OK", ImVec2(120, 0))) 
+            { 
+                ImGui::CloseCurrentPopup(); 
+                show_check_item = StateAlternativePicking::NONE; 
+                show_check_item_in_assemble = StateAlternativePicking::NONE;
+            } // go to state 0
+            ImGui::SameLine();
+            if (ImGui::Button("Trotzdem hinzufügen", ImVec2(150, 0))) 
+            { 
+                ImGui::CloseCurrentPopup(); 
+                show_check_item = StateAlternativePicking::CHECK_ALTERNATIVES;
+            } // go to state 0
+            ImGui::SetItemDefaultFocus();
+            ImGui::EndPopup();
+        }
     }
-        
-    if(show_check_item == 3) //state 3 : checl for alternatives
+    
+    //extra state for checking so database doesnt get polled the whole time
+    if(show_check_item == StateAlternativePicking::CHECK_ALTERNATIVES) //state 3 : checl for alternatives
     {
         //Softcheck
         search.clear();
         search.category = item_to_check.category;
         search.value = item_to_check.value;
         content = p_database->searchItem(search);
-        show_check_item++;
+        show_check_item = StateAlternativePicking::SELECT_ALTERNATIVE;
         ImGui::OpenPopup("Bauteilvorschläge");
     }
-    if(show_check_item == 4) //State 4: Select alternative
+
+    if(show_check_item == StateAlternativePicking::SELECT_ALTERNATIVE) //State 4: Select alternative
     {
         static ImVector<unsigned int> selection;
         static Item* alternative = nullptr;
@@ -1044,7 +1106,7 @@ void GuiDatabase::addItemToStorageWithCheck()
                         selection.clear();          
                         ImGui::CloseCurrentPopup();
                         item_to_check = *alternative; //needed for assembly
-                        show_check_item++;
+                        show_check_item =  StateAlternativePicking::FINISHED;
                     }
                     else
                     {
@@ -1054,9 +1116,13 @@ void GuiDatabase::addItemToStorageWithCheck()
                 ImGui::SameLine();
                 if(ImGui::Button("Neu anlegen"))
                 {
-                    p_database->addItem(item_to_check);
+                    item_to_check.id = p_database->addItem(item_to_check);
                     ImGui::CloseCurrentPopup();
-                    show_check_item++; //go to state 5 in 
+                    show_check_item = StateAlternativePicking::FINISHED; //go to state 5 in 
+                }
+                if(ImGui::Button("Abbrechen"))
+                {
+                    show_check_item = StateAlternativePicking::NONE;
                 }
                 static ImGuiTableFlags table_flags =
                 ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable
@@ -1172,8 +1238,8 @@ void GuiDatabase::addItemToStorageWithCheck()
         }
         else
         {
-            p_database->addItem(item_to_check); 
-            show_check_item++; //State 5 in addItemToAssembleWithCheck
+            item_to_check.id = p_database->addItem(item_to_check); 
+            show_check_item = StateAlternativePicking::FINISHED; //State 5 in addItemToAssembleWithCheck
         }
     }
 }
@@ -1182,21 +1248,26 @@ void GuiDatabase::addItemToAssembleWithCheck()
 {
     static Item search;
     static std::deque<Item> content;
-    if(show_check_item_in_assemble == 0 && show_check_item > 4) //no need to check for alternatives
+
+    //Catcher: when adding an unit it 
+    //if the process was started withot adding it to an assembly the Function addItemWithCheck()
+    //ends up here. The following if-statement does the reset of the state machine 
+    if(show_check_item_in_assemble == StateAlternativePicking::NONE && show_check_item == StateAlternativePicking::FINISHED) //no need to check for alternatives
     {
-        show_check_item = 0;
+        show_check_item = StateAlternativePicking::NONE;
         return;
     }
-    if(show_check_item_in_assemble == 1) //state 1 : checl for alternatives
+
+    if(show_check_item_in_assemble == StateAlternativePicking::CHECK_ALTERNATIVES_ASSEMBLE) //state 1 : checl for alternatives
     {
         search.clear();
-        search.manufactor = item_to_check.manufactor;
-        search.manufactor_number = item_to_check.manufactor_number;
-        content = p_database->searchItem(search);
+        // search.manufactor = item_to_check.manufactor;
+        // search.manufactor_number = item_to_check.manufactor_number;
+        content = p_database->searchItemByID(item_to_check.id);
         if(content.size() <= 0) //Add the "real" Item (Correct ID)
         {
-            cmsg("[error] Bauelement konnte nichthinzugefügt werden");
-            show_check_item = 0;
+            cmsg("[error] Bauelement konnte nicht hinzugefügt werden");
+            show_check_item = StateAlternativePicking::NONE;
             return;
         }
         else
@@ -1206,12 +1277,12 @@ void GuiDatabase::addItemToAssembleWithCheck()
         search.category = item_to_check.category;
         search.value = item_to_check.value;
         content = p_database->searchItemInAssemble(*p_selected_assemble, search);
-        show_check_item_in_assemble++;
+        show_check_item_in_assemble = StateAlternativePicking::SELECT_ALTERNATIVE_ASSEMBLE;
         ImGui::OpenPopup("Bauteilvorschläge");
         cmsg("[info] Suche nach Alternativen");
     }
 
-    if(show_check_item_in_assemble == 2) //State 4: Select alternative
+    if(show_check_item_in_assemble == StateAlternativePicking::SELECT_ALTERNATIVE_ASSEMBLE) //State 4: Select alternative
     {
         static ImVector<unsigned int> selection;
         static Item* alternative = nullptr;
@@ -1229,10 +1300,10 @@ void GuiDatabase::addItemToAssembleWithCheck()
                     {
                         //TODO: What happens if i check another Object: Update amount?
                         
-                        p_database->addItemToAssemble(*p_selected_assemble, *alternative, count_to_check);
+                        p_database->updateItemInAssemble(*p_selected_assemble, *alternative, count_to_check);
                         selection.clear();          
                         ImGui::CloseCurrentPopup();
-                        show_check_item_in_assemble = 0;
+                        show_check_item_in_assemble = StateAlternativePicking::NONE;
                     }
                     else
                     {
@@ -1242,9 +1313,24 @@ void GuiDatabase::addItemToAssembleWithCheck()
                 ImGui::SameLine();
                 if(ImGui::Button("Neu anlegen"))
                 {
-                    p_database->addItemToAssemble(*p_selected_assemble, item_to_check, count_to_check);
-                    ImGui::CloseCurrentPopup();
-                    show_check_item_in_assemble = 0;
+                    if(!p_database->itemExistsInAssemble(*p_selected_assemble, item_to_check))
+                    {
+                        p_database->addItemToAssemble(*p_selected_assemble, item_to_check, count_to_check);
+                        ImGui::CloseCurrentPopup();
+                        show_check_item_in_assemble = StateAlternativePicking::NONE;
+                    }
+                    else
+                    {
+                        p_database->updateItemInAssemble(*p_selected_assemble, item_to_check, count_to_check);
+                        cmsg("[error] Item exits already. Trying to update amount");
+                        show_check_item_in_assemble = StateAlternativePicking::NONE;
+                    }
+                    
+                }
+                ImGui::SameLine();
+                if(ImGui::Button("Abbrechen"))
+                {
+                    show_check_item_in_assemble = StateAlternativePicking::NONE;
                 }
                 static ImGuiTableFlags table_flags =
                 ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable
@@ -1360,8 +1446,28 @@ void GuiDatabase::addItemToAssembleWithCheck()
         else
         {
             p_database->addItemToAssemble(*p_selected_assemble, item_to_check, count_to_check);
-            show_check_item_in_assemble = 0;
+            show_check_item_in_assemble = StateAlternativePicking::NONE;
         }
     }
+}
+
+void GuiDatabase::importItemToAssembly()
+{
+    if(show_import_check != true) //check if it exists
+        return;
+    if(import_csv.size() <= 0) //everything is done
+    {
+        show_import_check = false; 
+        return;
+    }
+    if(show_check_item == StateAlternativePicking::NONE && show_check_item_in_assemble == StateAlternativePicking::NONE) //everything is done for the last item
+    {
+        LOG_INFO("Next Item|" << std::to_string(import_csv.size()) << " left");
+        item_to_check = import_csv.back();
+        import_csv.pop_back();
+        show_check_item = StateAlternativePicking::CHECK_EXISTANCE;
+        show_check_item_in_assemble = StateAlternativePicking::SELECT_ALTERNATIVE_ASSEMBLE;
+    }
+                
 }
 

@@ -1,28 +1,47 @@
 #include "Item.hpp"
-
-void ItemDatabase::initStorage()
+#define DEBUG
+#include "logger.hpp"
+void ItemDatabase::initStorage(bool new_database)
 {
-    try
+    if(new_database)
     {
-        SQLite::Transaction transaction(m_database);
-        m_database.exec("CREATE TABLE IF NOT EXISTS Lager (id INTEGER PRIMARY KEY, Value TEXT, Kategorie TEXT, Package TEXT, Eigenschaften TEXT,Anzahl INTEGER, Hersteller TEXT, Herstellernummer TEXT,\
-                        Distributor TEXT, Bestellnummer TEXT, Verpackungseinheit TEXT, Preis FLOAT, Lagerort TEXT, Datenblatt TEXT)");
-        m_database.exec("CREATE TABLE IF NOT EXISTS Baugruppen (id_bg INTEGER PRIMARY KEY, Name TEXT)");
-        m_database.exec("CREATE TABLE IF NOT EXISTS Link_Lager_Baugruppen (id INTEGER , id_bg INTEGER , Anzahl INTEGER, FOREIGN KEY (id) REFERENCES Lager (id) ON UPDATE CASCADE, FOREIGN KEY (id_bg) REFERENCES Baugruppen (id_bg) ON UPDATE CASCADE)");
-        transaction.commit();
+        try
+        {
+            SQLite::Transaction transaction(m_database);
+            m_database.exec("CREATE TABLE IF NOT EXISTS Lager (id INTEGER PRIMARY KEY, Value TEXT, Kategorie TEXT, Package TEXT, Eigenschaften TEXT,Anzahl INTEGER, Hersteller TEXT, Herstellernummer TEXT,\
+                            Distributor TEXT, Bestellnummer TEXT, Verpackungseinheit TEXT, Preis FLOAT, Lagerort TEXT, Datenblatt TEXT)");
+            m_database.exec("CREATE TABLE IF NOT EXISTS Baugruppen (id_bg INTEGER PRIMARY KEY, Name TEXT)");
+            m_database.exec("CREATE TABLE IF NOT EXISTS Link_Lager_Baugruppen (id INTEGER , id_bg INTEGER , Anzahl INTEGER, FOREIGN KEY (id) REFERENCES Lager (id) ON UPDATE CASCADE, FOREIGN KEY (id_bg) REFERENCES Baugruppen (id_bg) ON UPDATE CASCADE)");
+            transaction.commit();
+        }
+        catch(const std::exception& e)
+        {
+            cmsg(e.what());
+            LOG_ERROR("Failed initialize");
+        }
+        id = 1;
     }
-    catch(const std::exception& e)
+    else
     {
-        cmsg(e.what());
+        SQLite::Statement query(m_database, "SELECT id FROM Lager ORDER BY id DESC");
+        int i = 0;
+        while (query.executeStep())
+        {
+            i = std::max(i, query.getColumn(0).getInt());
+        }
+        id = ++i; //next free id
     }
+    LOG_TRACE(id);
+    
 }
 
-void ItemDatabase::addItem(Item item)
+int ItemDatabase::addItem(Item item)
 {
     try
     {
         SQLite::Transaction transaction(m_database);
-        SQLite::Statement query(m_database, "INSERT INTO Lager VALUES(NULL, :value, :cat ,:package, :prop ,:n ,:hrst ,:hrstnr ,:dist ,:bstnr ,:vpe, :price, :storage_place, :datasheet)");
+        SQLite::Statement query(m_database, "INSERT INTO Lager VALUES(:id, :value, :cat ,:package, :prop ,:n ,:hrst ,:hrstnr ,:dist ,:bstnr ,:vpe, :price, :storage_place, :datasheet)");
+        query.bind(":id", id);
         query.bind(":value", item.value);
         query.bind(":package", item.package);
         query.bind(":cat", item.category);
@@ -43,7 +62,10 @@ void ItemDatabase::addItem(Item item)
     catch(const std::exception& e)
     {
         cmsg(e.what());
+        LOG_ERROR(e.what());
     }
+    id++;
+    return (id-1);
 }
 
 
@@ -51,6 +73,7 @@ void ItemDatabase::updateItem(Item item)
 {
     try
     {
+        LOG_TRACE("Update Item " << item.id << ": " << item.count);
         SQLite::Transaction transaction(m_database);
         SQLite::Statement query(m_database, "UPDATE Lager SET Value = :value, Kategorie = :cat , Package = :package, Eigenschaften = :prop , Anzahl = :n , Hersteller = :hrst , Herstellernummer = :hrstnr , Distributor = :dist , Bestellnummer = :bstnr , Verpackungseinheit = :vpe, Preis = :price , Lagerort = :storage_place, Datenblatt = :datasheet WHERE id = :id");
         query.bind(":id", item.id);
@@ -74,6 +97,7 @@ void ItemDatabase::updateItem(Item item)
     catch(const std::exception& e)
     {
         cmsg(e.what());
+        LOG_ERROR(e.what());
     }
 }
 
@@ -107,6 +131,42 @@ const std::deque<Item>& ItemDatabase::searchItem()
     catch(const std::exception& e)
     {
         std::cerr << e.what() << '\n';
+        LOG_ERROR(e.what());
+    }
+    return m_list;
+}
+
+const std::deque<Item>& ItemDatabase::searchItemByID(int id)
+{
+    try
+    {
+        m_list.clear();
+        SQLite::Statement query(m_database, "SELECT * FROM Lager WHERE id=:id");
+        query.bind(":id", id);
+        while (query.executeStep())
+        {
+            Item i;
+            i.id                = query.getColumn(0).getInt();
+            i.value             = query.getColumn(1).getText();
+            i.category          = query.getColumn(2).getText();
+            i.package           = query.getColumn(3).getText();
+            i.properties         = query.getColumn(4).getText();
+            i.count             = query.getColumn(5).getInt();
+            i.manufactor        = query.getColumn(6).getText();
+            i.manufactor_number = query.getColumn(7).getText();
+            i.distributor       = query.getColumn(8).getText();
+            i.shop_number       = query.getColumn(9).getText();
+            i.vpe               = query.getColumn(10).getText();
+            i.price             = query.getColumn(11).getDouble();
+            i.storage_place     = query.getColumn(12).getText();
+            i.datasheet         = query.getColumn(13).getText();
+            m_list.push_back(i);
+        }        
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+        LOG_ERROR(e.what());
     }
     return m_list;
 }
@@ -210,6 +270,7 @@ const std::deque<Item>& ItemDatabase::searchItem(Item i)
     catch(const std::exception& e)
     {
        cmsg(e.what());
+       LOG_ERROR(e.what());
     }
     return m_list;
 }
@@ -228,19 +289,27 @@ void ItemDatabase::addAssemble(Assemble a)
     catch(const std::exception& e)
     {
         cmsg(e.what());
+        LOG_ERROR(e.what());
     }
 }
 
 int ItemDatabase::itemExistsInAssemble(Assemble a, Item i)
 {
-    Assemble assemble = searchAssemble(a);
-    for(auto& b : assemble.bom)
-    {
-        if(std::get<0>(b).id == i.id)
-            return std::get<1>(b);
-    }
+    int count = searchItemInAssembleByID(a, i).size();
+    // Assemble assemble = 
+    // for(auto& b : assemble.bom)
+    // {
+    //     if(std::get<0>(b).id == i.id)
+    //         return std::get<1>(b);
+    // }
+    if(count > 1)
+        LOG_ERROR("Multiple existance of same Element");
+    if(count == 1)
+        return 1;
+    LOG_INFO("Item " << i.id << "does not exist in " << a.name);
     return -1;
 }
+
 const std::deque<Item>& ItemDatabase::searchItemInAssemble(Assemble a, Item i)
 {
     try
@@ -345,13 +414,58 @@ const std::deque<Item>& ItemDatabase::searchItemInAssemble(Assemble a, Item i)
     catch(const std::exception& e)
     {
        cmsg(e.what());
+       LOG_ERROR(e.what());
     }
     return m_list;
 }
+
+const std::deque<Item>& ItemDatabase::searchItemInAssembleByID(Assemble a, Item i)
+{
+    try
+    {
+        std::string condition("SELECT Lager.id, Lager.Value, Lager.Kategorie, Lager.Package, Lager.Eigenschaften, Lager.Anzahl, Lager.Hersteller, Lager.Herstellernummer, Lager.Distributor, Lager.Bestellnummer, Lager.Verpackungseinheit, Lager.Preis, Lager.Datenblatt, Link_Lager_Baugruppen.Anzahl ");
+        condition += "FROM Link_Lager_Baugruppen ";
+        condition += "INNER JOIN Lager ON Link_Lager_baugruppen.id = Lager.id ";
+        condition += "INNER JOIN Baugruppen ON Baugruppen.id_bg = Link_Lager_Baugruppen.id_bg ";
+        condition += "WHERE Baugruppen.id_bg = :id_bg AND Lager.id = :id";
+        m_list.clear();
+        SQLite::Statement query(m_database, condition);
+        query.bind(":id_bg", a.id);
+        query.bind(":id", i.id);
+        while (query.executeStep())
+        {
+            Item i;
+            i.id                = query.getColumn(0).getInt();
+            i.value             = query.getColumn(1).getText();
+            i.category          = query.getColumn(2).getText();
+            i.package           = query.getColumn(3).getText();
+            i.properties         = query.getColumn(4).getText();
+            i.count             = query.getColumn(5).getInt();
+            i.manufactor        = query.getColumn(6).getText();
+            i.manufactor_number = query.getColumn(7).getText();
+            i.distributor       = query.getColumn(8).getText();
+            i.shop_number       = query.getColumn(9).getText();
+            i.vpe               = query.getColumn(10).getText();
+            i.price             = query.getColumn(11).getDouble();
+            i.storage_place     = query.getColumn(12).getText();
+            i.datasheet         = query.getColumn(13).getText();
+            m_list.push_back(i);
+        }
+    }
+    catch(const std::exception& e)
+    {
+       cmsg(e.what());
+       LOG_ERROR(e.what());
+    }
+
+    return m_list;
+}
+
 void ItemDatabase::updateItemInAssemble(Assemble a, Item i, int count)
 {
     try
     {
+        LOG_INFO("Try Update Item " << i.id << "to: " << count << " in Assembly: " << a.name);
         SQLite::Transaction transaction(m_database);
         SQLite::Statement query(m_database, "UPDATE Link_Lager_Baugruppen SET Anzahl = :count WHERE id = :id AND id_bg = :id_bg");
         query.bind(":id", i.id);
@@ -359,12 +473,13 @@ void ItemDatabase::updateItemInAssemble(Assemble a, Item i, int count)
         query.bind(":count", count);     
         query.exec();
         transaction.commit();
-        cmsg("Updated Item to Assemble");
+        cmsg("Updated Item in Assemble");
         m_updated = true;
     }
     catch(const std::exception& e)
     {
         cmsg(e.what());
+        LOG_ERROR(e.what());
     }
 }
 
@@ -393,16 +508,18 @@ void ItemDatabase::addItemToAssemble(Assemble a, Item i, int count)
     catch(const std::exception& e)
     {
         cmsg(e.what());
+        LOG_ERROR(e.what());
     }
 }
 
 
 const Assemble ItemDatabase::searchAssemble(Assemble a)
 {
+    LOG_TRACE("");
     m_assemble_list.clear();
     try
     {
-        std::string s ("SELECT Lager.id, Lager.Value, Lager.Kategorie, Lager.Package, Lager.Eigenschaften, Lager.Anzahl, Lager.Hersteller, Lager.Herstellernummer, Lager.Distributor, Lager.Bestellnummer, Lager.Verpackungseinheit, Lager.Preis, Lager.Datenblatt, Link_Lager_Baugruppen.Anzahl ");
+        std::string s ("SELECT Lager.id, Lager.Value, Lager.Kategorie, Lager.Package, Lager.Eigenschaften, Lager.Anzahl, Lager.Hersteller, Lager.Herstellernummer, Lager.Distributor, Lager.Bestellnummer, Lager.Verpackungseinheit, Lager.Preis, Lager.Lagerort, Lager.Datenblatt, Link_Lager_Baugruppen.Anzahl ");
         s += "FROM Link_Lager_Baugruppen ";
         s += "INNER JOIN Lager ON Link_Lager_baugruppen.id = Lager.id ";
         s += "INNER JOIN Baugruppen ON Baugruppen.id_bg = Link_Lager_Baugruppen.id_bg ";
@@ -428,14 +545,16 @@ const Assemble ItemDatabase::searchAssemble(Assemble a)
             i.price             = query.getColumn(11).getDouble();
             i.storage_place     = query.getColumn(12).getText();
             i.datasheet         = query.getColumn(13).getText();
-            int amount          = query.getColumn(12).getInt();
+            int amount          = query.getColumn(14).getInt();
 
             a.bom.push_back(std::make_tuple(i, amount));
+            LOG_TRACE("Found " << i.id << " in " << a.name);
         }        
     }
     catch(const std::exception& e)
     {
         cmsg(e.what());
+        LOG_ERROR(e.what());
     }
     return a;
 }
@@ -456,7 +575,8 @@ const std::deque<Assemble>& ItemDatabase::searchAssembles()
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        cmsg(e.what());
+        LOG_ERROR(e.what());
     }
     //TODO: item fill data 
     return m_assemble_list;
@@ -478,5 +598,6 @@ void ItemDatabase::deleteItemFromAssemble(Assemble a, Item i)
     catch(const std::exception& e)
     {
         cmsg(e.what());
+        LOG_ERROR(e.what());
     }
 }

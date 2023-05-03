@@ -1,7 +1,6 @@
 #ifndef CONSOLE_HPP
 #define CONSOLE_HPP
 
-#include "SFML/Graphics.hpp"
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "imgui_stdlib.h"

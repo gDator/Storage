@@ -10,9 +10,10 @@ project "STORAGE"
 	targetname "storage"
 	files {"**.hpp", "**.h", "**.c", "**.cpp", "**.cc", "**.idl"}
 	includedirs{"include",
-	"./vendor/SFML",
 	"./vendor/imgui/include",
-	"D:/DEV/boost_1_70_0",
+	"./vendor/Logger",
+	"./vendor/stb",
+	"D:/DEV/boost_1_82_0",
 	"vendor/GL",
 	"vendor/sqlite",
 	"vendor",
@@ -20,9 +21,6 @@ project "STORAGE"
 	removefiles{}
 	links{"glew32s",
 	"opengl32",
-	"sfml-graphics",
-	"sfml-window",
-	"sfml-system",
 	"ole32",
 	"oleaut32",
 	"imm32",
@@ -30,20 +28,21 @@ project "STORAGE"
 	"iconv",
 	"pthread",
 	"z",
-	"boost_date_time-clang15-mt-s-x64-1_70",
-	"boost_log-clang15-mt-s-x64-1_70",
-	"boost_thread-clang15-mt-s-x64-1_70",
-	"boost_regex-clang15-mt-s-x64-1_70",
-	"boost_filesystem-clang15-mt-s-x64-1_70",
-	"boost_log_setup-clang15-mt-s-x64-1_70",
-	"boost_atomic-clang15-mt-s-x64-1_70",
-	"boost_chrono-clang15-mt-s-x64-1_70",
 	"sqlite3",
 	"SQLiteCpp",
-	"comdlg32"}
+	"comdlg32",
+	"gdi32",
+	"glfw3",
+	"boost_log-mt-x64",
+	"boost_thread-mt-x64",
+	"boost_regex-mt-x64",
+	"boost_filesystem-mt-x64",	
+	"boost_log_setup-mt-x64",
+	"boost_atomic-mt-x64",
+	"boost_chrono-mt-x64"}
 	linkoptions{}
 	libdirs{"lib", 
-	"D:/DEV/boost_1_70_0/static_stage/lib"}
+	"D:/DEV/boost_1_82_0/stage/lib"}
 	--libdirs{os.findlib("OpenGL")}
 	stl ("libc++")
 	filter "files:**.cpp"
