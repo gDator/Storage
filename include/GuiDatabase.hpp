@@ -29,6 +29,7 @@ class GuiDatabase
         bool show_assemble_list = false;
         bool show_change_item = false;
         bool show_import_check = false;
+        bool show_import_storage_check = false;
         bool m_dark_mode = true;
         bool m_gui_database_updated = false;
         
@@ -48,25 +49,26 @@ class GuiDatabase
 
         std::vector<Item> import_csv{0};
 
-        void showConsole(GLFWwindow* w);
-        void showSearch(GLFWwindow *w);
-        void showItem(GLFWwindow *w);
-        void showChangeItem(GLFWwindow *w);
-        void showAssemble(GLFWwindow *w);
-        void showInfo(GLFWwindow *w);
-        void showRemove(GLFWwindow *w);
-        void showBOM(GLFWwindow *w);
-        void showAssembleList(GLFWwindow *w);
+        void showConsole();
+        void showSearch();
+        void showItem();
+        void showChangeItem();
+        void showAssemble();
+        void showInfo();
+        void showRemove();
+        void showBOM();
+        void showAssembleList();
 
         void addItemToStorageWithCheck();
         void addItemToAssembleWithCheck();
         void importItemToAssembly();
+        void importItemToStorage();
 
     public:
         //Callback Varaiables
         // std::function<void(std::filesystem::path p)> callback_file_reader;
 
-        void draw(GLFWwindow *w);
+        void draw();
         
         GuiDatabase(Console* c)
         {
@@ -95,7 +97,7 @@ class GuiDatabase
             //Add all the filter hints
             for(auto& entry : g_categories)
             {
-                std::string result(ini.GetValue("Hints", entry.c_str(), ""));
+                std::string result(ini.GetValue("Hints", std::get<0>(entry).c_str(), ""));
                 if(result == "")
                     continue;
                 std::string::size_type position = 0;
@@ -117,7 +119,7 @@ class GuiDatabase
                     position++; // jump over semikolon
                 }
                 LOG_INFO("found hints: " << hint[0] << ", " << hint[1]<< "," <<hint[2]);
-                g_filter_hints.emplace(entry, std::make_tuple(hint[0], hint[1], hint[2], hint[3]));
+                g_filter_hints.emplace(std::get<0>(entry), std::make_tuple(hint[0], hint[1], hint[2], hint[3]));
             }
         }
 };

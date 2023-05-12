@@ -15,7 +15,9 @@ BUGS
 + B-7: Item wurde zu Lager aber nicht zu Baugruppe hinzugefügt -> Item muss erst wieder zurückgelesen werden
 + B-8: GuiDatabase.hpp:68: No inifile crashes program:  -> check if ini file exists if(std::filesystem::file) 
 + B-9: Absturz nach erstellung einer Datenbank -> id erst in init Storage  aufrufen
-
++ B-10: Nachdem ich nach C gefiltert hatte und bei einem Bauteil den Preis geändert hatte wurde die Kategorie von allein auf R geändert ?? Konkret ID14, 15
+        Auch der MOSFET ID 4 hat von allein seine Kategorie auf R geändert?? -> GuiDatabase.cpp:602: p_selected_item->category = g_categories[item_current_idx]; 
+        -> Kategorie wurde immer auf R geändert
 
 TODO
 =======================================================================
@@ -54,3 +56,15 @@ x Neue datenbank erstellen selektiert diese direkt (auch in ini file)
 + csv importieren
 + B-9
 + Neue BOM-Liste
++ Wenn man einen Fehler beim Anlegen eines Bauteils gemacht hat (falsche Kategorie) kann der nicht korrigiert werden
+    Variante 1: Bauteil löschen
+    Variante 2: Kategorie änderbar -> ideal
+    Variante 3: Hersteller änderbar -> ideal
+- Sortierung nach Kategorie in Ansicht Lager scheint nicht zu funktionieren
+- Wäre schön, wenn auch nach allen anderen Spalten geordnet werden kann (besonders wichtig Value 1, Value 2)
+
++ Wäre Schön, wenn nach Eingabe VPE und Preis/VPE auch automatisch ein Stückpreis angezeigt wird.
++ Noch cooler wäre, wenn auch alternativ die Eingabe VPE und Preis/Stück eingetragen wird und dann der Preis/VPE automatisch dargestellt wird
++ Export Lager
++ VPE als Int in Datenbank
+

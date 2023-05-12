@@ -3,7 +3,7 @@
 #include "CSV.hpp"
 
 
-void GuiDatabase::draw(GLFWwindow *w)
+void GuiDatabase::draw()
 {
     ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
     if(ImGui::BeginMainMenuBar())
@@ -40,17 +40,48 @@ void GuiDatabase::draw(GLFWwindow *w)
                 // std::filesystem::path selected_path = std::filesystem::absolute(std::filesystem::current_path());
                 // file_explorer.PickFile(std::filesystem::absolute(std::filesystem::current_path()), [&](const std::filesystem::path& selected_path) {/*Store data*/});
             }
-            // ImGui::Separator();
-            // if(ImGui::BeginMenu("Import From"))
-            // {
-            //     if(ImGui::MenuItem("CSV")) {}
-            //     ImGui::EndMenu();
-            // }
-            // if(ImGui::BeginMenu("Export As"))
-            // {
-            //     if(ImGui::MenuItem("CSV")) {}
-            //     ImGui::EndMenu();
-            // }
+            ImGui::Separator();
+            if(ImGui::BeginMenu("Import From"))
+            {
+                if(ImGui::MenuItem("CSV")) 
+                {
+                    std::string path = FileDialog::OpenFile("CSV (*.csv)\0*.csv");
+                    if(path != "")
+                    {
+                        auto item_strings = CSV::importCSV(path);
+                        for(auto& string : item_strings)
+                        {
+                            Item i;
+                            if(Item::deserializeCSV(i, string))
+                            {
+                                import_csv.push_back(i);
+                            }
+                            show_import_storage_check = true;
+                        }
+                    }
+                }
+                ImGui::EndMenu();
+            }
+            if(ImGui::BeginMenu("Export As"))   //whole storage
+            {
+                if(ImGui::MenuItem("CSV")) 
+                {
+                    std::string path = FileDialog::SaveFile("CSV (*.csv)\0*.csv");
+                    if(path != "" && p_database != nullptr)
+                    {
+                        Item i;
+                        i.clear();
+                        std::deque<Item> content = p_database->searchItem(i);
+                        std::vector<std::string> result;
+                        for(size_t i = 0; i < content.size(); i++)
+                        {
+                            result.push_back(content[i].serializeCSV());
+                        }
+                        CSV::exportCSV(path, result, {"Kategorie", "Value 1", "Value 2", "Package", "Beschreibung", "Hersteller", "Hersteller-Nr.", "Distributor", "Bestellnummer", "Verpackungseinheit", "Preis", "Preis/Stck", "Anzahl"});
+                    }
+                }
+                ImGui::EndMenu();
+            }
             ImGui::EndMenu();
         }
 
@@ -160,9 +191,9 @@ void GuiDatabase::draw(GLFWwindow *w)
     } 
 
     if(show_console)
-        showConsole(w);
+        showConsole();
     if(show_info)
-        showInfo(w);
+        showInfo();
    
     if(p_database != nullptr)
     {
@@ -171,19 +202,19 @@ void GuiDatabase::draw(GLFWwindow *w)
             m_gui_database_updated = false;
         }
         if(show_search)
-        showSearch(w);
+        showSearch();
         if(show_item)
-            showItem(w);
+            showItem();
         if(show_remove)
-            showRemove(w);
+            showRemove();
         if(show_assemble)
-            showAssemble(w);
+            showAssemble();
         if(show_bom)
-            showBOM(w);
+            showBOM();
         if(show_assemble_list)
-            showAssembleList(w);
+            showAssembleList();
         if(show_change_item)
-            showChangeItem(w);
+            showChangeItem();
         if(show_check_item != StateAlternativePicking::NONE)
             addItemToStorageWithCheck();
         if(show_check_item == StateAlternativePicking::FINISHED)
@@ -191,43 +222,44 @@ void GuiDatabase::draw(GLFWwindow *w)
         if(m_gui_database_updated) //updated Database is also updated in Gui
             p_database->updateRecognized();
         if(show_import_check)
-            importItemToAssembly();      
+            importItemToAssembly();
+        if(show_import_storage_check)
+            importItemToStorage();     
     }
     
     
 }
 
-void GuiDatabase::showConsole(GLFWwindow *w)
+void GuiDatabase::showConsole()
 {
     p_console->draw();
 }
 
-void GuiDatabase::showSearch(GLFWwindow *w)
+void GuiDatabase::showSearch()
 {
     // ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar;
     if(ImGui::Begin("Lager", &show_search))
     {
         static ImGuiTableFlags table_flags =
             ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable
-            | ImGuiTableFlags_Sortable | ImGuiTableFlags_SortMulti
+            | ImGuiTableFlags_Sortable //| ImGuiTableFlags_SortMulti
             | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_NoBordersInBody
             | ImGuiTableFlags_ScrollX | ImGuiTableFlags_ScrollY;
             //| ImGuiTableFlags_SizingFixedFit;
         static std::deque<Item> content;
         static ImVector<unsigned int> selection;
-        static std::string status = "";
-        static Item filter;
+        static Item filter(true);
         static int item_current_idx, storage_current_x_idx, storage_current_y_idx;
         ImGui::SameLine();
-        if(ImGui::Button("Search"))
+        if(ImGui::Button("Aktualisieren"))
         {
             content.resize(0);
             selection.resize(0);
-            status = "Searching...";
+            cmsg("[info] Searching Database");
             filter.category = g_filter_categories[item_current_idx];
             filter.storage_place = g_filter_storage_x[storage_current_x_idx] + "|" + g_filter_storage_y[storage_current_y_idx];
             content = p_database->searchItem(filter);
-            status = "Ready...";
+            cmsg("[info] Finsished Searching");
         }
         ImGui::SameLine();
         if(ImGui::Button("Auflösen"))
@@ -235,7 +267,6 @@ void GuiDatabase::showSearch(GLFWwindow *w)
             cmsg("[warning] Not implemented yet");
         }
         ImGui::SameLine();
-        ImGui::Text(status.c_str());
         if(ImGui::TreeNode("Filter"))
         {
             if (ImGui::BeginCombo("Kategorie", g_filter_categories[item_current_idx].c_str()))
@@ -261,7 +292,7 @@ void GuiDatabase::showSearch(GLFWwindow *w)
             ImGui::InputText("Hersteller-Nr.", &filter.manufactor_number);
             ImGui::InputText("Distributor", &filter.distributor);
             ImGui::InputText("Distributor-Nr.", &filter.shop_number);
-            ImGui::InputText("Verpackungseinheit", &filter.vpe);
+            ImGui::InputInt("Verpackungseinheit", &filter.vpe);
             ImGui::InputInt("Anzahl", &filter.count);
             ImGui::InputDouble("Preis/VPE [Euro]", &filter.price, 0.01f, 1.0f, "%.3f");
             if (ImGui::BeginCombo("Lager-X", g_filter_storage_x[storage_current_x_idx].c_str()))
@@ -273,8 +304,6 @@ void GuiDatabase::showSearch(GLFWwindow *w)
                     {
                         storage_current_x_idx = n;
                     }
-                        
-
                     // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
                     if (is_selected)
                         ImGui::SetItemDefaultFocus();
@@ -302,27 +331,36 @@ void GuiDatabase::showSearch(GLFWwindow *w)
             }
             ImGui::TreePop();
         }
-        if(ImGui::BeginTable("search_results", 15, table_flags))
+        if(ImGui::BeginTable("search_results", 16, table_flags))
         {
-            ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_NoSort);
+            ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_DefaultSort);
             
             ImGui::TableSetupColumn("Kategorie", ImGuiTableColumnFlags_DefaultSort);
-            ImGui::TableSetupColumn("Value 1", ImGuiTableColumnFlags_NoSort);
-            ImGui::TableSetupColumn("Value 2", ImGuiTableColumnFlags_NoSort);
-            ImGui::TableSetupColumn("Package ", ImGuiTableColumnFlags_NoSort);
-            ImGui::TableSetupColumn("Beschreibung ", ImGuiTableColumnFlags_NoSort);
-            ImGui::TableSetupColumn("Anzahl", ImGuiTableColumnFlags_NoSort);
-            ImGui::TableSetupColumn("Hersteller", ImGuiTableColumnFlags_NoSort);
-            ImGui::TableSetupColumn("Hersteller-Nr.", ImGuiTableColumnFlags_NoSort);
-            ImGui::TableSetupColumn("Distributor", ImGuiTableColumnFlags_NoSort);
-            ImGui::TableSetupColumn("Bestell-Nr.", ImGuiTableColumnFlags_NoSort);
-            ImGui::TableSetupColumn("Verpackungseinheit", ImGuiTableColumnFlags_NoSort);
-            ImGui::TableSetupColumn("Preis/VPE [Euro]", ImGuiTableColumnFlags_NoSort);
+            ImGui::TableSetupColumn("Value 1", ImGuiTableColumnFlags_DefaultSort);
+            ImGui::TableSetupColumn("Value 2", ImGuiTableColumnFlags_DefaultSort);
+            ImGui::TableSetupColumn("Package ", ImGuiTableColumnFlags_DefaultSort);
+            ImGui::TableSetupColumn("Beschreibung ", ImGuiTableColumnFlags_DefaultSort);
+            ImGui::TableSetupColumn("Anzahl", ImGuiTableColumnFlags_DefaultSort);
+            ImGui::TableSetupColumn("Hersteller", ImGuiTableColumnFlags_DefaultSort);
+            ImGui::TableSetupColumn("Hersteller-Nr.", ImGuiTableColumnFlags_DefaultSort);
+            ImGui::TableSetupColumn("Distributor", ImGuiTableColumnFlags_DefaultSort);
+            ImGui::TableSetupColumn("Bestell-Nr.", ImGuiTableColumnFlags_DefaultSort);
+            ImGui::TableSetupColumn("Verpackungseinheit", ImGuiTableColumnFlags_DefaultSort);
+            ImGui::TableSetupColumn("Preis/VPE [Euro]", ImGuiTableColumnFlags_DefaultSort);
+            ImGui::TableSetupColumn("Preis/Stück [Euro]", ImGuiTableColumnFlags_DefaultSort);
             ImGui::TableSetupColumn("Lagerort", ImGuiTableColumnFlags_NoSort);
             ImGui::TableSetupColumn("Datenblatt", ImGuiTableColumnFlags_NoSort);
-            
             ImGui::TableSetupScrollFreeze(0, 1); // Make row always visible
             ImGui::TableHeadersRow();
+            // Sorting
+            if (ImGuiTableSortSpecs* sort_specs = ImGui::TableGetSortSpecs())
+                if (sort_specs->SpecsDirty && content.size() > 1)
+                {
+                    sortItems(content);   
+                    sort_specs->SpecsDirty = false;
+                }
+            
+            
 
             if(!content.empty())
             {
@@ -396,12 +434,14 @@ void GuiDatabase::showSearch(GLFWwindow *w)
                         ImGui::TableSetColumnIndex(10);
                         ImGui::TextUnformatted(content[row_n].shop_number.c_str());
                         ImGui::TableSetColumnIndex(11);
-                        ImGui::TextUnformatted(content[row_n].vpe.c_str());
+                        ImGui::TextUnformatted(std::to_string(content[row_n].vpe).c_str());
                         ImGui::TableSetColumnIndex(12);
                         ImGui::TextUnformatted(std::to_string(content[row_n].price).c_str());
                         ImGui::TableSetColumnIndex(13);
-                        ImGui::TextUnformatted(content[row_n].storage_place.c_str());
+                        ImGui::TextUnformatted(std::to_string(content[row_n].price_per_unit).c_str());
                         ImGui::TableSetColumnIndex(14);
+                        ImGui::TextUnformatted(content[row_n].storage_place.c_str());
+                        ImGui::TableSetColumnIndex(15);
                         ImGui::TextUnformatted(content[row_n].datasheet.c_str());
                     }
             }
@@ -424,15 +464,16 @@ void GuiDatabase::showSearch(GLFWwindow *w)
 /**
  * @brief Used to add a Item to Database
  * 
- * @param w 
+ * @param
  */
-void GuiDatabase::showItem(GLFWwindow *w)
+void GuiDatabase::showItem()
 {
     static Item item;
-    static unsigned int item_current_idx = 0;
+    // static unsigned int item_current_idx = 0;
     static unsigned int storage_current_x_idx = 0;
     static unsigned int storage_current_y_idx = 0;
     static int amount;
+    static bool enter_price_per_unit;
     if(ImGui::Begin("Bauteil"))
     {
         if(m_action == Action::ADD_ITEM_TO_ASSEMBLE_AND_STORAGE)
@@ -444,14 +485,15 @@ void GuiDatabase::showItem(GLFWwindow *w)
             ImGui::Text("' hinzugefügt");
             ImGui::InputInt("Anzahl (Baugruppe)", &amount);
         }
-
-        if (ImGui::BeginCombo("Kategorie", g_categories[item_current_idx].c_str()))
+        //  for (auto& cat : g_categories)
+        //         std::cout << std::get<0>(cat);
+        if (ImGui::BeginCombo("Kategorie", g_categories[item.category].c_str()))
         {
-            for (int n = 0; n < g_categories.size(); n++)
+            for (auto& cat : g_categories)
             {
-                const bool is_selected = (item_current_idx == n);
-                if (ImGui::Selectable(g_categories[n].c_str(), is_selected))
-                    item_current_idx = n;
+                const bool is_selected = (item.category.compare(std::get<0>(cat)) == 0);
+                if (ImGui::Selectable(std::get<1>(cat).c_str(), is_selected))
+                    item.category = std::get<0>(cat);
 
                 // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
                 if (is_selected)
@@ -459,12 +501,12 @@ void GuiDatabase::showItem(GLFWwindow *w)
             }
             ImGui::EndCombo();
         }
-        if(g_filter_hints.count(g_categories[item_current_idx]) > 0) //if there is an hint entry
+        if(g_filter_hints.count(g_categories[item.category]) > 0) //if there is an hint entry
         {
-            ImGui::InputTextWithHint("Value 1", std::get<0>(g_filter_hints.at(g_categories[item_current_idx])).c_str(), &item.value);
-            ImGui::InputTextWithHint("Value 2", std::get<1>(g_filter_hints.at(g_categories[item_current_idx])).c_str(), &item.value_2);
-            ImGui::InputTextWithHint("Package", std::get<2>(g_filter_hints.at(g_categories[item_current_idx])).c_str() ,&item.package);
-            ImGui::InputTextWithHint("Beschreibung", std::get<3>(g_filter_hints.at(g_categories[item_current_idx])).c_str(), &item.description);
+            ImGui::InputTextWithHint("Value 1", std::get<0>(g_filter_hints.at(g_categories[item.category])).c_str(), &item.value);
+            ImGui::InputTextWithHint("Value 2", std::get<1>(g_filter_hints.at(g_categories[item.category])).c_str(), &item.value_2);
+            ImGui::InputTextWithHint("Package", std::get<2>(g_filter_hints.at(g_categories[item.category])).c_str() ,&item.package);
+            ImGui::InputTextWithHint("Beschreibung", std::get<3>(g_filter_hints.at(g_categories[item.category])).c_str(), &item.description);
         }
         else
         {
@@ -478,9 +520,23 @@ void GuiDatabase::showItem(GLFWwindow *w)
         ImGui::InputText("Hersteller-Nr.", &item.manufactor_number);
         ImGui::InputText("Distributor", &item.distributor);
         ImGui::InputText("Distributor-Nr.", &item.shop_number);
-        ImGui::InputText("Verpackungseinheit", &item.vpe);
+        ImGui::Checkbox("Eingabe: Preis/Stück", &enter_price_per_unit);
+        if(enter_price_per_unit)
+        {
+            ImGui::InputInt("Verpackungseinheit", &item.vpe, 1, 10);
+            ImGui::Text(std::string("Preis/VPE [Euro]: " + std::to_string(item.price_per_unit*item.vpe)).c_str());
+            ImGui::InputDouble("Preis/Stk [Euro]", &item.price_per_unit, 0.01f, 1.0f, "%.4f");
+        }
+        else
+        {
+            ImGui::InputInt("Verpackungseinheit", &item.vpe, 1, 10);
+            ImGui::InputDouble("Preis/VPE [Euro]", &item.price, 0.01f, 1.0f, "%.4f");
+            ImGui::Text(std::string("Preis/Stk [Euro]:").c_str());
+            ImGui::SameLine();
+            ImGui::Text(item.vpe == 0?"-":std::to_string(item.price/item.vpe).c_str());
+        }    
         ImGui::InputInt("Anzahl", &item.count);
-        ImGui::InputDouble("Preis/VPE [Euro]", &item.price, 0.01f, 1.0f, "%.3f");
+        
         if (ImGui::BeginCombo("Lager-X", g_storage_x[storage_current_x_idx].c_str()))
         {
             for (int n = 0; n < g_storage_x.size(); n++)
@@ -514,11 +570,15 @@ void GuiDatabase::showItem(GLFWwindow *w)
         ImGui::SameLine();
         if(ImGui::Button("Datenblatt..."))
         {
-            item.datasheet = FileDialog::OpenFile("pdf (*.pdf), Word-Dokument (*.docx)\0*.pdf\0*.doc\0*.odt\0*docx\0");
+            item.datasheet = FileDialog::OpenFile("pdf (*.pdf), Word-Dokument (*.docx)\0*.pdf\0*.doc\0*.odt\0*.docx\0");
         }
         if(ImGui::Button("OK")) 
         {   
-            item.category = g_categories[item_current_idx];
+            if(enter_price_per_unit)
+            {
+                item.price = item.price_per_unit*item.vpe;
+            }
+            item.category = g_categories[item.category];
             item.storage_place = g_storage_x[storage_current_x_idx] + "|" + g_storage_y[storage_current_y_idx];
             
             show_check_item = StateAlternativePicking::CHECK_EXISTANCE;
@@ -542,25 +602,51 @@ void GuiDatabase::showItem(GLFWwindow *w)
     ImGui::End();
 }
 
-void GuiDatabase::showChangeItem(GLFWwindow *w)
+void GuiDatabase::showChangeItem()
 {
     static unsigned int item_current_idx = 0;
     static unsigned int storage_current_x_idx = 0;
     static unsigned int storage_current_y_idx = 0;
+    static bool enter_price_per_unit;
     if(ImGui::Begin("Bauteil"))
     {
-        ImGui::Text(p_selected_item->category.c_str());
+        if (ImGui::BeginCombo("Kategorie", g_categories[p_selected_item->category].c_str()))
+        {
+            for (auto& cat : g_categories)
+            {
+                const bool is_selected = (p_selected_item->category.compare(std::get<0>(cat)) == 0);
+                if (ImGui::Selectable(std::get<1>(cat).c_str(), is_selected))
+                    p_selected_item->category = std::get<0>(cat);
+
+                // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                if (is_selected)
+                    ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
         ImGui::InputText("Value 1", &p_selected_item->value);
         ImGui::InputText("Value 2", &p_selected_item->value_2);
         ImGui::InputText("Package", &p_selected_item->package);
         ImGui::InputText("Beschreibung", &p_selected_item->description);
-        ImGui::Text(p_selected_item->manufactor.c_str());
+        ImGui::InputText("Hersteller", &p_selected_item->manufactor);
         ImGui::InputText("Hersteller-Nr.", &p_selected_item->manufactor_number);
         ImGui::InputText("Distributor", &p_selected_item->distributor);
         ImGui::InputText("Distributor-Nr.", &p_selected_item->shop_number);
-        ImGui::InputText("Verpackungseinheit", &p_selected_item->vpe);
+        ImGui::Checkbox("Eingabe: Preis/Stück", &enter_price_per_unit);
+        if(enter_price_per_unit)
+        {
+            ImGui::InputInt("Verpackungseinheit", &p_selected_item->vpe, 1, 10);
+            ImGui::Text(std::string("Preis/VPE [Euro]: " + std::to_string(p_selected_item->price_per_unit*p_selected_item->vpe)).c_str());
+            ImGui::InputDouble("Preis/Stk [Euro]", &p_selected_item->price_per_unit, 0.01f, 1.0f, "%.4f");
+        }
+        else
+        {
+            ImGui::InputInt("Verpackungseinheit", &p_selected_item->vpe, 1, 10);
+            ImGui::InputDouble("Preis/VPE [Euro]", &p_selected_item->price, 0.01f, 1.0f, "%.4f");
+            ImGui::Text(std::string("Preis/Stk [Euro]:" + p_selected_item->vpe== 0?"-":std::to_string(p_selected_item->price/p_selected_item->vpe)).c_str());
+        }        
         ImGui::InputInt("Anzahl", &p_selected_item->count);
-        ImGui::InputDouble("Preis/VPE [Euro]", &p_selected_item->price, 0.01f, 1.0f, "%.3f");
+
         if (ImGui::BeginCombo("Lager-X", g_storage_x[storage_current_x_idx].c_str()))
         {
             for (int n = 0; n < g_storage_x.size(); n++)
@@ -599,7 +685,11 @@ void GuiDatabase::showChangeItem(GLFWwindow *w)
         }
         if(ImGui::Button("OK")) 
         {   
-            p_selected_item->category = g_categories[item_current_idx];
+            if(enter_price_per_unit)
+            {
+                p_selected_item->price = p_selected_item->price_per_unit*p_selected_item->vpe;
+            }
+            LOG_TRACE("Update Item" << p_selected_item->id << ", " << p_selected_item->category);
             p_selected_item->storage_place = g_storage_x[storage_current_x_idx] + "|" + g_storage_y[storage_current_y_idx];
             p_database->updateItem(*p_selected_item);
             show_change_item = false; // close if ready?
@@ -613,7 +703,7 @@ void GuiDatabase::showChangeItem(GLFWwindow *w)
     ImGui::End();
 }
 
-void GuiDatabase::showAssemble(GLFWwindow *w)
+void GuiDatabase::showAssemble()
 {
     static Assemble assemble;
     if(ImGui::Begin("Bauteil"))
@@ -634,7 +724,7 @@ void GuiDatabase::showAssemble(GLFWwindow *w)
     ImGui::End();
 }
 
-void GuiDatabase::showInfo(GLFWwindow *w)
+void GuiDatabase::showInfo()
 {
     if(ImGui::Begin("Info", &show_info))
     {
@@ -681,7 +771,7 @@ void GuiDatabase::showInfo(GLFWwindow *w)
     
 }
 
-void GuiDatabase::showRemove(GLFWwindow *w)
+void GuiDatabase::showRemove()
 {
     static int amount = 0;
     static bool add = false;
@@ -696,40 +786,28 @@ void GuiDatabase::showRemove(GLFWwindow *w)
         else
             ImGui::Text("");
         if(m_action == Action::UPDATE_ITEM) 
-            ImGui::Checkbox("Hinzufügen/Entfernen", &add);
+            ImGui::Checkbox("Hinzufügen", &add);
         ImGui::InputInt("Anzahl", &amount);
         if(ImGui::Button("OK")) 
         {
-            if(p_selected_assemble != nullptr && p_selected_item != nullptr)
+            if(p_selected_assemble != nullptr && p_selected_item != nullptr && m_action == Action::ADD_ITEM_TO_ASSEMBLE)
             {
-                
-                if(m_action == Action::UPDATE_ITEM)
-                {
-                    LOG_TRACE("Action::UPDATE_ITEM");
-                    if(add)
-                        (p_selected_item->count) += amount;
-                    else
-                        (p_selected_item->count) -= amount;
-                    p_database->updateItem(*p_selected_item);
-                }
-                else if (m_action == Action::ADD_ITEM_TO_ASSEMBLE)
-                {
-                    LOG_TRACE("Action::ADD_ITEM_TO_ASSEMBLE");
-                    // int i = p_database->itemExistsInAssemble(*p_selected_assemble, *p_selected_item);
-                    // if(i > 0)
-                    // {
-                    //     cmsg("[warning] Bauteil existiert bereits. Anzahl aktualisiert");
-                    //     p_database->updateItemInAssemble(*p_selected_assemble, *p_selected_item, amount);
-                    // }
-                    // else
-                    // {
-                    item_to_check = *p_selected_item;
-                    count_to_check = amount;
-                    show_check_item = StateAlternativePicking::FINISHED; 
-                    show_check_item_in_assemble =  StateAlternativePicking::CHECK_ALTERNATIVES_ASSEMBLE;
-                        //old: p_database->addItemToAssembleWithCheck(*p_selected_assemble, *p_selected_item, amount);
-                    // }
-                }
+                LOG_TRACE("Action::ADD_ITEM_TO_ASSEMBLE");
+                // int i = p_database->itemExistsInAssemble(*p_selected_assemble, *p_selected_item);
+                // if(i > 0)
+                // {
+                //     cmsg("[warning] Bauteil existiert bereits. Anzahl aktualisiert");
+                //     p_database->updateItemInAssemble(*p_selected_assemble, *p_selected_item, amount);
+                // }
+                // else
+                // {
+                item_to_check = *p_selected_item;
+                count_to_check = amount;
+                show_check_item = StateAlternativePicking::FINISHED; 
+                show_check_item_in_assemble =  StateAlternativePicking::CHECK_ALTERNATIVES_ASSEMBLE;
+                    //old: p_database->addItemToAssembleWithCheck(*p_selected_assemble, *p_selected_item, amount);
+                // }
+
             }
             if(p_selected_assemble != nullptr && m_action == Action::UPDATE_ASSEMBLE)
             {
@@ -740,6 +818,15 @@ void GuiDatabase::showRemove(GLFWwindow *w)
                     std::get<0>(item).count -= (std::get<1>(item)*amount);
                     p_database->updateItem(std::get<0>(item));
                 }
+            }
+            if(p_selected_item != nullptr && m_action == Action::UPDATE_ITEM)
+            {
+                LOG_TRACE("Action::UPDATE_ITEM");
+                if(add)
+                    (p_selected_item->count) += amount;
+                else
+                    (p_selected_item->count) -= amount;
+                p_database->updateItem(*p_selected_item);
             }
             show_remove = false;
         }
@@ -752,7 +839,7 @@ void GuiDatabase::showRemove(GLFWwindow *w)
     ImGui::End();
 }
 
-void GuiDatabase::showAssembleList(GLFWwindow *w)
+void GuiDatabase::showAssembleList()
 {
     // ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar;
     if(ImGui::Begin("Baugruppen", &show_assemble_list))
@@ -826,7 +913,7 @@ void GuiDatabase::showAssembleList(GLFWwindow *w)
     ImGui::End();   
 }
 
-void GuiDatabase::showBOM(GLFWwindow *w)
+void GuiDatabase::showBOM()
 {
     // ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar;
     if(p_selected_assemble == nullptr)
@@ -999,7 +1086,7 @@ void GuiDatabase::showBOM(GLFWwindow *w)
                         ImGui::TableSetColumnIndex(12);
                         ImGui::Text(std::get<0>(content[row_n]).shop_number.c_str());
                         ImGui::TableSetColumnIndex(13);
-                        ImGui::Text(std::get<0>(content[row_n]).vpe.c_str());
+                        ImGui::Text(std::to_string(std::get<0>(content[row_n]).vpe).c_str());
                         ImGui::TableSetColumnIndex(14);
                         ImGui::Text(std::to_string(std::get<0>(content[row_n]).price).c_str());
                         ImGui::TableSetColumnIndex(15);
@@ -1254,7 +1341,7 @@ void GuiDatabase::addItemToStorageWithCheck()
                                 ImGui::TableSetColumnIndex(10);
                                 ImGui::TextUnformatted(content[row_n].shop_number.c_str());
                                 ImGui::TableSetColumnIndex(11);
-                                ImGui::TextUnformatted(content[row_n].vpe.c_str());
+                                ImGui::TextUnformatted(std::to_string(content[row_n].vpe).c_str());
                                 ImGui::TableSetColumnIndex(12);
                                 ImGui::TextUnformatted(std::to_string(content[row_n].price).c_str());
                                 ImGui::TableSetColumnIndex(13);
@@ -1483,7 +1570,7 @@ void GuiDatabase::addItemToAssembleWithCheck()
                                 ImGui::TableSetColumnIndex(10);
                                 ImGui::TextUnformatted(content[row_n].shop_number.c_str());
                                 ImGui::TableSetColumnIndex(11);
-                                ImGui::TextUnformatted(content[row_n].vpe.c_str());
+                                ImGui::TextUnformatted(std::to_string(content[row_n].vpe).c_str());
                                 ImGui::TableSetColumnIndex(12);
                                 ImGui::TextUnformatted(std::to_string(content[row_n].price).c_str());
                                 ImGui::TableSetColumnIndex(13);
@@ -1524,5 +1611,23 @@ void GuiDatabase::importItemToAssembly()
         show_check_item_in_assemble = StateAlternativePicking::SELECT_ALTERNATIVE_ASSEMBLE;
     }
                 
+}
+
+void GuiDatabase::importItemToStorage()
+{
+    if(show_import_storage_check != true) //check if it exists
+        return;
+    if(import_csv.size() <= 0) //everything is done
+    {
+        show_import_storage_check = false; 
+        return;
+    }
+    if(show_check_item == StateAlternativePicking::NONE) //everything is done for the last item
+    {
+        LOG_INFO("Next Item |" << std::to_string(import_csv.size()) << " left");
+        item_to_check = import_csv.back();
+        import_csv.pop_back();
+        show_check_item = StateAlternativePicking::CHECK_EXISTANCE;
+    }           
 }
 

@@ -27,11 +27,12 @@ endif
 ifeq ($(origin AR), default)
   AR = ar
 endif
-INCLUDES += -Iinclude -Ivendor/SFML -Ivendor/imgui/include -ID:/DEV/boost_1_70_0 -Ivendor/GL -Ivendor/sqlite -Ivendor -Ivendor/simpleini
+DEFINES += -DDEBUG
+INCLUDES += -Iinclude -Ivendor/imgui/include -Ivendor/Logger -Ivendor/stb -IX:/dev/boost_1_82_0 -Ivendor/GL -Ivendor/sqlite -Ivendor -Ivendor/simpleini
 FORCE_INCLUDE +=
 ALL_CPPFLAGS += $(CPPFLAGS) -MD -MP $(DEFINES) $(INCLUDES)
 ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-LIBS += -lglew32s -lopengl32 -lsfml-graphics -lsfml-window -lsfml-system -lole32 -loleaut32 -limm32 -lversion -liconv -lpthread -lz -lboost_date_time-clang15-mt-s-x64-1_70 -lboost_log-clang15-mt-s-x64-1_70 -lboost_thread-clang15-mt-s-x64-1_70 -lboost_regex-clang15-mt-s-x64-1_70 -lboost_filesystem-clang15-mt-s-x64-1_70 -lboost_log_setup-clang15-mt-s-x64-1_70 -lboost_atomic-clang15-mt-s-x64-1_70 -lboost_chrono-clang15-mt-s-x64-1_70 -lsqlite3 -lSQLiteCpp -lcomdlg32
+LIBS += -lglew32s -lopengl32 -lole32 -loleaut32 -limm32 -lversion -liconv -lpthread -lz -lsqlite3 -lSQLiteCpp -lcomdlg32 -lgdi32 -lglfw3 -lboost_log-mt-x64 -lboost_thread-mt-x64 -lboost_regex-mt-x64 -lboost_filesystem-mt-x64 -lboost_log_setup-mt-x64 -lboost_atomic-mt-x64 -lboost_chrono-mt-x64
 LDDEPS +=
 define PREBUILDCMDS
 endef
@@ -44,60 +45,54 @@ ifeq ($(config),debug_win64)
 TARGETDIR = .
 TARGET = $(TARGETDIR)/storage.exe
 OBJDIR = obj/Win64/Debug
-DEFINES += -DDEBUG
 ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -g -g3 -fdata-sections -ffunction-sections
 ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -g -g3 -fdata-sections -ffunction-sections
-ALL_LDFLAGS += $(LDFLAGS) -Llib -LD:/DEV/boost_1_70_0/static_stage/lib -L/usr/lib64 -m64
+ALL_LDFLAGS += $(LDFLAGS) -Llib -LX:/dev/boost_1_82_0/stage/lib -L/usr/lib64 -m64
 LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
 
 else ifeq ($(config),debug_static)
 TARGETDIR = .
 TARGET = $(TARGETDIR)/storage.lib
 OBJDIR = obj/Static/Debug
-DEFINES += -DDEBUG
 ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -g -g3 -fdata-sections -ffunction-sections
 ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -g -g3 -fdata-sections -ffunction-sections
-ALL_LDFLAGS += $(LDFLAGS) -Llib -LD:/DEV/boost_1_70_0/static_stage/lib
+ALL_LDFLAGS += $(LDFLAGS) -Llib -LX:/dev/boost_1_82_0/stage/lib
 LINKCMD = $(AR) -rcs "$@" $(OBJECTS)
 
 else ifeq ($(config),debug_shared)
 TARGETDIR = .
 TARGET = $(TARGETDIR)/storage.exe
 OBJDIR = obj/Shared/Debug
-DEFINES += -DDEBUG
 ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -g -g3 -fdata-sections -ffunction-sections
 ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -g -g3 -fdata-sections -ffunction-sections
-ALL_LDFLAGS += $(LDFLAGS) -Llib -LD:/DEV/boost_1_70_0/static_stage/lib
+ALL_LDFLAGS += $(LDFLAGS) -Llib -LX:/dev/boost_1_82_0/stage/lib
 LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
 
 else ifeq ($(config),release_win64)
 TARGETDIR = .
 TARGET = $(TARGETDIR)/storage.exe
 OBJDIR = obj/Win64/Release
-DEFINES +=
 ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -fdata-sections -ffunction-sections -m64 -Wall -Wextra -pthread
 ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -fdata-sections -ffunction-sections -m64 -Wall -Wextra -pthread
-ALL_LDFLAGS += $(LDFLAGS) -Llib -LD:/DEV/boost_1_70_0/static_stage/lib -L/usr/lib64 -m64 -mwindows -fno-exceptions -fno-rtti -fPIC
+ALL_LDFLAGS += $(LDFLAGS) -Llib -LX:/dev/boost_1_82_0/stage/lib -L/usr/lib64 -m64 -mwindows -fno-exceptions -fno-rtti -fPIC
 LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
 
 else ifeq ($(config),release_static)
 TARGETDIR = .
 TARGET = $(TARGETDIR)/storage.lib
 OBJDIR = obj/Static/Release
-DEFINES +=
 ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -O2 -fdata-sections -ffunction-sections -m64 -Wall -Wextra -pthread
 ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -O2 -fdata-sections -ffunction-sections -m64 -Wall -Wextra -pthread
-ALL_LDFLAGS += $(LDFLAGS) -Llib -LD:/DEV/boost_1_70_0/static_stage/lib -fno-exceptions -fno-rtti -fPIC
+ALL_LDFLAGS += $(LDFLAGS) -Llib -LX:/dev/boost_1_82_0/stage/lib -fno-exceptions -fno-rtti -fPIC
 LINKCMD = $(AR) -rcs "$@" $(OBJECTS)
 
 else ifeq ($(config),release_shared)
 TARGETDIR = .
 TARGET = $(TARGETDIR)/storage.exe
 OBJDIR = obj/Shared/Release
-DEFINES +=
 ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -O2 -fdata-sections -ffunction-sections -m64 -Wall -Wextra -pthread
 ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -O2 -fdata-sections -ffunction-sections -m64 -Wall -Wextra -pthread
-ALL_LDFLAGS += $(LDFLAGS) -Llib -LD:/DEV/boost_1_70_0/static_stage/lib -mwindows -fno-exceptions -fno-rtti -fPIC
+ALL_LDFLAGS += $(LDFLAGS) -Llib -LX:/dev/boost_1_82_0/stage/lib -mwindows -fno-exceptions -fno-rtti -fPIC
 LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
 
 endif
@@ -120,17 +115,18 @@ GENERATED += $(OBJDIR)/FileDialog.o
 GENERATED += $(OBJDIR)/GuiDatabase.o
 GENERATED += $(OBJDIR)/Item.o
 GENERATED += $(OBJDIR)/ProgramStateDatabase.o
-GENERATED += $(OBJDIR)/ViewHandler.o
 GENERATED += $(OBJDIR)/imgui.o
 GENERATED += $(OBJDIR)/imgui_demo.o
 GENERATED += $(OBJDIR)/imgui_draw.o
-GENERATED += $(OBJDIR)/imgui_sfml.o
+GENERATED += $(OBJDIR)/imgui_impl_glfw.o
+GENERATED += $(OBJDIR)/imgui_impl_opengl3.o
 GENERATED += $(OBJDIR)/imgui_stdlib.o
 GENERATED += $(OBJDIR)/imgui_tables.o
 GENERATED += $(OBJDIR)/imgui_widgets.o
 GENERATED += $(OBJDIR)/implot.o
 GENERATED += $(OBJDIR)/implot_demo.o
 GENERATED += $(OBJDIR)/implot_items.o
+GENERATED += $(OBJDIR)/logger.o
 GENERATED += $(OBJDIR)/main.o
 GENERATED += $(OBJDIR)/program.o
 OBJECTS += $(OBJDIR)/CSV.o
@@ -140,17 +136,18 @@ OBJECTS += $(OBJDIR)/FileDialog.o
 OBJECTS += $(OBJDIR)/GuiDatabase.o
 OBJECTS += $(OBJDIR)/Item.o
 OBJECTS += $(OBJDIR)/ProgramStateDatabase.o
-OBJECTS += $(OBJDIR)/ViewHandler.o
 OBJECTS += $(OBJDIR)/imgui.o
 OBJECTS += $(OBJDIR)/imgui_demo.o
 OBJECTS += $(OBJDIR)/imgui_draw.o
-OBJECTS += $(OBJDIR)/imgui_sfml.o
+OBJECTS += $(OBJDIR)/imgui_impl_glfw.o
+OBJECTS += $(OBJDIR)/imgui_impl_opengl3.o
 OBJECTS += $(OBJDIR)/imgui_stdlib.o
 OBJECTS += $(OBJDIR)/imgui_tables.o
 OBJECTS += $(OBJDIR)/imgui_widgets.o
 OBJECTS += $(OBJDIR)/implot.o
 OBJECTS += $(OBJDIR)/implot_demo.o
 OBJECTS += $(OBJDIR)/implot_items.o
+OBJECTS += $(OBJDIR)/logger.o
 OBJECTS += $(OBJDIR)/main.o
 OBJECTS += $(OBJDIR)/program.o
 
@@ -234,13 +231,13 @@ $(OBJDIR)/Item.o: src/Item.cpp
 $(OBJDIR)/ProgramStateDatabase.o: src/ProgramStateDatabase.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(PERFILE_FLAGS_0) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/ViewHandler.o: src/ViewHandler.cpp
-	@echo "$(notdir $<)"
-	$(SILENT) $(CXX) $(PERFILE_FLAGS_0) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/main.o: src/main.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(PERFILE_FLAGS_0) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/program.o: src/program.cpp
+	@echo "$(notdir $<)"
+	$(SILENT) $(CXX) $(PERFILE_FLAGS_0) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/logger.o: vendor/Logger/logger.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(PERFILE_FLAGS_0) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/imgui.o: vendor/imgui/src/imgui.cpp
@@ -252,7 +249,10 @@ $(OBJDIR)/imgui_demo.o: vendor/imgui/src/imgui_demo.cpp
 $(OBJDIR)/imgui_draw.o: vendor/imgui/src/imgui_draw.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(PERFILE_FLAGS_0) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/imgui_sfml.o: vendor/imgui/src/imgui_sfml.cpp
+$(OBJDIR)/imgui_impl_glfw.o: vendor/imgui/src/imgui_impl_glfw.cpp
+	@echo "$(notdir $<)"
+	$(SILENT) $(CXX) $(PERFILE_FLAGS_0) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/imgui_impl_opengl3.o: vendor/imgui/src/imgui_impl_opengl3.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(PERFILE_FLAGS_0) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/imgui_stdlib.o: vendor/imgui/src/imgui_stdlib.cpp

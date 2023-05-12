@@ -29,7 +29,7 @@ Program::Program()
     if (!glfwInit())
         return;
     //DEB(lg, trace) << "Program::Program()";
-    initLog("log.log", 1); //only log file
+    initLog("log/log", 1); //only log file
     window = glfwCreateWindow(1280, 720, "Storage", NULL, NULL);
     int channels;
     image.width = 32;

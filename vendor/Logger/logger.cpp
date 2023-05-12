@@ -64,28 +64,39 @@ void initLog(std::string filename, int mode)
     if(mode == 1 || mode == 3)    // Add attributes
     {
         // create sink to logfile
-        boost::shared_ptr<text_sink> sink = boost::make_shared<text_sink>();
-        sink->locked_backend()->add_stream( boost::make_shared<std::ofstream>(filename.c_str()));
+        // boost::shared_ptr<text_sink> sink = boost::make_shared<text_sink>(
+        //     log::keywords::file_name = filename + "%N.log",                                        /*< file name pattern >*/
+        //     log::keywords::rotation_size = 10 * 1024 * 1024,                                   /*< rotate files every 10 MiB... >*/
+        //     log::keywords::time_based_rotation = log::sinks::file::rotation_at_time_point(0, 0, 0), /*< ...or at midnight >*/
+        //     log::keywords::open_mode = std::ios_base::app);
+        // // sink->locked_backend()->scan_for_files();
+        // sink->locked_backend()->add_stream( boost::make_shared<std::ofstream>(std::ios::out | std::ios::app));
 
         log::add_common_attributes();
-        sink->set_formatter //log::add_file_log
+        // sink->set_formatter 
+        log::add_file_log
         (
-            // log::keywords::file_name = filename + "%N.log",                                        /*< file name pattern >*/
-            // log::keywords::rotation_size = 10 * 1024 * 1024,                                   /*< rotate files every 10 MiB... >*/
+            log::keywords::file_name = filename + "%N.log",                                        /*< file name pattern >*/
+            log::keywords::rotation_size = 10 * 1024 * 1024,                                   /*< rotate files every 10 MiB... >*/
             // log::keywords::time_based_rotation = log::sinks::file::rotation_at_time_point(0, 0, 0), /*< ...or at midnight >*/
-            /*< log record format >*/
-            log::expressions::stream
-                    << log::expressions::attr< unsigned int >("LineID")
-                    << log::expressions::format_date_time< boost::posix_time::ptime >("TimeStamp", " [%Y-%m-%d %H:%M:%S]")
-                    << " <" << log::trivial::severity
-                    << ">: " << log::expressions::smessage                    
+            log::keywords::open_mode = std::ios_base::app,
+            log::keywords::auto_flush = true,
+            // /*< log record format >*/
+            log::keywords::format = 
+            (
+                log::expressions::stream
+                        << log::expressions::attr< unsigned int >("LineID")
+                        << log::expressions::format_date_time< boost::posix_time::ptime >("TimeStamp", " [%Y-%m-%d %H:%M:%S]")
+                        << " <" << log::trivial::severity
+                        << ">: " << log::expressions::smessage   
+            )                 
         );
     	
         // flush
-        sink->locked_backend()->auto_flush(true);
+        // sink->locked_backend()->auto_flush(true);
         
         // register sink
-        log::core::get()->add_sink(sink);
+        // log::core::get()->add_sink(sink);
     }
     if(mode == 2 || mode == 3)
     {

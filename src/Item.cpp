@@ -1,6 +1,43 @@
 #include "Item.hpp"
 #define DEBUG
 #include "logger.hpp"
+
+void sortItems(std::deque<Item>& content)
+{
+    auto sort_specs = ImGui::TableGetSortSpecs();
+    std::sort(content.begin(), content.end(), [&sort_specs] (Item& a, Item& b) 
+    {
+    for (int n = 0; n < sort_specs->SpecsCount; n++)
+    {
+        const ImGuiTableColumnSortSpecs* sort_spec = &sort_specs->Specs[0];
+        int delta = 0;
+        switch(sort_spec->ColumnIndex)
+        {
+            case 0: delta = a.id - b.id; break;
+            case 1: delta = (a.category.compare(b.category)); break;
+            case 2: delta = (a.value.compare(b.value)); break;
+            case 3: delta = (a.value_2.compare(b.value_2)); break;
+            case 4: delta = (a.package.compare(b.package)); break;
+            case 5: delta = (a.description.compare(b.description)); break;
+            case 6: delta = a.count - b.count; break;
+            case 7: delta = (a.manufactor.compare(b.manufactor)); break;
+            case 8: delta = (a.manufactor_number.compare(b.manufactor_number)); break;
+            case 9: delta = (a.distributor.compare(b.distributor)); break;
+            case 10: delta = (a.shop_number.compare(b.shop_number)); break;
+            case 11: delta = a.vpe - b.vpe; break;
+            case 12: delta = (a.price - b.price); break;
+            case 13: if(a.vpe != 0 && b.vpe!= 0) delta = (a.price/a.vpe - b.price/b.vpe); break;                                    
+        }
+
+        if (delta > 0)
+                return (sort_spec->SortDirection == ImGuiSortDirection_Ascending) ? true : false;
+        if (delta < 0)
+                return (sort_spec->SortDirection == ImGuiSortDirection_Ascending) ? false : true;
+    }
+        return false;
+    });
+}
+
 void ItemDatabase::initStorage(bool new_database)
 {
     if(new_database)
@@ -9,14 +46,14 @@ void ItemDatabase::initStorage(bool new_database)
         {
             SQLite::Transaction transaction(m_database);
             m_database.exec("CREATE TABLE IF NOT EXISTS Lager (id INTEGER PRIMARY KEY, Value TEXT, Value2 TEXT, Kategorie TEXT, Package TEXT, Eigenschaften TEXT,Anzahl INTEGER, Hersteller TEXT, Herstellernummer TEXT,\
-                            Distributor TEXT, Bestellnummer TEXT, Verpackungseinheit TEXT, Preis FLOAT, Lagerort TEXT, Datenblatt TEXT)");
+                            Distributor TEXT, Bestellnummer TEXT, Verpackungseinheit INTEGER, Preis FLOAT, Lagerort TEXT, Datenblatt TEXT)");
             m_database.exec("CREATE TABLE IF NOT EXISTS Baugruppen (id_bg INTEGER PRIMARY KEY, Name TEXT)");
             m_database.exec("CREATE TABLE IF NOT EXISTS Link_Lager_Baugruppen (id INTEGER , id_bg INTEGER , Anzahl INTEGER, FOREIGN KEY (id) REFERENCES Lager (id) ON UPDATE CASCADE, FOREIGN KEY (id_bg) REFERENCES Baugruppen (id_bg) ON UPDATE CASCADE)");
             transaction.commit();
         }
         catch(const std::exception& e)
         {
-            cmsg(e.what());
+            cmsg("[error]" + std::string(e.what()));
             LOG_ERROR("Failed initialize");
         }
         id = 1;
@@ -62,13 +99,12 @@ int ItemDatabase::addItem(Item item)
     }
     catch(const std::exception& e)
     {
-        cmsg(e.what());
+        cmsg("[error]" + std::string(e.what()));
         LOG_ERROR(e.what());
     }
     id++;
     return (id-1);
 }
-
 
 void ItemDatabase::updateItem(Item item)
 {
@@ -98,7 +134,7 @@ void ItemDatabase::updateItem(Item item)
     }
     catch(const std::exception& e)
     {
-        cmsg(e.what());
+        cmsg("[error]" + std::string(e.what()));
         LOG_ERROR(e.what());
     }
 }
@@ -124,10 +160,11 @@ const std::deque<Item>& ItemDatabase::searchItem()
             i.manufactor_number = query.getColumn(8).getText();
             i.distributor       = query.getColumn(9).getText();
             i.shop_number       = query.getColumn(10).getText();
-            i.vpe               = query.getColumn(11).getText();
+            i.vpe               = query.getColumn(11).getInt();
             i.price             = query.getColumn(12).getDouble();
             i.storage_place     = query.getColumn(13).getText();
             i.datasheet         = query.getColumn(14).getText();
+            i.price_per_unit    = i.price/i.vpe;
             m_list.push_back(i);
         }        
     }
@@ -160,10 +197,11 @@ const std::deque<Item>& ItemDatabase::searchItemByID(int id)
             i.manufactor_number = query.getColumn(8).getText();
             i.distributor       = query.getColumn(9).getText();
             i.shop_number       = query.getColumn(10).getText();
-            i.vpe               = query.getColumn(11).getText();
+            i.vpe               = query.getColumn(11).getInt();
             i.price             = query.getColumn(12).getDouble();
             i.storage_place     = query.getColumn(13).getText();
             i.datasheet         = query.getColumn(14).getText();
+            i.price_per_unit    = i.price/i.vpe;
             m_list.push_back(i);
         }        
     }
@@ -234,7 +272,7 @@ const std::deque<Item>& ItemDatabase::searchItem(Item i)
             condition += i.shop_number;
             condition += std::string("'");
         }
-        if(i.vpe.compare("") != 0)
+        if(i.vpe > 0)
         {
             condition += std::string(" AND Verpackungseinheit LIKE '");
             condition += i.vpe;
@@ -270,16 +308,17 @@ const std::deque<Item>& ItemDatabase::searchItem(Item i)
             i.manufactor_number = query.getColumn(8).getText();
             i.distributor       = query.getColumn(9).getText();
             i.shop_number       = query.getColumn(10).getText();
-            i.vpe               = query.getColumn(11).getText();
+            i.vpe               = query.getColumn(11).getInt();
             i.price             = query.getColumn(12).getDouble();
             i.storage_place     = query.getColumn(13).getText();
             i.datasheet         = query.getColumn(14).getText();
+            i.price_per_unit    = i.price/i.vpe;
             m_list.push_back(i);
         }        
     }
     catch(const std::exception& e)
     {
-       cmsg(e.what());
+       cmsg("[error]" + std::string(e.what()));
        LOG_ERROR(e.what());
     }
     return m_list;
@@ -298,7 +337,7 @@ void ItemDatabase::addAssemble(Assemble a)
     }
     catch(const std::exception& e)
     {
-        cmsg(e.what());
+        (e.what());
         LOG_ERROR(e.what());
     }
 }
@@ -385,7 +424,7 @@ const std::deque<Item>& ItemDatabase::searchItemInAssemble(Assemble a, Item i)
             condition += i.shop_number;
             condition += std::string("'");
         }
-        if(i.vpe.compare("") != 0)
+        if(i.vpe > 0)
         {
             condition += std::string(" AND Lager.Verpackungseinheit LIKE '");
             condition += i.vpe;
@@ -421,16 +460,17 @@ const std::deque<Item>& ItemDatabase::searchItemInAssemble(Assemble a, Item i)
             i.manufactor_number = query.getColumn(8).getText();
             i.distributor       = query.getColumn(9).getText();
             i.shop_number       = query.getColumn(10).getText();
-            i.vpe               = query.getColumn(11).getText();
+            i.vpe               = query.getColumn(11).getInt();
             i.price             = query.getColumn(12).getDouble();
             i.storage_place     = query.getColumn(13).getText();
             i.datasheet         = query.getColumn(14).getText();
+            i.price_per_unit    = i.price/i.vpe;
             m_list.push_back(i);
         }        
     }
     catch(const std::exception& e)
     {
-       cmsg(e.what());
+       cmsg("[error]" + std::string(e.what()));
        LOG_ERROR(e.what());
     }
     return m_list;
@@ -463,16 +503,17 @@ const std::deque<Item>& ItemDatabase::searchItemInAssembleByID(Assemble a, Item 
             i.manufactor_number = query.getColumn(8).getText();
             i.distributor       = query.getColumn(9).getText();
             i.shop_number       = query.getColumn(10).getText();
-            i.vpe               = query.getColumn(11).getText();
+            i.vpe               = query.getColumn(11).getInt();
             i.price             = query.getColumn(12).getDouble();
             i.storage_place     = query.getColumn(13).getText();
             i.datasheet         = query.getColumn(14).getText();
+            i.price_per_unit    = i.price/i.vpe;
             m_list.push_back(i);
         }
     }
     catch(const std::exception& e)
     {
-       cmsg(e.what());
+       cmsg("[error]" + std::string(e.what()));
        LOG_ERROR(e.what());
     }
 
@@ -491,12 +532,12 @@ void ItemDatabase::updateItemInAssemble(Assemble a, Item i, int count)
         query.bind(":count", count);     
         query.exec();
         transaction.commit();
-        cmsg("Updated Item in Assemble");
+        cmsg("[info] Updated Item in Assemble");
         m_updated = true;
     }
     catch(const std::exception& e)
     {
-        cmsg(e.what());
+        cmsg("[error]" + std::string(e.what()));
         LOG_ERROR(e.what());
     }
 }
@@ -525,7 +566,7 @@ void ItemDatabase::addItemToAssemble(Assemble a, Item i, int count)
     }
     catch(const std::exception& e)
     {
-        cmsg(e.what());
+        cmsg("[error]" + std::string(e.what()));
         LOG_ERROR(e.what());
     }
 }
@@ -560,18 +601,19 @@ const Assemble ItemDatabase::searchAssemble(Assemble a)
             i.manufactor_number = query.getColumn(8).getText();
             i.distributor       = query.getColumn(9).getText();
             i.shop_number       = query.getColumn(10).getText();
-            i.vpe               = query.getColumn(11).getText();
+            i.vpe               = query.getColumn(11).getInt();
             i.price             = query.getColumn(12).getDouble();
             i.storage_place     = query.getColumn(13).getText();
             i.datasheet         = query.getColumn(14).getText();
             int amount          = query.getColumn(15).getInt();
+            i.price_per_unit    = i.price/i.vpe;
             a.bom.push_back(std::make_tuple(i, amount));
             LOG_TRACE("Found " << i.id << " in " << a.name);
         }        
     }
     catch(const std::exception& e)
     {
-        cmsg(e.what());
+        cmsg("[error]" + std::string(e.what()));
         LOG_ERROR(e.what());
     }
     return a;
@@ -593,7 +635,7 @@ const std::deque<Assemble>& ItemDatabase::searchAssembles()
     }
     catch(const std::exception& e)
     {
-        cmsg(e.what());
+        cmsg("[error]" + std::string(e.what()));
         LOG_ERROR(e.what());
     }
     //TODO: item fill data 
@@ -610,12 +652,12 @@ void ItemDatabase::deleteItemFromAssemble(Assemble a, Item i)
         query.bind(":id_bg", a.id);     
         query.exec();
         transaction.commit();
-        cmsg("Deleted Item from Assemble");
+        cmsg("[info] Deleted Item from Assemble");
         m_updated = true;
     }
     catch(const std::exception& e)
     {
-        cmsg(e.what());
+        cmsg("[error]" + std::string(e.what()));
         LOG_ERROR(e.what());
     }
 }

@@ -16,6 +16,16 @@ namespace xgl
             console_open = true;
 
             ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+            g_categories.emplace("None", "None");
+            g_categories.emplace("R", "R");
+            g_categories.emplace("C","C");
+            g_categories.emplace("L", "L");
+            g_categories.emplace("J", "J");
+            g_categories.emplace("U", "U");
+            g_categories.emplace("D", "D");
+            g_categories.emplace("K", "K");
+            g_categories.emplace("Q", "Q");
+            LOG_TRACE("No. of categories: " << g_categories.size());
         }
 
         /*
@@ -28,7 +38,7 @@ namespace xgl
         {
             //DEB(lg, trace) << "ProgramStateTask::draw()";
             //program->getRenderWindow().clear(xgl::graphics::getXglImguiColors(xgl::graphics::WindowBg));
-            p_gui->draw(window);
+            p_gui->draw();
             // ImPlot::ShowDemoWindow();
             // ImGui::ShowDemoWindow();
         }

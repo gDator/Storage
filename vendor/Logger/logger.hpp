@@ -29,12 +29,12 @@ void initLog(std::string filename, int mode = 1);
 std::ostream& operator<< (std::ostream& strm, boost::log::trivial::severity_level level);
 inline boost::log::sources::severity_logger<boost::log::trivial::severity_level> lg;  //gloabl variable for logging
 
-#define LOG_WARN(message) BOOST_LOG_SEV(lg, boost::log::trivial::severity_level::warning) << __FILE__ << ": " <<__LINE__ << "[" << __FUNCTION__ << "]: " << message;
-#define LOG_ERROR(message) BOOST_LOG_SEV(lg, boost::log::trivial::severity_level::error) << __FILE__ << ": " <<__LINE__ << "[" << __FUNCTION__ << "]: " << message;
+#define LOG_WARN(message) BOOST_LOG_SEV(lg, boost::log::trivial::severity_level::warning) << __FILE__ << ":" <<__LINE__ << " [" << __FUNCTION__ << "]: " << message;
+#define LOG_ERROR(message) BOOST_LOG_SEV(lg, boost::log::trivial::severity_level::error) << __FILE__ << ":" <<__LINE__ << " [" << __FUNCTION__ << "]: " << message;
 
 #ifdef DEBUG
-#define LOG_TRACE(message) BOOST_LOG_SEV(lg, boost::log::trivial::severity_level::trace) << __FILE__ << ": " <<__LINE__ << "[" << __FUNCTION__ << "]: " << message;
-#define LOG_INFO(message) BOOST_LOG_SEV(lg, boost::log::trivial::severity_level::info) << __FILE__ << ": " <<__LINE__ << "[" << __FUNCTION__ << "]: " << message;
+#define LOG_TRACE(message) BOOST_LOG_SEV(lg, boost::log::trivial::severity_level::trace) << __FILE__ << ":" <<__LINE__ << " [" << __FUNCTION__ << "]: " << message;
+#define LOG_INFO(message) BOOST_LOG_SEV(lg, boost::log::trivial::severity_level::info) << __FILE__ << ":" <<__LINE__ << " [" << __FUNCTION__ << "]: " << message;
 
 #else
 #define LOG_TRACE(message)
