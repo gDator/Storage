@@ -68,3 +68,21 @@ x Neue datenbank erstellen selektiert diese direkt (auch in ini file)
 + Export Lager
 + VPE als Int in Datenbank
 
+-------------------------v0.3---------------------------
++ Oberkategorien E (Elektronische BE), K(Kabel), M (Mechanische BE) einführen und diese in allen Variantionen darstellen (also nur eine Ober-Kategorie oder alle...)
++ neue Spalte mit "Einheit" vor "Anzahl"
++ neue Spalte "reserviert" nach "Anzahl" 
++ Bearbeiten -> Bauteil -> Untermenü anpassen:
+	erhöhen
+	reduzieren
+	reservieren, hier vorsehen: 
+		"reservieren (Menge eingeben)" wenn Menge eingegeben und bestätigt, dann wird der Wert in der Spalte "reserviert" um die Menge erhöht und der Wert Anzahl wird um diese Menge reduziert 
+		"Reservierung verbraucht (Menge eingeben)" wenn Menge eingegeben und bestätigt, dann wird der Wert "reserviert" um diesen Wert reduziert. Achtung mehr als reserviert kann nicht verbraucht werden
+		"Reservierung frei geben (Menge eingeben)" wenn Menge eingegeben und bestätigt, dann wird der Wert in der Spalte "reserviert" um die Menge reduziert und der Wert "Anzahl" wird um diese Menge erhöht 
+	Bauteil neu
+	Bauteil anpassen
+
++ action -> unterscheiden zwischen hinzufpügen und entfernen, damit sich "Fenster" nicht gegenseitig stören
++ add units to ini
++ add history to log file
++ function Itemtable as class 

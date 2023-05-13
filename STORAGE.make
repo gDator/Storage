@@ -28,7 +28,7 @@ ifeq ($(origin AR), default)
   AR = ar
 endif
 DEFINES += -DDEBUG
-INCLUDES += -Iinclude -Ivendor/imgui/include -Ivendor/Logger -Ivendor/stb -IX:/dev/boost_1_82_0 -Ivendor/GL -Ivendor/sqlite -Ivendor -Ivendor/simpleini
+INCLUDES += -Iinclude -Ivendor/imgui/include -Ivendor/Logger -Ivendor/stb -ID:/DEV/boost_1_82_0 -Ivendor/GL -Ivendor/sqlite -Ivendor -Ivendor/simpleini
 FORCE_INCLUDE +=
 ALL_CPPFLAGS += $(CPPFLAGS) -MD -MP $(DEFINES) $(INCLUDES)
 ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
@@ -47,7 +47,7 @@ TARGET = $(TARGETDIR)/storage.exe
 OBJDIR = obj/Win64/Debug
 ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -g -g3 -fdata-sections -ffunction-sections
 ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -g -g3 -fdata-sections -ffunction-sections
-ALL_LDFLAGS += $(LDFLAGS) -Llib -LX:/dev/boost_1_82_0/stage/lib -L/usr/lib64 -m64
+ALL_LDFLAGS += $(LDFLAGS) -Llib -LD:/DEV/boost_1_82_0/stage/lib -L/usr/lib64 -m64
 LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
 
 else ifeq ($(config),debug_static)
@@ -56,7 +56,7 @@ TARGET = $(TARGETDIR)/storage.lib
 OBJDIR = obj/Static/Debug
 ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -g -g3 -fdata-sections -ffunction-sections
 ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -g -g3 -fdata-sections -ffunction-sections
-ALL_LDFLAGS += $(LDFLAGS) -Llib -LX:/dev/boost_1_82_0/stage/lib
+ALL_LDFLAGS += $(LDFLAGS) -Llib -LD:/DEV/boost_1_82_0/stage/lib
 LINKCMD = $(AR) -rcs "$@" $(OBJECTS)
 
 else ifeq ($(config),debug_shared)
@@ -65,7 +65,7 @@ TARGET = $(TARGETDIR)/storage.exe
 OBJDIR = obj/Shared/Debug
 ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -g -g3 -fdata-sections -ffunction-sections
 ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -g -g3 -fdata-sections -ffunction-sections
-ALL_LDFLAGS += $(LDFLAGS) -Llib -LX:/dev/boost_1_82_0/stage/lib
+ALL_LDFLAGS += $(LDFLAGS) -Llib -LD:/DEV/boost_1_82_0/stage/lib
 LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
 
 else ifeq ($(config),release_win64)
@@ -74,7 +74,7 @@ TARGET = $(TARGETDIR)/storage.exe
 OBJDIR = obj/Win64/Release
 ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -fdata-sections -ffunction-sections -m64 -Wall -Wextra -pthread
 ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -fdata-sections -ffunction-sections -m64 -Wall -Wextra -pthread
-ALL_LDFLAGS += $(LDFLAGS) -Llib -LX:/dev/boost_1_82_0/stage/lib -L/usr/lib64 -m64 -mwindows -fno-exceptions -fno-rtti -fPIC
+ALL_LDFLAGS += $(LDFLAGS) -Llib -LD:/DEV/boost_1_82_0/stage/lib -L/usr/lib64 -m64 -mwindows -fno-exceptions -fno-rtti -fPIC
 LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
 
 else ifeq ($(config),release_static)
@@ -83,7 +83,7 @@ TARGET = $(TARGETDIR)/storage.lib
 OBJDIR = obj/Static/Release
 ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -O2 -fdata-sections -ffunction-sections -m64 -Wall -Wextra -pthread
 ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -O2 -fdata-sections -ffunction-sections -m64 -Wall -Wextra -pthread
-ALL_LDFLAGS += $(LDFLAGS) -Llib -LX:/dev/boost_1_82_0/stage/lib -fno-exceptions -fno-rtti -fPIC
+ALL_LDFLAGS += $(LDFLAGS) -Llib -LD:/DEV/boost_1_82_0/stage/lib -fno-exceptions -fno-rtti -fPIC
 LINKCMD = $(AR) -rcs "$@" $(OBJECTS)
 
 else ifeq ($(config),release_shared)
@@ -92,7 +92,7 @@ TARGET = $(TARGETDIR)/storage.exe
 OBJDIR = obj/Shared/Release
 ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -O2 -fdata-sections -ffunction-sections -m64 -Wall -Wextra -pthread
 ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -O2 -fdata-sections -ffunction-sections -m64 -Wall -Wextra -pthread
-ALL_LDFLAGS += $(LDFLAGS) -Llib -LX:/dev/boost_1_82_0/stage/lib -mwindows -fno-exceptions -fno-rtti -fPIC
+ALL_LDFLAGS += $(LDFLAGS) -Llib -LD:/DEV/boost_1_82_0/stage/lib -mwindows -fno-exceptions -fno-rtti -fPIC
 LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
 
 endif
@@ -113,7 +113,9 @@ GENERATED += $(OBJDIR)/Console.o
 GENERATED += $(OBJDIR)/ConvertUTF.o
 GENERATED += $(OBJDIR)/FileDialog.o
 GENERATED += $(OBJDIR)/GuiDatabase.o
+GENERATED += $(OBJDIR)/GuiTable.o
 GENERATED += $(OBJDIR)/Item.o
+GENERATED += $(OBJDIR)/ItemDatabase.o
 GENERATED += $(OBJDIR)/ProgramStateDatabase.o
 GENERATED += $(OBJDIR)/imgui.o
 GENERATED += $(OBJDIR)/imgui_demo.o
@@ -129,12 +131,15 @@ GENERATED += $(OBJDIR)/implot_items.o
 GENERATED += $(OBJDIR)/logger.o
 GENERATED += $(OBJDIR)/main.o
 GENERATED += $(OBJDIR)/program.o
+GENERATED += $(OBJDIR)/utils.o
 OBJECTS += $(OBJDIR)/CSV.o
 OBJECTS += $(OBJDIR)/Console.o
 OBJECTS += $(OBJDIR)/ConvertUTF.o
 OBJECTS += $(OBJDIR)/FileDialog.o
 OBJECTS += $(OBJDIR)/GuiDatabase.o
+OBJECTS += $(OBJDIR)/GuiTable.o
 OBJECTS += $(OBJDIR)/Item.o
+OBJECTS += $(OBJDIR)/ItemDatabase.o
 OBJECTS += $(OBJDIR)/ProgramStateDatabase.o
 OBJECTS += $(OBJDIR)/imgui.o
 OBJECTS += $(OBJDIR)/imgui_demo.o
@@ -150,6 +155,7 @@ OBJECTS += $(OBJDIR)/implot_items.o
 OBJECTS += $(OBJDIR)/logger.o
 OBJECTS += $(OBJDIR)/main.o
 OBJECTS += $(OBJDIR)/program.o
+OBJECTS += $(OBJDIR)/utils.o
 
 # Rules
 # #############################################
@@ -222,10 +228,16 @@ $(OBJDIR)/Console.o: src/Console.cpp
 $(OBJDIR)/FileDialog.o: src/FileDialog.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(PERFILE_FLAGS_0) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/GuiDatabase.o: src/GuiDatabase.cpp
+$(OBJDIR)/GuiDatabase.o: src/Gui/GuiDatabase.cpp
+	@echo "$(notdir $<)"
+	$(SILENT) $(CXX) $(PERFILE_FLAGS_0) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/GuiTable.o: src/Gui/GuiTable.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(PERFILE_FLAGS_0) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Item.o: src/Item.cpp
+	@echo "$(notdir $<)"
+	$(SILENT) $(CXX) $(PERFILE_FLAGS_0) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/ItemDatabase.o: src/ItemDatabase.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(PERFILE_FLAGS_0) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/ProgramStateDatabase.o: src/ProgramStateDatabase.cpp
@@ -235,6 +247,9 @@ $(OBJDIR)/main.o: src/main.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(PERFILE_FLAGS_0) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/program.o: src/program.cpp
+	@echo "$(notdir $<)"
+	$(SILENT) $(CXX) $(PERFILE_FLAGS_0) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/utils.o: src/utils.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(PERFILE_FLAGS_0) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/logger.o: vendor/Logger/logger.cpp

@@ -31,6 +31,7 @@ inline boost::log::sources::severity_logger<boost::log::trivial::severity_level>
 
 #define LOG_WARN(message) BOOST_LOG_SEV(lg, boost::log::trivial::severity_level::warning) << __FILE__ << ":" <<__LINE__ << " [" << __FUNCTION__ << "]: " << message;
 #define LOG_ERROR(message) BOOST_LOG_SEV(lg, boost::log::trivial::severity_level::error) << __FILE__ << ":" <<__LINE__ << " [" << __FUNCTION__ << "]: " << message;
+#define LOG_HISTORY(message) BOOST_LOG_SEV(lg, boost::log::trivial::severity_level::info) << message;
 
 #ifdef DEBUG
 #define LOG_TRACE(message) BOOST_LOG_SEV(lg, boost::log::trivial::severity_level::trace) << __FILE__ << ":" <<__LINE__ << " [" << __FUNCTION__ << "]: " << message;

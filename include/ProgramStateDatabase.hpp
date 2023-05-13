@@ -6,7 +6,7 @@
 #include "implot.h"
 #include "ProgramState.hpp"
 #include "Console.hpp"
-#include "GuiDatabase.hpp"
+#include "Gui/GuiDatabase.hpp"
 #include "Item.hpp"
 #include <functional>
 #include <memory>
@@ -31,6 +31,7 @@ namespace xgl
                 void handleInput(GLFWwindow *window);
                 void handleKeyboard();
                 void handleMouse();
+                void init();
                 ProgramStateDatabase();
         };
     }
