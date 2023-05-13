@@ -60,8 +60,8 @@ x Neue datenbank erstellen selektiert diese direkt (auch in ini file)
     Variante 1: Bauteil löschen
     Variante 2: Kategorie änderbar -> ideal
     Variante 3: Hersteller änderbar -> ideal
-- Sortierung nach Kategorie in Ansicht Lager scheint nicht zu funktionieren
-- Wäre schön, wenn auch nach allen anderen Spalten geordnet werden kann (besonders wichtig Value 1, Value 2)
++ Sortierung nach Kategorie in Ansicht Lager scheint nicht zu funktionieren
++ Wäre schön, wenn auch nach allen anderen Spalten geordnet werden kann (besonders wichtig Value 1, Value 2)
 
 + Wäre Schön, wenn nach Eingabe VPE und Preis/VPE auch automatisch ein Stückpreis angezeigt wird.
 + Noch cooler wäre, wenn auch alternativ die Eingabe VPE und Preis/Stück eingetragen wird und dann der Preis/VPE automatisch dargestellt wird

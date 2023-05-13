@@ -1,0 +1,5 @@
+1 [2023-05-13 18:50:49] <info>: User Daniel Hagenlogged in Database C:\Users\Daniel Hagen\Desktop\Lager_230513 - Kopie.db
+2 [2023-05-13 18:50:49] <info>: ID count38
+3 [2023-05-13 18:50:49] <info>: src/ProgramStateDatabase.cpp:134 [init]: found hints: 1k, 1% 50V,0603,MMLC
+4 [2023-05-13 18:50:49] <trace>: src/ItemDatabase.cpp:287 [searchItem]: Search filter: SELECT * FROM Lager WHERE id > 0
+5 [2023-05-13 18:50:49] <info>: Daniel Hagen: searches item: 38

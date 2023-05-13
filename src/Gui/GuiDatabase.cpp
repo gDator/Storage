@@ -88,9 +88,9 @@ void GuiDatabase::draw()
         {
             if(ImGui::BeginMenu("Bauteil"))
             {
+                if(ImGui::MenuItem("Neu")) {show_new_item = true;}
                 if(p_selected_item != nullptr)
                 {
-                    if(ImGui::MenuItem("Neu")) {show_new_item = true;}
                     if(ImGui::MenuItem("Aktualisieren")) 
                     {
                         show_change_item = true; 
