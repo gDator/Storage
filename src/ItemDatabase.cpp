@@ -13,6 +13,7 @@ void ItemDatabase::initStorage(bool new_database)
                             Distributor TEXT, Bestellnummer TEXT, Verpackungseinheit INTEGER, Preis FLOAT, Lagerort TEXT, Datenblatt TEXT, Reserviert INTEGER, Einheit TEXT, Oberkategorie TEXT)");
             m_database.exec("CREATE TABLE IF NOT EXISTS Baugruppen (id_bg INTEGER PRIMARY KEY, Name TEXT)");
             m_database.exec("CREATE TABLE IF NOT EXISTS Link_Lager_Baugruppen (id INTEGER , id_bg INTEGER , Anzahl INTEGER, FOREIGN KEY (id) REFERENCES Lager (id) ON UPDATE CASCADE, FOREIGN KEY (id_bg) REFERENCES Baugruppen (id_bg) ON UPDATE CASCADE)");
+            m_database.exec("CREATE TABLE IF NOT EXISTS Reservierung (id INTEGER , id_bg INTEGER , Anzahl INTEGER, FOREIGN KEY (id) REFERENCES Lager (id) ON UPDATE CASCADE, FOREIGN KEY (id_bg) REFERENCES Baugruppen (id_bg) ON UPDATE CASCADE)");
             transaction.commit();
         }
         catch(const std::exception& e)
@@ -20,7 +21,7 @@ void ItemDatabase::initStorage(bool new_database)
             cmsg("[error]" + std::string(e.what()));
             LOG_ERROR("Failed initialize");
         }
-        id = 1;
+        m_id = 1;
     }
     else
     {
@@ -30,9 +31,9 @@ void ItemDatabase::initStorage(bool new_database)
         {
             i = std::max(i, query.getColumn(0).getInt());
         }
-        id = ++i; //next free id
+        m_id = ++i; //next free id
     }
-    LOG_HISTORY("ID count" << id);
+    LOG_HISTORY("ID count" << m_id);
     
 }
 
@@ -42,7 +43,7 @@ int ItemDatabase::addItem(Item item)
     {
         SQLite::Transaction transaction(m_database);
         SQLite::Statement query(m_database, "INSERT INTO Lager VALUES(:id, :value, :value2, :cat ,:package, :prop ,:n ,:hrst ,:hrstnr ,:dist ,:bstnr ,:vpe, :price, :storage_place, :datasheet, :reserved, :unit, :maincat)");
-        query.bind(":id", id);
+        query.bind(":id", m_id);
         query.bind(":value", item.value);
         query.bind(":value2", item.value_2);
         query.bind(":package", item.package);
@@ -70,8 +71,8 @@ int ItemDatabase::addItem(Item item)
         LOG_ERROR(e.what());
     }
     LOG_HISTORY(username << ": add item:" << item.id << ":" << item.serializeCSV());
-    id++;
-    return (id-1);
+    m_id++;
+    return (m_id-1);
 }
 
 void ItemDatabase::updateItem(Item item)
@@ -107,7 +108,7 @@ void ItemDatabase::updateItem(Item item)
         cmsg("[error]" + std::string(e.what()));
         LOG_ERROR(e.what());
     }
-    LOG_HISTORY(username << ": add item:" << item.id << item.serializeCSV());
+    LOG_HISTORY(username << ": updated item:" << item.id << item.serializeCSV());
 }
 
 const std::deque<Item>& ItemDatabase::searchItem()
@@ -139,6 +140,7 @@ const std::deque<Item>& ItemDatabase::searchItem()
             res.unit              = query.getColumn(16).getText();
             res.main_category     = query.getColumn(17).getText();
             res.price_per_unit    = res.price/res.vpe;
+            getReservationsFromAssembles(res);
             m_list.push_back(res);
         }        
     }
@@ -180,6 +182,7 @@ const std::deque<Item>& ItemDatabase::searchItemByID(int id)
             res.unit              = query.getColumn(16).getText();
             res.main_category     = query.getColumn(17).getText();
             res.price_per_unit    = res.price/res.vpe;
+            getReservationsFromAssembles(res);
             m_list.push_back(res);
         }        
     }
@@ -194,9 +197,10 @@ const std::deque<Item>& ItemDatabase::searchItemByID(int id)
 
 const std::deque<Item>& ItemDatabase::searchItem(Item item)
 {
+    std::string condition("SELECT * FROM Lager WHERE id > 0");
     try
     {
-        std::string condition("SELECT * FROM Lager WHERE id > 0");
+        
         if(item.main_category.compare("") != 0 && item.main_category.find("Non") == std::string::npos)
         {
            condition += std::string(" AND (");
@@ -310,6 +314,7 @@ const std::deque<Item>& ItemDatabase::searchItem(Item item)
             res.unit                = query.getColumn(16).getText();
             res.main_category       = query.getColumn(17).getText();
             res.price_per_unit    = res.price/res.vpe;
+            getReservationsFromAssembles(res);
             m_list.push_back(res);
         }        
     }
@@ -318,7 +323,7 @@ const std::deque<Item>& ItemDatabase::searchItem(Item item)
        cmsg("[error]" + std::string(e.what()));
        LOG_ERROR(e.what());
     }
-    LOG_HISTORY(username << ": searches item: " << id);
+    LOG_HISTORY(username << ": searches items:" << condition);
     return m_list;
 }
 
@@ -362,9 +367,9 @@ const std::deque<Item>& ItemDatabase::searchItemInAssemble(Assemble assemble, It
 {
     try
     {
-        std::string condition("SELECT Lager.id, Lager.Value, Lager.Value2, Lager.Kategorie, Lager.Package, Lager.Eigenschaften, Lager.Anzahl, Lager.Hersteller, Lager.Herstellernummer, Lager.Distributor, Lager.Bestellnummer, Lager.Verpackungseinheit, Lager.Preis, Lager.Datenblatt, Lager.Reserviert, Lager.Einheit, Lager.Oberkategorie");
+        std::string condition("SELECT Lager.id, Lager.Value, Lager.Value2, Lager.Kategorie, Lager.Package, Lager.Eigenschaften, Lager.Anzahl, Lager.Hersteller, Lager.Herstellernummer, Lager.Distributor, Lager.Bestellnummer, Lager.Verpackungseinheit, Lager.Preis, Lager.Datenblatt, Lager.Reserviert, Lager.Einheit, Lager.Oberkategorie ");
         condition += "FROM Link_Lager_Baugruppen ";
-        condition += "INNER JOIN Lager ON Link_Lager_baugruppen.id = Lager.id ";
+        condition += "INNER JOIN Lager ON Link_Lager_Baugruppen.id = Lager.id ";
         condition += "INNER JOIN Baugruppen ON Baugruppen.id_bg = Link_Lager_Baugruppen.id_bg ";
         condition += "WHERE Baugruppen.id_bg = :id";
 
@@ -467,6 +472,7 @@ const std::deque<Item>& ItemDatabase::searchItemInAssemble(Assemble assemble, It
             res.unit              = query.getColumn(16).getText();
             res.main_category       = query.getColumn(17).getText();
             res.price_per_unit    = res.price/res.vpe;
+            getReservationsFromAssembles(res);
             m_list.push_back(res);
         }        
     }
@@ -483,7 +489,7 @@ const std::deque<Item>& ItemDatabase::searchItemInAssembleByID(Assemble assemble
 {
     try
     {
-        std::string condition("SELECT Lager.id, Lager.Value, Lager.Value2, Lager.Kategorie, Lager.Package, Lager.Eigenschaften, Lager.Anzahl, Lager.Hersteller, Lager.Herstellernummer, Lager.Distributor, Lager.Bestellnummer, Lager.Verpackungseinheit, Lager.Preis, Lager.Datenblatt, Lager.Reserviert, Lager.Einheit");
+        std::string condition("SELECT Lager.id, Lager.Value, Lager.Value2, Lager.Kategorie, Lager.Package, Lager.Eigenschaften, Lager.Anzahl, Lager.Hersteller, Lager.Herstellernummer, Lager.Distributor, Lager.Bestellnummer, Lager.Verpackungseinheit, Lager.Preis, Lager.Datenblatt, Lager.Reserviert, Lager.Einheit ");
         condition += "FROM Link_Lager_Baugruppen ";
         condition += "INNER JOIN Lager ON Link_Lager_baugruppen.id = Lager.id ";
         condition += "INNER JOIN Baugruppen ON Baugruppen.id_bg = Link_Lager_Baugruppen.id_bg ";
@@ -514,6 +520,7 @@ const std::deque<Item>& ItemDatabase::searchItemInAssembleByID(Assemble assemble
             res.unit              = query.getColumn(16).getText();
             res.main_category       = query.getColumn(17).getText();
             res.price_per_unit    = res.price/res.vpe;
+            getReservationsFromAssembles(res);
             m_list.push_back(res);
         }
     }
@@ -615,6 +622,7 @@ const Assemble ItemDatabase::searchAssemble(Assemble assemble)
             res.main_category       = query.getColumn(17).getText();
             int amount          = query.getColumn(18).getInt();
             res.price_per_unit    = res.price/res.vpe;
+            res.reserved          = itemIsReservedFromAssemble(assemble.id, res);
             assemble.bom.push_back(std::make_tuple(res, amount));
         }        
     }
@@ -668,5 +676,131 @@ void ItemDatabase::deleteItemFromAssemble(Assemble assemble, Item item)
         cmsg("[error]" + std::string(e.what()));
         LOG_ERROR(e.what());
     }
-    LOG_HISTORY(username << ": deleted item " <<  item.id << "from assemble" << assemble.name);
+    LOG_HISTORY(username << ": deleted item " <<  item.id << "from assemble " << assemble.name);
+}
+
+void ItemDatabase::reserveItemToAssemble(unsigned int id, Item& item, int count)
+{
+    int n = itemIsReservedFromAssemble(id, item);
+    if(n > 0)
+    {
+        cmsg("[warning] Bauteil existiert bereits. Anzahl aktualisiert");
+        updateItemInReservation(id, item, count);
+        return;
+    }
+    try
+    {
+        SQLite::Transaction transaction(m_database);
+        SQLite::Statement query(m_database, "INSERT INTO Reservierung VALUES( :id, :id_bg, :count)");
+        query.bind(":id", item.id);
+        query.bind(":id_bg", id);     
+        query.bind(":count", count);     
+        query.exec();
+        transaction.commit();
+        item.count -= count;
+        updateItem(item);
+        cmsg("[info] Added Item to Reservation");
+        m_updated = true;
+    }
+    catch(const std::exception& e)
+    {
+        cmsg("[error]" + std::string(e.what()));
+        LOG_ERROR(e.what());
+    }
+    LOG_HISTORY(username << ": added item: " << item.serializeCSV() << " to reservation " << id << "with amount" << count);
+}
+
+void ItemDatabase::removeReservationFromAssemble(unsigned int id, Item& item)
+{
+    try
+    {
+        SQLite::Transaction transaction(m_database);
+        SQLite::Statement query(m_database, "DELETE FROM Reservierung WHERE id = :id AND id_bg = :id_bg");
+        query.bind(":id", item.id);
+        query.bind(":id_bg", id);     
+        query.exec();
+        transaction.commit();
+        cmsg("[info] Deleted Item from Reservation");
+        m_updated = true;
+    }
+    catch(const std::exception& e)
+    {
+        cmsg("[error]" + std::string(e.what()));
+        LOG_ERROR(e.what());
+    }
+    LOG_HISTORY(username << ": deleted item " <<  item.id << "from reservation: " << id);
+}
+
+void ItemDatabase::getReservationsFromAssembles(Item& item)
+{
+    try
+    {
+        SQLite::Statement query(m_database, "SELECT Anzahl FROM Reservierung WHERE id=:id");
+        query.bind(":id", item.id);
+        while (query.executeStep())
+        {
+            item.reserved       += query.getColumn(0).getInt();
+        }        
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+        LOG_ERROR(e.what());
+    }
+    LOG_HISTORY(username << ": reservation count from item with id: " << item.id << " is " << item.reserved);
+}
+
+int ItemDatabase::itemIsReservedFromAssemble(unsigned int assemble_id, Item& item)
+{
+    int n = 0;   
+    try
+    {
+        SQLite::Transaction transaction(m_database);
+        SQLite::Statement query(m_database, "SELECT Anzahl FROM Reservierung WHERE id = :id AND id_bg = :id_bg");
+        query.bind(":id", item.id);
+        query.bind(":id_bg", assemble_id); 
+        
+        while (query.executeStep())
+        {
+            n += query.getColumn(0).getInt();
+        } 
+        transaction.commit();
+        cmsg("[info] Search Item from Reservation");
+        m_updated = true;
+    }
+    catch(const std::exception& e)
+    {
+        cmsg("[error]" + std::string(e.what()));
+        LOG_ERROR(e.what());
+    }
+    
+    
+    return n;
+}
+
+void ItemDatabase::updateItemInReservation(unsigned int assemble_id, Item& item, int count)
+{
+    int old_count = itemIsReservedFromAssemble(assemble_id, item);
+    int diff = count - old_count; 
+    
+    try
+    {
+        SQLite::Transaction transaction(m_database);
+        SQLite::Statement query(m_database, "UPDATE Reservierung SET Anzahl = :count WHERE id = :id AND id_bg = :id_bg");
+        query.bind(":id", item.id);
+        query.bind(":id_bg", assemble_id);     
+        query.bind(":count", count);     
+        query.exec();
+        transaction.commit();
+        cmsg("[info] Updated Item in Assemble");
+        m_updated = true;
+        item.count -= diff;
+        updateItem(item);
+    }
+    catch(const std::exception& e)
+    {
+        cmsg("[error]" + std::string(e.what()));
+        LOG_ERROR(e.what());
+    }
+    LOG_HISTORY(username << ": updated item: " << item.serializeCSV() << " in reservation " << assemble_id << "to amount of " << count);
 }

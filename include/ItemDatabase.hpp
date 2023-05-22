@@ -17,7 +17,7 @@ class ItemDatabase
         std::deque<Assemble> m_assemble_list;
         char username[UNLEN+1];
         bool m_updated = true;
-        int id; //tracks intern id 
+        int m_id; //tracks intern id 
     public:
         const std::string getDatabasePath() {return m_filename;}
         void initStorage(bool new_database);
@@ -35,8 +35,12 @@ class ItemDatabase
         void deleteItemFromAssemble(Assemble a, Item i);
         void updateRecognized() {m_updated = false;}
         bool isUpdated() {return m_updated;}
-       
         const Assemble searchAssemble(Assemble a);
+        void reserveItemToAssemble(unsigned int id, Item& item, int count);
+        void removeReservationFromAssemble(unsigned int id, Item& item);
+        void getReservationsFromAssembles(Item& i);
+        int itemIsReservedFromAssemble(unsigned int assemble_id, Item& i);
+        void updateItemInReservation(unsigned int assemble_id, Item& i, int count);
          //this fucntion delivers all assembles  without it items
         const std::deque<Assemble>& searchAssembles();
 

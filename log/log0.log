@@ -1,5 +1,588 @@
-1 [2023-05-13 18:50:49] <info>: User Daniel Hagenlogged in Database C:\Users\Daniel Hagen\Desktop\Lager_230513 - Kopie.db
-2 [2023-05-13 18:50:49] <info>: ID count38
-3 [2023-05-13 18:50:49] <info>: src/ProgramStateDatabase.cpp:134 [init]: found hints: 1k, 1% 50V,0603,MMLC
-4 [2023-05-13 18:50:49] <trace>: src/ItemDatabase.cpp:287 [searchItem]: Search filter: SELECT * FROM Lager WHERE id > 0
-5 [2023-05-13 18:50:49] <info>: Daniel Hagen: searches item: 38
+1 [2023-05-13 18:06:19] <info>: User Daniel Hagenlogged in Database C:\Users\Daniel Hagen\Desktop\Lager_230513 - Kopie.db
+2 [2023-05-13 18:06:19] <info>: ID count38
+3 [2023-05-13 18:06:19] <info>: src/ProgramStateDatabase.cpp:134 [init]: found hints: 1k, 1% 50V,0603,MMLC
+4 [2023-05-13 18:06:19] <trace>: src/ItemDatabase.cpp:287 [searchItem]: Search filter: SELECT * FROM Lager WHERE id > 0 AND ( Oberkategorie LIKE 'None')
+5 [2023-05-13 18:06:19] <info>: Daniel Hagen: searches item: 38
+1 [2023-05-13 18:08:44] <info>: User Daniel Hagenlogged in Database C:\Users\Daniel Hagen\Desktop\Lager_230513 - Kopie.db
+2 [2023-05-13 18:08:44] <info>: ID count38
+3 [2023-05-13 18:08:44] <info>: src/ProgramStateDatabase.cpp:134 [init]: found hints: 1k, 1% 50V,0603,MMLC
+4 [2023-05-13 18:08:44] <trace>: src/ItemDatabase.cpp:287 [searchItem]: Search filter: SELECT * FROM Lager WHERE id > 0 AND ( Oberkategorie LIKE 'None')
+5 [2023-05-13 18:08:44] <info>: Daniel Hagen: searches item: 38
+6 [2023-05-13 18:08:51] <trace>: src/ItemDatabase.cpp:287 [searchItem]: Search filter: SELECT * FROM Lager WHERE id > 0
+7 [2023-05-13 18:08:51] <info>: Daniel Hagen: searches item: 38
+1 [2023-05-13 18:09:31] <info>: User Daniel Hagenlogged in Database C:\Users\Daniel Hagen\Desktop\Lager_230513 - Kopie.db
+2 [2023-05-13 18:09:31] <info>: ID count38
+3 [2023-05-13 18:09:31] <info>: src/ProgramStateDatabase.cpp:134 [init]: found hints: 1k, 1% 50V,0603,MMLC
+4 [2023-05-13 18:09:31] <trace>: src/ItemDatabase.cpp:287 [searchItem]: Search filter: SELECT * FROM Lager WHERE id > 0 AND ( Oberkategorie LIKE 'None')
+5 [2023-05-13 18:09:31] <info>: Daniel Hagen: searches item: 38
+6 [2023-05-13 18:09:36] <trace>: src/ItemDatabase.cpp:287 [searchItem]: Search filter: SELECT * FROM Lager WHERE id > 0 AND ( Oberkategorie LIKE 'None')
+7 [2023-05-13 18:09:36] <info>: Daniel Hagen: searches item: 38
+1 [2023-05-13 18:10:41] <info>: User Daniel Hagenlogged in Database C:\Users\Daniel Hagen\Desktop\Lager_230513 - Kopie.db
+2 [2023-05-13 18:10:41] <info>: ID count38
+3 [2023-05-13 18:10:41] <info>: src/ProgramStateDatabase.cpp:134 [init]: found hints: 1k, 1% 50V,0603,MMLC
+1 [2023-05-13 18:27:40] <info>: User Daniel Hagenlogged in Database C:\Users\Daniel Hagen\Desktop\Lager_230513 - Kopie.db
+2 [2023-05-13 18:27:40] <info>: ID count38
+3 [2023-05-13 18:27:40] <info>: src/ProgramStateDatabase.cpp:134 [init]: found hints: 1k, 1% 50V,0603,MMLC
+4 [2023-05-13 18:27:40] <trace>: src/ItemDatabase.cpp:287 [searchItem]: Search filter: SELECT * FROM Lager WHERE id > 0 AND ( Oberkategorie LIKE 'None')
+5 [2023-05-13 18:27:40] <info>: Daniel Hagen: searches item: 38
+1 [2023-05-13 18:29:20] <info>: User Daniel Hagenlogged in Database C:\Users\Daniel Hagen\Desktop\Lager_230513 - Kopie.db
+2 [2023-05-13 18:29:20] <info>: ID count38
+3 [2023-05-13 18:29:20] <info>: src/ProgramStateDatabase.cpp:134 [init]: found hints: 1k, 1% 50V,0603,MMLC
+4 [2023-05-13 18:29:20] <trace>: src/ItemDatabase.cpp:287 [searchItem]: Search filter: SELECT * FROM Lager WHERE id > 0 AND ( Oberkategorie LIKE 'None')
+5 [2023-05-13 18:29:20] <info>: Daniel Hagen: searches item: 38
+1 [2023-05-13 18:31:26] <info>: User Daniel Hagenlogged in Database C:\Users\Daniel Hagen\Desktop\Lager_230513 - Kopie.db
+2 [2023-05-13 18:31:26] <info>: ID count38
+3 [2023-05-13 18:31:26] <info>: src/ProgramStateDatabase.cpp:134 [init]: found hints: 1k, 1% 50V,0603,MMLC
+4 [2023-05-13 18:31:26] <trace>: src/ItemDatabase.cpp:287 [searchItem]: Search filter: SELECT * FROM Lager WHERE id > 0 AND ( Oberkategorie LIKE 'None')
+5 [2023-05-13 18:31:26] <info>: Daniel Hagen: searches item: 38
+6 [2023-05-13 18:31:33] <trace>: src/ItemDatabase.cpp:287 [searchItem]: Search filter: SELECT * FROM Lager WHERE id > 0
+7 [2023-05-13 18:31:33] <info>: Daniel Hagen: searches item: 38
+1 [2023-05-13 18:33:24] <info>: User Daniel Hagenlogged in Database C:\Users\Daniel Hagen\Desktop\Lager_230513 - Kopie.db
+2 [2023-05-13 18:33:24] <info>: ID count38
+3 [2023-05-13 18:33:24] <info>: src/ProgramStateDatabase.cpp:134 [init]: found hints: 1k, 1% 50V,0603,MMLC
+4 [2023-05-13 18:33:24] <trace>: src/ItemDatabase.cpp:287 [searchItem]: Search filter: SELECT * FROM Lager WHERE id > 0
+5 [2023-05-13 18:33:24] <info>: Daniel Hagen: searches item: 38
+6 [2023-05-13 18:33:31] <trace>: src/ItemDatabase.cpp:287 [searchItem]: Search filter: SELECT * FROM Lager WHERE id > 0 AND ( Oberkategorie LIKE 'E')
+7 [2023-05-13 18:33:31] <info>: Daniel Hagen: searches item: 38
+8 [2023-05-13 18:33:39] <trace>: src/ItemDatabase.cpp:287 [searchItem]: Search filter: SELECT * FROM Lager WHERE id > 0
+9 [2023-05-13 18:33:39] <info>: Daniel Hagen: searches item: 38
+10 [2023-05-13 18:33:47] <trace>: src/ItemDatabase.cpp:287 [searchItem]: Search filter: SELECT * FROM Lager WHERE id > 0 AND ( Oberkategorie LIKE 'E' OR  Oberkategorie LIKE 'K')
+11 [2023-05-13 18:33:47] <info>: Daniel Hagen: searches item: 38
+1 [2023-05-22 19:30:26] <error>: include/Gui/GuiDatabase.hpp:97 [GuiDatabase]: No Database on this path
+2 [2023-05-22 19:30:26] <info>: src/ProgramStateDatabase.cpp:134 [init]: found hints: 1k, 1% 50V,0603,MMLC
+3 [2023-05-22 19:30:35] <info>: User Daniel Hagenlogged in Database C:\Users\Daniel Hagen\Desktop\Lager_230513.db
+4 [2023-05-22 19:30:35] <info>: ID count38
+5 [2023-05-22 19:30:38] <trace>: src/ItemDatabase.cpp:290 [searchItem]: Search filter: SELECT * FROM Lager WHERE id > 0
+6 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+7 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+8 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+9 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+10 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+11 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+12 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+13 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+14 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+15 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+16 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+17 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+18 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+19 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+20 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+21 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+22 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+23 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+24 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+25 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+26 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+27 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+28 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+29 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+30 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+31 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+32 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+33 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+34 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+35 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+36 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+37 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+38 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+39 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+40 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+41 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+42 [2023-05-22 19:30:38] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+43 [2023-05-22 19:30:38] <info>: Daniel Hagen: searches item: 38
+44 [2023-05-22 19:30:58] <info>: Daniel Hagen: searches assemble list
+45 [2023-05-22 19:31:05] <info>: Daniel Hagen: added assemble: Test
+46 [2023-05-22 19:31:06] <info>: Daniel Hagen: searches assemble list
+47 [2023-05-22 19:31:08] <trace>: src/ItemDatabase.cpp:290 [searchItem]: Search filter: SELECT * FROM Lager WHERE id > 0
+48 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+49 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+50 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+51 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+52 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+53 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+54 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+55 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+56 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+57 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+58 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+59 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+60 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+61 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+62 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+63 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+64 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+65 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+66 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+67 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+68 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+69 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+70 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+71 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+72 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+73 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+74 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+75 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+76 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+77 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+78 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+79 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+80 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+81 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+82 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+83 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+84 [2023-05-22 19:31:08] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+85 [2023-05-22 19:31:08] <info>: Daniel Hagen: searches item: 38
+86 [2023-05-22 19:31:18] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+87 [2023-05-22 19:31:18] <info>: Daniel Hagen: searches item with id: 1
+88 [2023-05-22 19:31:18] <error>: src/ItemDatabase.cpp:481 [searchItemInAssemble]: near "INNER": syntax error
+89 [2023-05-22 19:31:18] <info>: Daniel Hagen: searches item: None;R;2K;;;;;;;;0;0.000000;0.000000;0None|None;None; in assemble Test
+90 [2023-05-22 19:31:18] <error>: src/ItemDatabase.cpp:529 [searchItemInAssembleByID]: near "INNER": syntax error
+91 [2023-05-22 19:31:18] <info>: Daniel Hagen: searches item with id 1 in assemble Test
+92 [2023-05-22 19:31:18] <info>: Item 1does not exist in Test
+93 [2023-05-22 19:31:18] <info>: Daniel Hagen: added item: E;R;2K;75V 100mW 1%;0603;;MULTICOMP PRO;MCWR06X2001FTL;Farnell;2446636;5000;9.000000;0.001800;5000A|1; Stk; to assemble Testwith amount20
+94 [2023-05-22 19:31:33] <info>: Daniel Hagen: searches bom of assembleTest
+95 [2023-05-22 19:31:33] <info>: Daniel Hagen: searches bom of assembleTest
+96 [2023-05-22 19:32:59] <trace>: src/ItemDatabase.cpp:290 [searchItem]: Search filter: SELECT * FROM Lager WHERE id > 0
+97 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+98 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+99 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+100 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+101 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+102 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+103 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+104 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+105 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+106 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+107 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+108 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+109 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+110 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+111 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+112 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+113 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+114 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+115 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+116 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+117 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+118 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+119 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+120 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+121 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+122 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+123 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+124 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+125 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+126 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+127 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+128 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+129 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+130 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+131 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+132 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+133 [2023-05-22 19:32:59] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+134 [2023-05-22 19:32:59] <info>: Daniel Hagen: searches item: 38
+135 [2023-05-22 19:33:13] <trace>: src/ItemDatabase.cpp:290 [searchItem]: Search filter: SELECT * FROM Lager WHERE id > 0
+136 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+137 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+138 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+139 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+140 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+141 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+142 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+143 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+144 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+145 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+146 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+147 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+148 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+149 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+150 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+151 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+152 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+153 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+154 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+155 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+156 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+157 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+158 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+159 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+160 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+161 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+162 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+163 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+164 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+165 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+166 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+167 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+168 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+169 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+170 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+171 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+172 [2023-05-22 19:33:13] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+173 [2023-05-22 19:33:13] <info>: Daniel Hagen: searches item: 38
+1 [2023-05-22 19:37:43] <info>: User Daniel Hagenlogged in Database C:\Users\Daniel Hagen\Desktop\Lager_230513.db
+2 [2023-05-22 19:37:43] <info>: ID count38
+3 [2023-05-22 19:37:43] <info>: src/ProgramStateDatabase.cpp:134 [init]: found hints: 1k, 1% 50V,0603,MMLC
+4 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+5 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+6 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+7 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+8 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+9 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+10 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+11 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+12 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+13 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+14 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+15 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+16 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+17 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+18 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+19 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+20 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+21 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+22 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+23 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+24 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+25 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+26 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+27 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+28 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+29 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+30 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+31 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+32 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+33 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+34 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+35 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+36 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+37 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+38 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+39 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+40 [2023-05-22 19:37:45] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+41 [2023-05-22 19:37:45] <info>: Daniel Hagen: searches all items:
+42 [2023-05-22 19:37:52] <trace>: src/ItemDatabase.cpp:290 [searchItem]: Search filter: SELECT * FROM Lager WHERE id > 0
+43 [2023-05-22 19:38:24] <info>: Daniel Hagen:reservation count from item with id: 38 is 0
+1 [2023-05-22 19:43:35] <info>: User Daniel Hagenlogged in Database C:\Users\Daniel Hagen\Desktop\Lager_230513.db
+2 [2023-05-22 19:43:35] <info>: ID count38
+3 [2023-05-22 19:43:35] <info>: src/ProgramStateDatabase.cpp:134 [init]: found hints: 1k, 1% 50V,0603,MMLC
+4 [2023-05-22 19:43:35] <trace>: src/ItemDatabase.cpp:291 [searchItem]: Search filter: SELECT * FROM Lager WHERE id > 0
+5 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 1 is 0
+6 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 2 is 0
+7 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 3 is 0
+8 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 4 is 0
+9 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 5 is 0
+10 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 6 is 0
+11 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 7 is 0
+12 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 8 is 0
+13 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 9 is 0
+14 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 10 is 0
+15 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 11 is 0
+16 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 12 is 0
+17 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 13 is 0
+18 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 14 is 0
+19 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 15 is 0
+20 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 16 is 0
+21 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 17 is 0
+22 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 18 is 0
+23 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 19 is 0
+24 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 20 is 0
+25 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 21 is 0
+26 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 22 is 0
+27 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 23 is 0
+28 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 24 is 0
+29 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 25 is 0
+30 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 26 is 0
+31 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 27 is 0
+32 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 28 is 0
+33 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 29 is 0
+34 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 30 is 0
+35 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 31 is 0
+36 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 32 is 0
+37 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 33 is 0
+38 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 34 is 0
+39 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 35 is 0
+40 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 36 is 0
+41 [2023-05-22 19:43:35] <info>: Daniel Hagen: reservation count from item with id: 37 is 0
+42 [2023-05-22 19:43:35] <info>: Daniel Hagen: searches items:SELECT * FROM Lager WHERE id > 0
+43 [2023-05-22 19:43:37] <info>: Daniel Hagen: searches assemble list
+44 [2023-05-22 19:43:45] <info>: Daniel Hagen: searches bom of assembleTest
+45 [2023-05-22 19:43:45] <info>: Daniel Hagen: searches bom of assembleTest
+46 [2023-05-22 19:44:28] <info>: Daniel Hagen: updated item:1E;R;2K;75V 100mW 1%;0603;;MULTICOMP PRO;MCWR06X2001FTL;Farnell;2446636;5000;9.000000;0.001800;4978A|1; Stk;
+47 [2023-05-22 19:44:28] <info>: Daniel Hagen: added item: E;R;2K;75V 100mW 1%;0603;;MULTICOMP PRO;MCWR06X2001FTL;Farnell;2446636;5000;9.000000;0.001800;4978A|1; Stk; to reservation 1with amount22
+48 [2023-05-22 19:44:28] <info>: Daniel Hagen: searches bom of assembleTest
+49 [2023-05-22 19:44:32] <trace>: src/ItemDatabase.cpp:291 [searchItem]: Search filter: SELECT * FROM Lager WHERE id > 0
+50 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 1 is 22
+51 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 2 is 0
+52 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 3 is 0
+53 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 4 is 0
+54 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 5 is 0
+55 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 6 is 0
+56 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 7 is 0
+57 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 8 is 0
+58 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 9 is 0
+59 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 10 is 0
+60 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 11 is 0
+61 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 12 is 0
+62 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 13 is 0
+63 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 14 is 0
+64 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 15 is 0
+65 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 16 is 0
+66 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 17 is 0
+67 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 18 is 0
+68 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 19 is 0
+69 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 20 is 0
+70 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 21 is 0
+71 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 22 is 0
+72 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 23 is 0
+73 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 24 is 0
+74 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 25 is 0
+75 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 26 is 0
+76 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 27 is 0
+77 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 28 is 0
+78 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 29 is 0
+79 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 30 is 0
+80 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 31 is 0
+81 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 32 is 0
+82 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 33 is 0
+83 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 34 is 0
+84 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 35 is 0
+85 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 36 is 0
+86 [2023-05-22 19:44:32] <info>: Daniel Hagen: reservation count from item with id: 37 is 0
+87 [2023-05-22 19:44:32] <info>: Daniel Hagen: searches items:SELECT * FROM Lager WHERE id > 0
+88 [2023-05-22 19:45:00] <info>: Daniel Hagen: deleted item 1from reservation: 1
+89 [2023-05-22 19:45:00] <info>: Daniel Hagen: searches bom of assembleTest
+90 [2023-05-22 19:45:04] <trace>: src/ItemDatabase.cpp:291 [searchItem]: Search filter: SELECT * FROM Lager WHERE id > 0
+91 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 1 is 0
+92 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 2 is 0
+93 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 3 is 0
+94 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 4 is 0
+95 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 5 is 0
+96 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 6 is 0
+97 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 7 is 0
+98 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 8 is 0
+99 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 9 is 0
+100 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 10 is 0
+101 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 11 is 0
+102 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 12 is 0
+103 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 13 is 0
+104 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 14 is 0
+105 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 15 is 0
+106 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 16 is 0
+107 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 17 is 0
+108 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 18 is 0
+109 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 19 is 0
+110 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 20 is 0
+111 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 21 is 0
+112 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 22 is 0
+113 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 23 is 0
+114 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 24 is 0
+115 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 25 is 0
+116 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 26 is 0
+117 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 27 is 0
+118 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 28 is 0
+119 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 29 is 0
+120 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 30 is 0
+121 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 31 is 0
+122 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 32 is 0
+123 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 33 is 0
+124 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 34 is 0
+125 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 35 is 0
+126 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 36 is 0
+127 [2023-05-22 19:45:04] <info>: Daniel Hagen: reservation count from item with id: 37 is 0
+128 [2023-05-22 19:45:04] <info>: Daniel Hagen: searches items:SELECT * FROM Lager WHERE id > 0
+129 [2023-05-22 19:45:19] <info>: Daniel Hagen: reservation count from item with id: 2 is 0
+130 [2023-05-22 19:45:19] <info>: Daniel Hagen: searches item with id: 2
+131 [2023-05-22 19:45:19] <info>: Daniel Hagen: searches item: None;C;10µF;;;;;;;;0;0.000000;0.000000;0None|None;None; in assemble Test
+132 [2023-05-22 19:45:19] <info>: Daniel Hagen: searches item with id 2 in assemble Test
+133 [2023-05-22 19:45:19] <info>: Item 2does not exist in Test
+134 [2023-05-22 19:45:19] <info>: Daniel Hagen: added item: None;C;10µF;25V X5R 10%;1206;;Samsung;CL31A106KAHNNNE;Farnell;3013511;500;21.150000;0.042300;500A|1; None; to assemble Testwith amount20
+135 [2023-05-22 19:45:33] <info>: Daniel Hagen: reservation count from item with id: 4 is 0
+136 [2023-05-22 19:45:33] <info>: Daniel Hagen: searches item with id: 4
+137 [2023-05-22 19:45:33] <info>: Daniel Hagen: searches item: None;J;B2P-VH(LF)(SN);;;;;;;;0;0.000000;0.000000;0None|None;None; in assemble Test
+138 [2023-05-22 19:45:33] <info>: Daniel Hagen: searches item with id 4 in assemble Test
+139 [2023-05-22 19:45:33] <info>: Item 4does not exist in Test
+140 [2023-05-22 19:45:33] <info>: Daniel Hagen: added item: None;J;B2P-VH(LF)(SN);;;CONN HEADER VERT 2POS 3.96mm - B2P-VH(LF)(SN);JST;B2P-VH(LF)(SN);Farnell;9492003;100;12.300000;0.123000;20A|1; None; to assemble Testwith amount5
+141 [2023-05-22 19:45:35] <info>: Daniel Hagen: searches bom of assembleTest
+142 [2023-05-22 19:45:35] <info>: Daniel Hagen: searches bom of assembleTest
+143 [2023-05-22 19:46:10] <info>: Daniel Hagen: updated item:1E;R;2K;75V 100mW 1%;0603;;MULTICOMP PRO;MCWR06X2001FTL;Farnell;2446636;5000;9.000000;0.001800;4868A|1; Stk;
+144 [2023-05-22 19:46:10] <info>: Daniel Hagen: added item: E;R;2K;75V 100mW 1%;0603;;MULTICOMP PRO;MCWR06X2001FTL;Farnell;2446636;5000;9.000000;0.001800;4868A|1; Stk; to reservation 1with amount110
+145 [2023-05-22 19:46:10] <info>: Daniel Hagen: updated item:2None;C;10µF;25V X5R 10%;1206;;Samsung;CL31A106KAHNNNE;Farnell;3013511;500;21.150000;0.042300;390A|1; None;
+146 [2023-05-22 19:46:10] <info>: Daniel Hagen: added item: None;C;10µF;25V X5R 10%;1206;;Samsung;CL31A106KAHNNNE;Farnell;3013511;500;21.150000;0.042300;390A|1; None; to reservation 1with amount110
+147 [2023-05-22 19:46:10] <info>: Daniel Hagen: searches bom of assembleTest
+148 [2023-05-22 19:46:13] <trace>: src/ItemDatabase.cpp:291 [searchItem]: Search filter: SELECT * FROM Lager WHERE id > 0
+149 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 1 is 110
+150 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 2 is 110
+151 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 3 is 0
+152 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 4 is 0
+153 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 5 is 0
+154 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 6 is 0
+155 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 7 is 0
+156 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 8 is 0
+157 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 9 is 0
+158 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 10 is 0
+159 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 11 is 0
+160 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 12 is 0
+161 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 13 is 0
+162 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 14 is 0
+163 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 15 is 0
+164 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 16 is 0
+165 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 17 is 0
+166 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 18 is 0
+167 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 19 is 0
+168 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 20 is 0
+169 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 21 is 0
+170 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 22 is 0
+171 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 23 is 0
+172 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 24 is 0
+173 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 25 is 0
+174 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 26 is 0
+175 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 27 is 0
+176 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 28 is 0
+177 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 29 is 0
+178 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 30 is 0
+179 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 31 is 0
+180 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 32 is 0
+181 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 33 is 0
+182 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 34 is 0
+183 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 35 is 0
+184 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 36 is 0
+185 [2023-05-22 19:46:13] <info>: Daniel Hagen: reservation count from item with id: 37 is 0
+186 [2023-05-22 19:46:13] <info>: Daniel Hagen: searches items:SELECT * FROM Lager WHERE id > 0
+187 [2023-05-22 19:47:07] <info>: Daniel Hagen: deleted item 1from reservation: 1
+188 [2023-05-22 19:47:07] <info>: Daniel Hagen: searches bom of assembleTest
+189 [2023-05-22 19:47:13] <trace>: src/ItemDatabase.cpp:291 [searchItem]: Search filter: SELECT * FROM Lager WHERE id > 0
+190 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 1 is 0
+191 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 2 is 110
+192 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 3 is 0
+193 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 4 is 0
+194 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 5 is 0
+195 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 6 is 0
+196 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 7 is 0
+197 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 8 is 0
+198 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 9 is 0
+199 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 10 is 0
+200 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 11 is 0
+201 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 12 is 0
+202 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 13 is 0
+203 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 14 is 0
+204 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 15 is 0
+205 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 16 is 0
+206 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 17 is 0
+207 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 18 is 0
+208 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 19 is 0
+209 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 20 is 0
+210 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 21 is 0
+211 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 22 is 0
+212 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 23 is 0
+213 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 24 is 0
+214 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 25 is 0
+215 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 26 is 0
+216 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 27 is 0
+217 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 28 is 0
+218 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 29 is 0
+219 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 30 is 0
+220 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 31 is 0
+221 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 32 is 0
+222 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 33 is 0
+223 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 34 is 0
+224 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 35 is 0
+225 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 36 is 0
+226 [2023-05-22 19:47:13] <info>: Daniel Hagen: reservation count from item with id: 37 is 0
+227 [2023-05-22 19:47:13] <info>: Daniel Hagen: searches items:SELECT * FROM Lager WHERE id > 0
+1 [2023-05-22 19:57:29] <info>: User Daniel Hagenlogged in Database C:\Users\Daniel Hagen\Desktop\Lager_230513.db
+2 [2023-05-22 19:57:29] <info>: ID count38
+3 [2023-05-22 19:57:29] <info>: src/ProgramStateDatabase.cpp:134 [init]: found hints: 1k, 1% 50V,0603,MMLC
+4 [2023-05-22 19:57:29] <trace>: src/ItemDatabase.cpp:291 [searchItem]: Search filter: SELECT * FROM Lager WHERE id > 0
+5 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 1 is 0
+6 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 2 is 110
+7 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 3 is 0
+8 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 4 is 0
+9 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 5 is 0
+10 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 6 is 0
+11 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 7 is 0
+12 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 8 is 0
+13 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 9 is 0
+14 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 10 is 0
+15 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 11 is 0
+16 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 12 is 0
+17 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 13 is 0
+18 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 14 is 0
+19 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 15 is 0
+20 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 16 is 0
+21 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 17 is 0
+22 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 18 is 0
+23 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 19 is 0
+24 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 20 is 0
+25 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 21 is 0
+26 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 22 is 0
+27 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 23 is 0
+28 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 24 is 0
+29 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 25 is 0
+30 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 26 is 0
+31 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 27 is 0
+32 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 28 is 0
+33 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 29 is 0
+34 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 30 is 0
+35 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 31 is 0
+36 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 32 is 0
+37 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 33 is 0
+38 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 34 is 0
+39 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 35 is 0
+40 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 36 is 0
+41 [2023-05-22 19:57:29] <info>: Daniel Hagen: reservation count from item with id: 37 is 0
+42 [2023-05-22 19:57:29] <info>: Daniel Hagen: searches items:SELECT * FROM Lager WHERE id > 0
+43 [2023-05-22 19:57:31] <info>: Daniel Hagen: searches assemble list
+44 [2023-05-22 19:57:38] <info>: Daniel Hagen: searches bom of assembleTest
+45 [2023-05-22 19:57:38] <info>: Daniel Hagen: searches bom of assembleTest
+1 [2023-05-22 19:59:13] <info>: User Daniel Hagenlogged in Database C:\Users\Daniel Hagen\Desktop\Lager_230513.db
+2 [2023-05-22 19:59:13] <info>: ID count38
+3 [2023-05-22 19:59:13] <info>: src/ProgramStateDatabase.cpp:134 [init]: found hints: 1k, 1% 50V,0603,MMLC
+4 [2023-05-22 19:59:13] <trace>: src/ItemDatabase.cpp:291 [searchItem]: Search filter: SELECT * FROM Lager WHERE id > 0
+5 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 1 is 0
+6 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 2 is 110
+7 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 3 is 0
+8 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 4 is 0
+9 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 5 is 0
+10 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 6 is 0
+11 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 7 is 0
+12 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 8 is 0
+13 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 9 is 0
+14 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 10 is 0
+15 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 11 is 0
+16 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 12 is 0
+17 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 13 is 0
+18 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 14 is 0
+19 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 15 is 0
+20 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 16 is 0
+21 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 17 is 0
+22 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 18 is 0
+23 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 19 is 0
+24 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 20 is 0
+25 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 21 is 0
+26 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 22 is 0
+27 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 23 is 0
+28 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 24 is 0
+29 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 25 is 0
+30 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 26 is 0
+31 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 27 is 0
+32 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 28 is 0
+33 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 29 is 0
+34 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 30 is 0
+35 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 31 is 0
+36 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 32 is 0
+37 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 33 is 0
+38 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 34 is 0
+39 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 35 is 0
+40 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 36 is 0
+41 [2023-05-22 19:59:13] <info>: Daniel Hagen: reservation count from item with id: 37 is 0
+42 [2023-05-22 19:59:13] <info>: Daniel Hagen: searches items:SELECT * FROM Lager WHERE id > 0
+43 [2023-05-22 19:59:16] <info>: Daniel Hagen: searches assemble list
+44 [2023-05-22 19:59:19] <info>: Daniel Hagen: searches bom of assembleTest
+45 [2023-05-22 19:59:19] <info>: Daniel Hagen: searches bom of assembleTest
+46 [2023-05-22 19:59:47] <info>: Daniel Hagen: updated item:4None;J;B2P-VH(LF)(SN);;;CONN HEADER VERT 2POS 3.96mm - B2P-VH(LF)(SN);JST;B2P-VH(LF)(SN);Farnell;9492003;100;12.300000;0.123000;0A|1; None;
+47 [2023-05-22 19:59:47] <info>: Daniel Hagen: added item: None;J;B2P-VH(LF)(SN);;;CONN HEADER VERT 2POS 3.96mm - B2P-VH(LF)(SN);JST;B2P-VH(LF)(SN);Farnell;9492003;100;12.300000;0.123000;0A|1; None; to reservation 1with amount20
+48 [2023-05-22 19:59:47] <info>: Daniel Hagen: searches bom of assembleTest
+49 [2023-05-22 19:59:50] <info>: Daniel Hagen: searches bom of assembleTest
+50 [2023-05-22 19:59:50] <info>: Daniel Hagen: searches bom of assembleTest

@@ -86,3 +86,6 @@ x Neue datenbank erstellen selektiert diese direkt (auch in ini file)
 + add units to ini
 + add history to log file
 + function Itemtable as class 
+
+-------------------------v0.4---------------------------
++reservation projecktbezogen möglich

@@ -17,7 +17,7 @@ class GuiDatabase
 {
     enum class ItemAction {NONE, NEW_ITEM, UPDATE_ITEM,  ADD_ITEM_TO_ASSEMBLE_AND_STORAGE};
     enum class CountAction {NONE, NEW_ITEM, INCREASE_ITEM, DECREASE_ITEM, ADD_ITEM_TO_ASSEMBLE, UPDATE_ASSEMBLE,
-                            RESET_ITEM_RESERVATION, RELEASE_ITEM_RESERVATION, RESERVE_ITEM};
+                            RESET_ITEM_RESERVATION, RELEASE_ITEM_RESERVATION, RESERVE_ITEM, RESERVE_ITEM_TO_ASSEMBLE};
     //old state was int: 0, 1, 2, 3, 4 | 1, 2, 3
     enum class StateAlternativePicking {NONE, CHECK_EXISTANCE, ERROR_EXISTS, CHECK_ALTERNATIVES, SELECT_ALTERNATIVE, FINISHED, CHECK_ALTERNATIVES_ASSEMBLE, SELECT_ALTERNATIVE_ASSEMBLE};
     private:
@@ -36,11 +36,17 @@ class GuiDatabase
         bool m_dark_mode = true;
         bool m_gui_database_updated = false;
         
+        
         //state machine varibales for alternative picking dialog
         StateAlternativePicking show_check_item = StateAlternativePicking::NONE;
         StateAlternativePicking show_check_item_in_assemble = StateAlternativePicking::NONE;
         Item item_to_check;
         int count_to_check;
+
+        //Item reservation
+        bool allow_assemble_reservation = false;
+        std::deque<std::tuple<Item, int>> bom_content;
+        std::deque<bool> bom_export_selection;
 
         ItemAction m_item_action;
         CountAction m_count_action;

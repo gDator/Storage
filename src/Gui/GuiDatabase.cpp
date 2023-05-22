@@ -8,9 +8,9 @@ void GuiDatabase::draw()
     ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
     if(ImGui::BeginMainMenuBar())
     {
-        if(ImGui::BeginMenu("File"))
+        if(ImGui::BeginMenu("Datei"))
         {
-            if(ImGui::MenuItem("New Database..."))
+            if(ImGui::MenuItem("Neue Datenbank..."))
             {
                 std::string path = FileDialog::SaveFile("Database (*.db)\0\*.db\0");
                 if(path != "")
@@ -23,7 +23,7 @@ void GuiDatabase::draw()
                 // file_explorer.PickFile(std::filesystem::absolute(std::filesystem::current_path()), [&](const std::filesystem::path& selected_path) {/*Store data*/});
             }
 
-            if(ImGui::MenuItem("Load Database..."))
+            if(ImGui::MenuItem("Datenbank laden..."))
             {
                 std::string path = FileDialog::OpenFile("Database (*.db)\0\*.db\0");
                 if(path != "")
@@ -41,7 +41,7 @@ void GuiDatabase::draw()
                 // file_explorer.PickFile(std::filesystem::absolute(std::filesystem::current_path()), [&](const std::filesystem::path& selected_path) {/*Store data*/});
             }
             ImGui::Separator();
-            if(ImGui::BeginMenu("Import From"))
+            if(ImGui::BeginMenu("Importieren"))
             {
                 if(ImGui::MenuItem("CSV")) 
                 {
@@ -63,7 +63,7 @@ void GuiDatabase::draw()
                 }
                 ImGui::EndMenu();
             }
-            if(ImGui::BeginMenu("Export As"))   //whole storage
+            if(ImGui::BeginMenu("Exportieren"))   //whole storage
             {
                 if(ImGui::MenuItem("CSV")) 
                 {
@@ -165,14 +165,6 @@ void GuiDatabase::draw()
                     else
                         cmsg("[warning] No Item selected");
                 }
-                
-                if(ImGui::MenuItem("BOM")) 
-                {
-                    if(p_selected_assemble != nullptr)
-                    {
-                        show_bom = true;
-                    }
-                }
                 ImGui::EndMenu();
             }
             
@@ -184,16 +176,23 @@ void GuiDatabase::draw()
             if(ImGui::MenuItem("Baugruppen", NULL, &show_assemble_list)) {m_gui_database_updated = false;}
             if(ImGui::MenuItem("Konsole", NULL, &show_console)) {}
             if(ImGui::MenuItem("Info Box", NULL, &show_info)) {}
+            if(ImGui::MenuItem("BOM")) 
+            {
+                if(p_selected_assemble != nullptr)
+                {
+                    show_bom = true;
+                }
+            }
             ImGui::EndMenu();
         }
         if(ImGui::BeginMenu("Options"))
         {
-            if(ImGui::MenuItem("Fullscreen", NULL, &fullscreen)) 
-            {
-            }
+            // if(ImGui::MenuItem("Vollbild", NULL, &fullscreen)) 
+            // {
+            // }
             ImGui::Separator();
             if(ImGui::MenuItem("Darkmode", NULL, &m_dark_mode)) {m_dark_mode? ImGui::StyleColorsDark() : ImGui::StyleColorsLight(); }
-            if(ImGui::MenuItem("About")) {}
+            if(ImGui::MenuItem("Über...")) {}
             ImGui::EndMenu();
         }        
         ImGui::EndMainMenuBar();
@@ -721,9 +720,10 @@ void GuiDatabase::showRemove()
 {
     static int amount = 0;
     static bool add = false;
+    static int tolerance = 0;
     if(m_count_action == CountAction::NONE)
         return;
-    if(ImGui::Begin("Entfernen", &show_remove))
+    if(ImGui::Begin("Anzahl ändern", &show_remove))
     {
         if(m_count_action == CountAction::DECREASE_ITEM)
             ImGui::Text("Bauteil entfernen");
@@ -739,9 +739,14 @@ void GuiDatabase::showRemove()
             ImGui::Text("Gerät produziert");
         else if (m_count_action == CountAction::ADD_ITEM_TO_ASSEMBLE)
             ImGui::Text("Bauteile zur Baugruppe hinzufügen");
+        else if(m_count_action == CountAction::RESERVE_ITEM_TO_ASSEMBLE)
+            ImGui::Text("Markierte Bauteile zur Baugruppen-Reservierung hinzufügen");
         else
             ImGui::Text("");
         ImGui::InputInt("Anzahl", &amount);
+
+        if(m_count_action == CountAction::RESERVE_ITEM_TO_ASSEMBLE)
+            ImGui::DragInt("Toleranz", &tolerance, 1, 0, 100, "%d%%", ImGuiSliderFlags_AlwaysClamp);
         if(ImGui::Button("OK")) 
         {
             if(p_selected_assemble != nullptr && p_selected_item != nullptr && m_count_action == CountAction::ADD_ITEM_TO_ASSEMBLE)
@@ -806,6 +811,20 @@ void GuiDatabase::showRemove()
                 }
                 else
                     cmsg("[error] Cant release more items than reserved");
+            }
+
+            if(p_selected_assemble != nullptr && m_count_action == CountAction::RESERVE_ITEM_TO_ASSEMBLE)
+            {
+            
+                for(size_t i = 0; i < bom_content.size(); i++)
+                {
+                    int n = (int)std::get<1>(bom_content[i])*((float)amount*(1+(float)tolerance/100));
+                    if(bom_export_selection[i]) // item is selected
+                        if(std::get<0>(bom_content[i]).count >= n)
+                            p_database->reserveItemToAssemble(p_selected_assemble->id, std::get<0>(bom_content[i]), n);
+                        else
+                            cmsg(std::string("[error] Too less items (ID: " + std::to_string(std::get<0>(bom_content[i]).id) + ")"));
+                }
             }
             show_remove = false;
             m_count_action = CountAction::NONE;
@@ -903,20 +922,18 @@ void GuiDatabase::showBOM()
         cmsg("[warning] No Assemble selected");
         return;
     }
-
-    static std::deque<std::tuple<Item, int>> content = p_selected_assemble->bom;
     
     static ImVector<unsigned int> selection;
     static std::string status = "";
     static std::string title = "BOM - " + p_selected_assemble->name;
-    static std::deque<bool> export_csv(content.size());
+
 
     if(ImGui::Begin(title.c_str(), &show_bom))
     {
         if(ImGui::Button("Aktualisieren"))
         {
-            content = p_database->searchAssemble(*p_selected_assemble).bom;
-            export_csv.resize(content.size());
+            bom_content = p_database->searchAssemble(*p_selected_assemble).bom;
+            bom_export_selection.resize(bom_content.size());
         }
         ImGui::SameLine();
         if(ImGui::Button("Entfernen"))
@@ -930,23 +947,23 @@ void GuiDatabase::showBOM()
             }
         }
         ImGui::SameLine();
-        if(ImGui::Button("Export CSV"))
+        if(ImGui::Button("CSV exportieren"))
         {
             std::string path = FileDialog::SaveFile("CSV (*.csv)\0*.csv");
             if(path != "")
             {
                 std::vector<std::string> result;
-                for(size_t i = 0; i < content.size(); i++)
+                for(size_t i = 0; i < bom_content.size(); i++)
                 {
-                    if(export_csv[i])
-                        result.push_back(std::get<0>(content[i]).serializeCSV());
+                    if(bom_export_selection[i])
+                        result.push_back(std::get<0>(bom_content[i]).serializeCSV());
                 }
-                CSV::exportCSV(path, result, {"Kategorie", "Value 1", "Value 2", "Package", "Beschreibung", "Hersteller", "Hersteller-Nr.", "Distributor", "Bestellnummer", "Verpackungseinheit", "Preis", "Anzahl"});
+                CSV::exportCSV(path, result, {"Kategorie", "Value 1", "Value 2", "Package", "Beschreibung", "Hersteller", "Hersteller-Nr.", "Distributor", "Bestellnummer", "Verpackungseinheit", "Preis", "Preis/Stck", "Anzahl"});
             }
             
         }
         ImGui::SameLine();
-        if(ImGui::Button("Import CSV"))
+        if(ImGui::Button("CSV importieren"))
         {
             std::string path = FileDialog::OpenFile("CSV (*.csv)\0*.csv");
             if(path != "")
@@ -963,6 +980,55 @@ void GuiDatabase::showBOM()
                 show_import_check = true;
             }
         }
+        ImGui::SameLine();
+        if(ImGui::Button("Reservieren"))
+        {
+            m_count_action = CountAction::RESERVE_ITEM_TO_ASSEMBLE;
+            show_remove = true;
+        }
+
+        if (ImGui::IsItemHovered())
+            ImGui::SetTooltip("Reservierung von markierten Bauteilen mit Toleranzangabe bei Fertigung");
+        
+        ImGui::SameLine();
+        if(ImGui::Button("Reservierung ausbuchen"))
+        {
+            for(size_t i = 0; i < bom_content.size(); i++)
+            {
+                if(bom_export_selection[i]) // item is selected
+                    p_database->removeReservationFromAssemble(p_selected_assemble->id, std::get<0>(bom_content[i]));               
+            }
+        }
+        if (ImGui::IsItemHovered())
+            ImGui::SetTooltip("Reservierung von markierten Bauteilen ausbuchen");
+
+        if(ImGui::Button("Alle markieren"))
+        {
+            for(size_t i = 0; i < bom_export_selection.size(); i++)
+            {
+                bom_export_selection[i] = true;                                        
+            }
+        }
+        ImGui::SameLine();
+        if(ImGui::Button("Alle demarkieren"))
+        {
+            for(size_t i = 0; i < bom_export_selection.size(); i++)
+            {
+                bom_export_selection[i] = false;                                        
+            }
+        }
+        ImGui::SameLine();
+        if(ImGui::Button("Auswahl umkehren"))
+        {
+            for(size_t i = 0; i < bom_export_selection.size(); i++)
+            {
+                if(bom_export_selection[i]) // item is selected
+                    bom_export_selection[i] = false;
+                else
+                    bom_export_selection[i] = true;
+            }
+        }
+
         static ImGuiTableFlags table_flags =
             ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable
             | ImGuiTableFlags_Sortable | ImGuiTableFlags_SortMulti
@@ -973,7 +1039,7 @@ void GuiDatabase::showBOM()
         ImGui::SameLine();
         ImGui::Text(status.c_str());
         
-        if(ImGui::BeginTable("search_results", 17, table_flags))
+        if(ImGui::BeginTable("search_results", 18, table_flags))
         {
             ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_NoSort);
             ImGui::TableSetupColumn("Exp?", ImGuiTableColumnFlags_NoSort);
@@ -982,6 +1048,7 @@ void GuiDatabase::showBOM()
             ImGui::TableSetupColumn("Value 2", ImGuiTableColumnFlags_NoSort);
             ImGui::TableSetupColumn("Package ", ImGuiTableColumnFlags_NoSort);
             ImGui::TableSetupColumn("Beschreibung ", ImGuiTableColumnFlags_NoSort);
+            ImGui::TableSetupColumn("Reserviert (dieses Projekt)", ImGuiTableColumnFlags_NoSort);
             ImGui::TableSetupColumn("Anzahl (benötigt)", ImGuiTableColumnFlags_NoSort);
             ImGui::TableSetupColumn("Anzahl (vorhanden)", ImGuiTableColumnFlags_NoSort);
             ImGui::TableSetupColumn("Hersteller", ImGuiTableColumnFlags_NoSort);
@@ -996,25 +1063,25 @@ void GuiDatabase::showBOM()
             ImGui::TableSetupScrollFreeze(0, 1); // Make row always visible
             ImGui::TableHeadersRow();
 
-            if(!content.empty())
+            if(!bom_content.empty())
             {                
                 ImGuiListClipper clipper;
-                clipper.Begin(content.size());
+                clipper.Begin(bom_content.size());
                 while (clipper.Step())
                     for (int row_n = clipper.DisplayStart; row_n < clipper.DisplayEnd; row_n++)
                     {   
                         ImGui::TableNextRow();
-                        unsigned int id = std::get<0>(content[row_n]).id;
+                        unsigned int id = std::get<0>(bom_content[row_n]).id;
                         bool selected = selection.contains(id);
                         
                         ImVec4 color (0.0f, 0.0f, 0.0f, 1.0f);
                     
-                        if(std::get<1>(content[row_n]) > std::get<0>(content[row_n]).count)
+                        if(std::get<1>(bom_content[row_n]) > std::get<0>(bom_content[row_n]).count + std::get<0>(bom_content[row_n]).reserved)
                         {
                             color = ImVec4(.7f, .3f, .3f, 1.0f);
                             ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, ImGui::GetColorU32(color));
                         }                            
-                        else if(std::get<1>(content[row_n]) == std::get<0>(content[row_n]).count)
+                        else if(std::get<1>(bom_content[row_n]) == std::get<0>(bom_content[row_n]).count + std::get<0>(bom_content[row_n]).reserved)
                         {
                             color = ImVec4(.7f, 0.7f, 0.3f, 1.0f);
                             ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, ImGui::GetColorU32(color));
@@ -1034,43 +1101,46 @@ void GuiDatabase::showBOM()
                             {
                                 selection.clear();
                                 selection.push_back(id);
-                                p_selected_item = &std::get<0>(content[row_n]);
+                                p_selected_item = &std::get<0>(bom_content[row_n]);
                             }
                         }
                         ImGui::TableSetColumnIndex(1);
-                        ImGui::PushID(&(export_csv[row_n]));
-                        ImGui::Checkbox("###", &(export_csv[row_n]));
+                        ImGui::PushID(&(bom_export_selection[row_n]));
+                        ImGui::Checkbox("###", &(bom_export_selection[row_n]));
                         ImGui::PopID();
                         ImGui::TableSetColumnIndex(2);
-                        ImGui::TextUnformatted(std::get<0>(content[row_n]).category.c_str());
+                        ImGui::TextUnformatted(std::get<0>(bom_content[row_n]).category.c_str());
                         ImGui::TableSetColumnIndex(3);
-                        ImGui::TextUnformatted(std::get<0>(content[row_n]).value.c_str());
+                        ImGui::TextUnformatted(std::get<0>(bom_content[row_n]).value.c_str());
                         ImGui::TableSetColumnIndex(4);
-                        ImGui::TextUnformatted(std::get<0>(content[row_n]).value_2.c_str());
+                        ImGui::TextUnformatted(std::get<0>(bom_content[row_n]).value_2.c_str());
                         ImGui::TableSetColumnIndex(5);
-                        ImGui::TextUnformatted(std::get<0>(content[row_n]).package.c_str());
+                        ImGui::TextUnformatted(std::get<0>(bom_content[row_n]).package.c_str());
                         ImGui::TableSetColumnIndex(6);
-                        ImGui::TextUnformatted(std::get<0>(content[row_n]).description.c_str());
+                        ImGui::TextUnformatted(std::get<0>(bom_content[row_n]).description.c_str());
                         ImGui::TableSetColumnIndex(7);
-                        ImGui::Text(std::to_string(std::get<1>(content[row_n])).c_str());
+                        //in deisem Fall ist ist die Reservierung auf das Projekt bezogen
+                        ImGui::Text(std::to_string(std::get<0>(bom_content[row_n]).reserved).c_str());
                         ImGui::TableSetColumnIndex(8);
-                        ImGui::Text(std::to_string(std::get<0>(content[row_n]).count).c_str());
+                        ImGui::Text(std::to_string(std::get<1>(bom_content[row_n])).c_str());
                         ImGui::TableSetColumnIndex(9);
-                        ImGui::Text(std::get<0>(content[row_n]).manufactor.c_str());
+                        ImGui::Text(std::to_string(std::get<0>(bom_content[row_n]).count).c_str());
                         ImGui::TableSetColumnIndex(10);
-                        ImGui::Text(std::get<0>(content[row_n]).manufactor_number.c_str());
+                        ImGui::Text(std::get<0>(bom_content[row_n]).manufactor.c_str());
                         ImGui::TableSetColumnIndex(11);
-                        ImGui::Text(std::get<0>(content[row_n]).distributor.c_str());
+                        ImGui::Text(std::get<0>(bom_content[row_n]).manufactor_number.c_str());
                         ImGui::TableSetColumnIndex(12);
-                        ImGui::Text(std::get<0>(content[row_n]).shop_number.c_str());
+                        ImGui::Text(std::get<0>(bom_content[row_n]).distributor.c_str());
                         ImGui::TableSetColumnIndex(13);
-                        ImGui::Text(std::to_string(std::get<0>(content[row_n]).vpe).c_str());
+                        ImGui::Text(std::get<0>(bom_content[row_n]).shop_number.c_str());
                         ImGui::TableSetColumnIndex(14);
-                        ImGui::Text(std::to_string(std::get<0>(content[row_n]).price).c_str());
+                        ImGui::Text(std::to_string(std::get<0>(bom_content[row_n]).vpe).c_str());
                         ImGui::TableSetColumnIndex(15);
-                        ImGui::Text(std::get<0>(content[row_n]).storage_place.c_str());
+                        ImGui::Text(std::to_string(std::get<0>(bom_content[row_n]).price).c_str());
                         ImGui::TableSetColumnIndex(16);
-                        ImGui::Text(std::get<0>(content[row_n]).datasheet.c_str());
+                        ImGui::Text(std::get<0>(bom_content[row_n]).storage_place.c_str());
+                        ImGui::TableSetColumnIndex(17);
+                        ImGui::Text(std::get<0>(bom_content[row_n]).datasheet.c_str());
                     }
             }
             ImGui::EndTable();
@@ -1079,9 +1149,9 @@ void GuiDatabase::showBOM()
         {
             cmsg("[info] Automated Update");
             m_gui_database_updated = true;
-            content.clear();
-            content = p_database->searchAssemble(*p_selected_assemble).bom;
-            export_csv.resize(content.size());
+            bom_content.clear();
+            bom_content = p_database->searchAssemble(*p_selected_assemble).bom;
+            bom_export_selection.resize(bom_content.size());
         }
     }
     ImGui::End();
