@@ -136,11 +136,11 @@ const std::deque<Item>& ItemDatabase::searchItem()
             res.price             = query.getColumn(12).getDouble();
             res.storage_place     = query.getColumn(13).getText();
             res.datasheet         = query.getColumn(14).getText();
-            res.reserved          = query.getColumn(15).getInt();
+            // res.reserved          = query.getColumn(15).getInt();
             res.unit              = query.getColumn(16).getText();
             res.main_category     = query.getColumn(17).getText();
             res.price_per_unit    = res.price/res.vpe;
-            getReservationsFromAssembles(res);
+            res.reserved          += getReservationsFromAssembles(res);
             m_list.push_back(res);
         }        
     }
@@ -149,7 +149,7 @@ const std::deque<Item>& ItemDatabase::searchItem()
         std::cerr << e.what() << '\n';
         LOG_ERROR(e.what());
     }
-    LOG_HISTORY(username << ": searches all items:" );
+    LOG_HISTORY(username << ": searches all items" );
     return m_list;
 }
 
@@ -178,11 +178,11 @@ const std::deque<Item>& ItemDatabase::searchItemByID(int id)
             res.price             = query.getColumn(12).getDouble();
             res.storage_place     = query.getColumn(13).getText();
             res.datasheet         = query.getColumn(14).getText();
-            res.reserved          = query.getColumn(15).getInt();
+            // res.reserved          = query.getColumn(15).getInt();
             res.unit              = query.getColumn(16).getText();
             res.main_category     = query.getColumn(17).getText();
             res.price_per_unit    = res.price/res.vpe;
-            getReservationsFromAssembles(res);
+            res.reserved          += getReservationsFromAssembles(res);
             m_list.push_back(res);
         }        
     }
@@ -288,7 +288,6 @@ const std::deque<Item>& ItemDatabase::searchItem(Item item)
             condition += item.storage_place;
             condition += std::string("'");
         }
-        LOG_TRACE("Search filter: " << condition);
         m_list.clear();
         SQLite::Statement query(m_database, condition);
         
@@ -310,11 +309,11 @@ const std::deque<Item>& ItemDatabase::searchItem(Item item)
             res.price             = query.getColumn(12).getDouble();
             res.storage_place     = query.getColumn(13).getText();
             res.datasheet         = query.getColumn(14).getText();
-            res.reserved            = query.getColumn(15).getInt();
+            // res.reserved            = query.getColumn(15).getInt();
             res.unit                = query.getColumn(16).getText();
             res.main_category       = query.getColumn(17).getText();
             res.price_per_unit    = res.price/res.vpe;
-            getReservationsFromAssembles(res);
+            res.reserved          += getReservationsFromAssembles(res);
             m_list.push_back(res);
         }        
     }
@@ -468,11 +467,11 @@ const std::deque<Item>& ItemDatabase::searchItemInAssemble(Assemble assemble, It
             res.price             = query.getColumn(12).getDouble();
             res.storage_place     = query.getColumn(13).getText();
             res.datasheet         = query.getColumn(14).getText();
-            res.reserved          = query.getColumn(15).getInt();
+            // res.reserved          = query.getColumn(15).getInt();
             res.unit              = query.getColumn(16).getText();
             res.main_category       = query.getColumn(17).getText();
             res.price_per_unit    = res.price/res.vpe;
-            getReservationsFromAssembles(res);
+            res.reserved          += getReservationsFromAssembles(res);
             m_list.push_back(res);
         }        
     }
@@ -516,11 +515,11 @@ const std::deque<Item>& ItemDatabase::searchItemInAssembleByID(Assemble assemble
             res.price             = query.getColumn(12).getDouble();
             res.storage_place     = query.getColumn(13).getText();
             res.datasheet         = query.getColumn(14).getText();
-            res.reserved          = query.getColumn(15).getInt();
+            // res.reserved          = query.getColumn(15).getInt();
             res.unit              = query.getColumn(16).getText();
-            res.main_category       = query.getColumn(17).getText();
+            res.main_category     = query.getColumn(17).getText();
             res.price_per_unit    = res.price/res.vpe;
-            getReservationsFromAssembles(res);
+            res.reserved          += getReservationsFromAssembles(res);
             m_list.push_back(res);
         }
     }
@@ -617,7 +616,7 @@ const Assemble ItemDatabase::searchAssemble(Assemble assemble)
             res.price             = query.getColumn(12).getDouble();
             res.storage_place     = query.getColumn(13).getText();
             res.datasheet         = query.getColumn(14).getText();
-            res.reserved          = query.getColumn(15).getInt();
+            // res.reserved          = query.getColumn(15).getInt();
             res.unit              = query.getColumn(16).getText();
             res.main_category       = query.getColumn(17).getText();
             int amount          = query.getColumn(18).getInt();
@@ -679,14 +678,39 @@ void ItemDatabase::deleteItemFromAssemble(Assemble assemble, Item item)
     LOG_HISTORY(username << ": deleted item " <<  item.id << "from assemble " << assemble.name);
 }
 
-void ItemDatabase::reserveItemToAssemble(unsigned int id, Item& item, int count)
+void ItemDatabase::reserveItemToAssemble(int id, Item item, int count, bool stack_reservation)
 {
+    auto items = searchItemByID(item.id);
+    if(items.size() <= 0)
+    {
+        cmsg("[error] Etwas ist schiefgelaufen");
+        return;
+    }
+
+    item = items[0]; 
     int n = itemIsReservedFromAssemble(id, item);
     if(n > 0)
     {
-        cmsg("[warning] Bauteil existiert bereits. Anzahl aktualisiert");
-        updateItemInReservation(id, item, count);
-        return;
+        if(stack_reservation)
+        {
+            cmsg("[warning] Bauteil existiert bereits. Anzahl hinzugefügt");
+            if(n+count >= 0)
+            {
+                updateItemInReservation(id, item, n+count);
+            }
+            else
+                cmsg("[error] Keine negative Reservierung möglich");
+            
+            return;
+        }
+        else
+        {
+            cmsg("[warning] Bauteil existiert bereits. Anzahl aktualisiert");
+            updateItemInReservation(id, item, count);
+            return;
+        }
+
+        
     }
     try
     {
@@ -698,6 +722,7 @@ void ItemDatabase::reserveItemToAssemble(unsigned int id, Item& item, int count)
         query.exec();
         transaction.commit();
         item.count -= count;
+        item.reserved = 0;
         updateItem(item);
         cmsg("[info] Added Item to Reservation");
         m_updated = true;
@@ -710,7 +735,7 @@ void ItemDatabase::reserveItemToAssemble(unsigned int id, Item& item, int count)
     LOG_HISTORY(username << ": added item: " << item.serializeCSV() << " to reservation " << id << "with amount" << count);
 }
 
-void ItemDatabase::removeReservationFromAssemble(unsigned int id, Item& item)
+void ItemDatabase::removeReservationFromAssemble(int id, Item item)
 {
     try
     {
@@ -731,15 +756,42 @@ void ItemDatabase::removeReservationFromAssemble(unsigned int id, Item& item)
     LOG_HISTORY(username << ": deleted item " <<  item.id << "from reservation: " << id);
 }
 
-void ItemDatabase::getReservationsFromAssembles(Item& item)
+void ItemDatabase::removeReservationFromAssemblePartial(int assemble_id, Item item, int count)
 {
+    int old_count = itemIsReservedFromAssemble(assemble_id, item); 
+    count = old_count - count; 
+    try
+    {
+        SQLite::Transaction transaction(m_database);
+        SQLite::Statement query(m_database, "UPDATE Reservierung SET Anzahl = :count WHERE id = :id AND id_bg = :id_bg");
+        query.bind(":id", item.id);
+        query.bind(":id_bg", assemble_id);     
+        query.bind(":count", count);     
+        query.exec();
+        transaction.commit();
+        cmsg("[info] Updated Item in Assemble");
+        m_updated = true;
+        item.reserved = 0;
+        updateItem(item);
+    }
+    catch(const std::exception& e)
+    {
+        cmsg("[error]" + std::string(e.what()));
+        LOG_ERROR(e.what());
+    }
+    LOG_HISTORY(username << ": reduced item " <<  item.id << "from reservation with amount " << count);
+}
+
+int ItemDatabase::getReservationsFromAssembles(Item item)
+{
+    int count = 0;
     try
     {
         SQLite::Statement query(m_database, "SELECT Anzahl FROM Reservierung WHERE id=:id");
         query.bind(":id", item.id);
         while (query.executeStep())
         {
-            item.reserved       += query.getColumn(0).getInt();
+            count       += query.getColumn(0).getInt();
         }        
     }
     catch(const std::exception& e)
@@ -747,10 +799,11 @@ void ItemDatabase::getReservationsFromAssembles(Item& item)
         std::cerr << e.what() << '\n';
         LOG_ERROR(e.what());
     }
-    LOG_HISTORY(username << ": reservation count from item with id: " << item.id << " is " << item.reserved);
+    // LOG_HISTORY(username << ": reservation count from item with id: " << item.id << " is " << item.reserved);
+    return count;
 }
 
-int ItemDatabase::itemIsReservedFromAssemble(unsigned int assemble_id, Item& item)
+int ItemDatabase::itemIsReservedFromAssemble(int assemble_id, Item item)
 {
     int n = 0;   
     try
@@ -765,7 +818,6 @@ int ItemDatabase::itemIsReservedFromAssemble(unsigned int assemble_id, Item& ite
             n += query.getColumn(0).getInt();
         } 
         transaction.commit();
-        cmsg("[info] Search Item from Reservation");
         m_updated = true;
     }
     catch(const std::exception& e)
@@ -773,14 +825,12 @@ int ItemDatabase::itemIsReservedFromAssemble(unsigned int assemble_id, Item& ite
         cmsg("[error]" + std::string(e.what()));
         LOG_ERROR(e.what());
     }
-    
-    
     return n;
 }
 
-void ItemDatabase::updateItemInReservation(unsigned int assemble_id, Item& item, int count)
+void ItemDatabase::updateItemInReservation(int assemble_id, Item item, int count)
 {
-    int old_count = itemIsReservedFromAssemble(assemble_id, item);
+    int old_count = itemIsReservedFromAssemble(assemble_id, item); 
     int diff = count - old_count; 
     
     try
@@ -794,7 +844,8 @@ void ItemDatabase::updateItemInReservation(unsigned int assemble_id, Item& item,
         transaction.commit();
         cmsg("[info] Updated Item in Assemble");
         m_updated = true;
-        item.count -= diff;
+        item.count -= diff; 
+        item.reserved = 0;
         updateItem(item);
     }
     catch(const std::exception& e)

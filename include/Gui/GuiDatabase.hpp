@@ -26,7 +26,7 @@ class GuiDatabase
         bool show_assemble = false;
         bool show_search = false;
         bool fullscreen = false;
-        bool show_info = false;
+        bool show_info = true;
         bool show_remove = false;
         bool show_bom = false;
         bool show_assemble_list = false;

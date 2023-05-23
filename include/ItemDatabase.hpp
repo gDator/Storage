@@ -36,11 +36,12 @@ class ItemDatabase
         void updateRecognized() {m_updated = false;}
         bool isUpdated() {return m_updated;}
         const Assemble searchAssemble(Assemble a);
-        void reserveItemToAssemble(unsigned int id, Item& item, int count);
-        void removeReservationFromAssemble(unsigned int id, Item& item);
-        void getReservationsFromAssembles(Item& i);
-        int itemIsReservedFromAssemble(unsigned int assemble_id, Item& i);
-        void updateItemInReservation(unsigned int assemble_id, Item& i, int count);
+        void reserveItemToAssemble(int id, Item item, int count, bool stack_reservation = false);
+        void removeReservationFromAssemble(int id, Item item);
+        void removeReservationFromAssemblePartial(int assemble_id, Item item, int count);
+        int getReservationsFromAssembles(Item item);
+        int itemIsReservedFromAssemble(int assemble_id, Item item);
+        void updateItemInReservation(int assemble_id, Item item, int count);
          //this fucntion delivers all assembles  without it items
         const std::deque<Assemble>& searchAssembles();
 

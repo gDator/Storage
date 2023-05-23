@@ -275,7 +275,6 @@ void GuiDatabase::showSearch()
             }        
             content = p_database->searchItem(filter);
             filter.main_category = save;
-            cmsg("[info] Finsished Searching");
         }
         ImGui::SameLine();
         if(ImGui::Button("Auflösen"))
@@ -358,8 +357,6 @@ void GuiDatabase::showSearch()
                     {
                         storage_current_y_idx = n;
                     }
-                        
-
                     // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
                     if (is_selected)
                         ImGui::SetItemDefaultFocus();
@@ -784,9 +781,10 @@ void GuiDatabase::showRemove()
             {
                 if(p_selected_item->count - amount >= 0)
                 {
-                    p_selected_item->count -= amount;
-                    p_selected_item->reserved += amount;
-                    p_database->updateItem(*p_selected_item);
+                    p_database->reserveItemToAssemble(-1, *p_selected_item, amount, true);
+                    // p_selected_item->count -= amount;
+                    // p_selected_item->reserved += amount;
+                    // p_database->updateItem(*p_selected_item);
                 }
                 else
                     cmsg("[error] Too less items");
@@ -795,9 +793,10 @@ void GuiDatabase::showRemove()
             {
                 if(p_selected_item->reserved - amount >= 0)
                 {
-                    p_selected_item->count += amount;
-                    p_selected_item->reserved -= amount;
-                    p_database->updateItem(*p_selected_item);
+                    p_database->reserveItemToAssemble(-1, *p_selected_item, -amount, true);
+                    // p_selected_item->count += amount;
+                    // p_selected_item->reserved -= amount;
+                    // p_database->updateItem(*p_selected_item);
                 }
                 else
                     cmsg("[error] Cant release more items than reserved");
@@ -806,8 +805,9 @@ void GuiDatabase::showRemove()
             {
                 if(p_selected_item->reserved - amount >= 0)
                 {
-                    p_selected_item->reserved -= amount;
-                    p_database->updateItem(*p_selected_item);
+                    p_database->removeReservationFromAssemblePartial(-1, *p_selected_item, amount);
+                    // p_selected_item->reserved -= amount;
+                    // p_database->updateItem(*p_selected_item);
                 }
                 else
                     cmsg("[error] Cant release more items than reserved");
@@ -990,6 +990,15 @@ void GuiDatabase::showBOM()
         if (ImGui::IsItemHovered())
             ImGui::SetTooltip("Reservierung von markierten Bauteilen mit Toleranzangabe bei Fertigung");
         
+        ImGui::SameLine();
+        if(ImGui::Button("Reservierung aufheben"))
+        {
+            for(size_t i = 0; i < bom_content.size(); i++)
+            {
+                if(bom_export_selection[i]) // item is selected
+                    p_database->reserveItemToAssemble(p_selected_assemble->id, std::get<0>(bom_content[i]), 0);               
+            }
+        }
         ImGui::SameLine();
         if(ImGui::Button("Reservierung ausbuchen"))
         {
@@ -1404,7 +1413,7 @@ void GuiDatabase::addItemToAssembleWithCheck()
                     else
                     {
                         p_database->updateItemInAssemble(*p_selected_assemble, item_to_check, count_to_check);
-                        cmsg("[error] Item exits already. Trying to update amount");
+                        cmsg("[error] Item exits already. Try updating amount");
                         show_check_item_in_assemble = StateAlternativePicking::NONE;
                     }
                     
