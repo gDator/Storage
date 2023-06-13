@@ -89,3 +89,6 @@ x Neue datenbank erstellen selektiert diese direkt (auch in ini file)
 
 -------------------------v0.4---------------------------
 +reservation projecktbezogen möglich
+
+-------------------------v0.5---------------------------
++category settings per ini file

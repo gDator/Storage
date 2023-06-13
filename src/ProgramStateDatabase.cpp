@@ -19,26 +19,26 @@ ProgramStateDatabase::ProgramStateDatabase()
     console_open = true;
     //Hardcoded to take away flexability
     ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-    std::map<std::string, std::string> electrical;
-    std::map<std::string, std::string> mechanical;
-    std::map<std::string, std::string> cable;
-    std::map<std::string, std::string> none ;
-    electrical.emplace("None", "None");
-    electrical.emplace("R", "R");
-    electrical.emplace("C","C");
-    electrical.emplace("L", "L");
-    electrical.emplace("J", "J");
-    electrical.emplace("U", "U");
-    electrical.emplace("D", "D");
-    electrical.emplace("K", "K");
-    electrical.emplace("Q", "Q");
-    mechanical.emplace("None", "None");
-    cable.emplace("None", "None");
-    none.emplace("None", "None");
-    g_categories.emplace("E", electrical);
-    g_categories.emplace("M", mechanical);
-    g_categories.emplace("K", cable);
-    g_categories.emplace("None", none);
+    // std::map<std::string, std::string> electrical;
+    // std::map<std::string, std::string> mechanical;
+    // std::map<std::string, std::string> cable;
+    // std::map<std::string, std::string> none ;
+    // electrical.emplace("None", "None");
+    // electrical.emplace("R", "R");
+    // electrical.emplace("C","C");
+    // electrical.emplace("L", "L");
+    // electrical.emplace("J", "J");
+    // electrical.emplace("U", "U");
+    // electrical.emplace("D", "D");
+    // electrical.emplace("K", "K");
+    // electrical.emplace("Q", "Q");
+    // mechanical.emplace("None", "None");
+    // cable.emplace("None", "None");
+    // none.emplace("None", "None");
+    // g_categories.emplace("E", electrical);
+    // g_categories.emplace("M", mechanical);
+    // g_categories.emplace("K", cable);
+    // g_categories.emplace("None", none);
     init();
 }
 
@@ -118,22 +118,48 @@ void ProgramStateDatabase::init()
     }
     ini.LoadFile("storage.ini");
 
+    //load Main categories
+    std::string cat_string(ini.GetValue("Settings", "Main_Categories", ""));
+    if(cat_string != "")
+    {
+        std::vector<std::string> main_cats;
+        main_cats.clear();
+        split(cat_string, ';', main_cats);
+        for(auto entry : main_cats)
+        {
+            std::map<std::string, std::string> _category;
+            _category.emplace("None", "None");
+            std::string hint_main_category = "Hints-" + entry;
+            std::list<CSimpleIniA::Entry> sub_categories;
+            if(!ini.GetAllKeys(hint_main_category.c_str(), sub_categories))
+                continue;
+            for(auto c : sub_categories)
+            {
+                std::string cat(c.pItem);
+                _category.emplace(cat, cat);
+                std::string result(ini.GetValue(hint_main_category.c_str(), cat.c_str(), ""));
+                if(result == "")
+                    continue;
+                std::vector<std::string> hint;
+                hint.clear();
+                split(result, ';', hint);
+                hint.resize(4); 
+                LOG_INFO("found hints: " << hint[0] << ", " << hint[1]<< "," <<hint[2] << "," << hint[3]);
+                g_filter_hints.emplace(std::make_tuple(entry, cat), std::make_tuple(hint[0], hint[1], hint[2], hint[3]));
+            }
+            g_categories.emplace(entry, _category);
+        }
+        std::map<std::string, std::string> none;
+        none.emplace("None", "None");
+        g_categories.emplace("None", none);
+
+    }
+    
+    //load catgeories
     //Init Hints
     for(auto& entry : g_categories)
     {
-        std::string hint_main_category = "Hints-" + std::get<0>(entry);
-        for(auto& cat : std::get<1>(entry))
-        {
-            std::string result(ini.GetValue(hint_main_category.c_str(), std::get<0>(cat).c_str(), ""));
-            if(result == "")
-                continue;
-            std::vector<std::string> hint;
-            hint.clear();
-            split(result, ';', hint);
-            hint.resize(4); 
-            LOG_INFO("found hints: " << hint[0] << ", " << hint[1]<< "," <<hint[2] << "," << hint[3]);
-            g_filter_hints.emplace(std::make_tuple(std::get<0>(entry), std::get<0>(cat)), std::make_tuple(hint[0], hint[1], hint[2], hint[3]));
-        }
+        
         
     }
 
