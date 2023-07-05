@@ -1,5 +1,5 @@
 #include "CSV.hpp"
-
+#include <iostream>
 void CSV::exportCSV(std::string path, std::vector<std::string> data, std::vector <std::string> header)
 {
     std::ofstream csv(path);
@@ -19,6 +19,7 @@ std::vector<std::vector<std::string>> CSV::importCSV(std::string path)
 {
     std::ifstream csv(path);
     std::vector<std::vector<std::string>> data;
+    data.clear();
     std::vector<std::string> line;
     std::string buffer;
     std::getline(csv, buffer); //dont read header
@@ -32,7 +33,7 @@ std::vector<std::vector<std::string>> CSV::importCSV(std::string path)
         {
             last_position = position;
             position = buffer.find(";", position);
-            line.push_back(buffer.substr(last_position, position - last_position));
+            line.push_back(std::string(buffer.substr(last_position, position - last_position)));
             if(position == std::string::npos)
                 break;
             position++; //jump over semikolon 

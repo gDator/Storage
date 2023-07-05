@@ -41,7 +41,7 @@ void GuiDatabase::draw()
                 // file_explorer.PickFile(std::filesystem::absolute(std::filesystem::current_path()), [&](const std::filesystem::path& selected_path) {/*Store data*/});
             }
             ImGui::Separator();
-            if(ImGui::BeginMenu("Importieren"))
+            /*if(ImGui::BeginMenu("Importieren"))
             {
                 if(ImGui::MenuItem("CSV")) 
                 {
@@ -62,7 +62,7 @@ void GuiDatabase::draw()
                     }
                 }
                 ImGui::EndMenu();
-            }
+            }*/
             if(ImGui::BeginMenu("Exportieren"))   //whole storage
             {
                 if(ImGui::MenuItem("CSV")) 
@@ -279,7 +279,12 @@ void GuiDatabase::showSearch()
         ImGui::SameLine();
         if(ImGui::Button("Auflösen"))
         {
-            cmsg("[warning] Not implemented yet");
+            if(p_selected_item != nullptr)
+                if(p_database->removeItem(p_selected_item->id))
+                {
+                    p_selected_item = nullptr;
+                    cmsg("[info] Item deleted.");
+                }           
         }
         ImGui::SameLine();
         if(ImGui::TreeNode("Filter"))
@@ -779,15 +784,18 @@ void GuiDatabase::showRemove()
             }
             if(p_selected_item != nullptr && m_count_action == CountAction::RESERVE_ITEM)
             {
-                if(p_selected_item->count - amount >= 0)
-                {
-                    p_database->reserveItemToAssemble(-1, *p_selected_item, amount, true);
+                
+                
                     // p_selected_item->count -= amount;
                     // p_selected_item->reserved += amount;
                     // p_database->updateItem(*p_selected_item);
+                p_database->reserveItemToAssemble(-1, *p_selected_item, amount, true);
+                if(p_selected_item->count - amount >= 0)
+                {
+                    
                 }
                 else
-                    cmsg("[error] Too less items");
+                    cmsg("[warning] More items reserved than stored.");
             }
             if(p_selected_item != nullptr && m_count_action == CountAction::RELEASE_ITEM_RESERVATION)
             {
@@ -820,10 +828,11 @@ void GuiDatabase::showRemove()
                 {
                     int n = (int)std::get<1>(bom_content[i])*((float)amount*(1+(float)tolerance/100));
                     if(bom_export_selection[i]) // item is selected
-                        if(std::get<0>(bom_content[i]).count >= n)
-                            p_database->reserveItemToAssemble(p_selected_assemble->id, std::get<0>(bom_content[i]), n);
+                    p_database->reserveItemToAssemble(p_selected_assemble->id, std::get<0>(bom_content[i]), n);
+                        if(std::get<0>(bom_content[i]).count >= n){}
+                            
                         else
-                            cmsg(std::string("[error] Too less items (ID: " + std::to_string(std::get<0>(bom_content[i]).id) + ")"));
+                            cmsg(std::string("[warning] Too less items (ID: " + std::to_string(std::get<0>(bom_content[i]).id) + ")"));
                 }
             }
             show_remove = false;
@@ -833,6 +842,7 @@ void GuiDatabase::showRemove()
         if(ImGui::Button("Schließen"))
         {
             show_remove = false;
+            amount = 0;
             m_count_action = CountAction::NONE;
         }
     }
@@ -925,7 +935,7 @@ void GuiDatabase::showBOM()
     
     static ImVector<unsigned int> selection;
     static std::string status = "";
-    static std::string title = "BOM - " + p_selected_assemble->name;
+    std::string title = "BOM - " + p_selected_assemble->name;
 
 
     if(ImGui::Begin(title.c_str(), &show_bom))
@@ -969,6 +979,7 @@ void GuiDatabase::showBOM()
             if(path != "")
             {
                 auto item_strings = CSV::importCSV(path);
+                import_csv.clear();
                 for(auto& string : item_strings)
                 {
                     Item i;
@@ -1277,8 +1288,8 @@ void GuiDatabase::addItemToStorageWithCheck()
                     if(selection.size()>0)
                     {
                         //TODO: What happens if i check another Object: Update amount?
-                        alternative->count += item_to_check.count;
-                        p_database->updateItem(*alternative);
+                        // alternative->count += item_to_check.count;
+                        // p_database->updateItem(*alternative);
                         selection.clear();          
                         ImGui::CloseCurrentPopup();
                         item_to_check = *alternative; //needed for assembly
@@ -1292,13 +1303,18 @@ void GuiDatabase::addItemToStorageWithCheck()
                 ImGui::SameLine();
                 if(ImGui::Button("Neu anlegen"))
                 {
+                    item_to_check.count = 0;
+                    cmsg("[warning] Added Item with 0 count");
                     item_to_check.id = p_database->addItem(item_to_check);
                     ImGui::CloseCurrentPopup();
                     show_check_item = StateAlternativePicking::FINISHED; //go to state 5 in 
                 }
+                ImGui::SameLine();
                 if(ImGui::Button("Abbrechen"))
                 {
-                    show_check_item = StateAlternativePicking::NONE;
+                    show_check_item = StateAlternativePicking::FINISHED;
+                    show_check_item_in_assemble = StateAlternativePicking::NONE;
+                    // import_csv.clear();
                 }
 
                 table.draw(content, selection, alternative);
@@ -1307,7 +1323,7 @@ void GuiDatabase::addItemToStorageWithCheck()
                 ImGui::EndPopup();
             }
         }
-        else
+        else //content.size() <= 0
         {
             item_to_check.id = p_database->addItem(item_to_check); 
             show_check_item = StateAlternativePicking::FINISHED; //State 5 in addItemToAssembleWithCheck
@@ -1329,7 +1345,7 @@ void GuiDatabase::addItemToAssembleWithCheck()
         return;
     }
 
-    if(show_check_item_in_assemble == StateAlternativePicking::CHECK_ALTERNATIVES_ASSEMBLE) //state 1 : checl for alternatives
+    if(show_check_item_in_assemble == StateAlternativePicking::CHECK_ALTERNATIVES_ASSEMBLE) //state 1 : check for alternatives
     {
         search.clear();
         // search.manufactor = item_to_check.manufactor;
@@ -1362,7 +1378,7 @@ void GuiDatabase::addItemToAssembleWithCheck()
         {
             if (ImGui::BeginPopupModal("Bauteilvorschläge", NULL, ImGuiWindowFlags_AlwaysAutoResize))
             {
-                ImGui::Text("Es existiern ähnliche Bauteile im Lager (");
+                ImGui::Text("Es existiern ähnliche Bauteile in Baugruppe (");
                 ImGui::SameLine();
                 ImGui::Text(item_to_check.category.c_str());
                 ImGui::SameLine();
@@ -1415,6 +1431,9 @@ void GuiDatabase::addItemToAssembleWithCheck()
                         p_database->updateItemInAssemble(*p_selected_assemble, item_to_check, count_to_check);
                         cmsg("[error] Item exits already. Try updating amount");
                         show_check_item_in_assemble = StateAlternativePicking::NONE;
+                        show_check_item == StateAlternativePicking::NONE;
+                         //just cancel current item. Dont do:
+                        // show_import_check = false;
                     }
                     
                 }
@@ -1422,6 +1441,7 @@ void GuiDatabase::addItemToAssembleWithCheck()
                 if(ImGui::Button("Abbrechen"))
                 {
                     show_check_item_in_assemble = StateAlternativePicking::NONE;
+                    show_check_item == StateAlternativePicking::NONE;
                 }
                 
                 table.draw(content, selection, alternative);
@@ -1451,9 +1471,10 @@ void GuiDatabase::importItemToAssembly()
     {
         LOG_HISTORY("Next Item | " << std::to_string(import_csv.size()) << " left");
         item_to_check = import_csv.back();
+        count_to_check = item_to_check.count;
         import_csv.pop_back();
         show_check_item = StateAlternativePicking::CHECK_EXISTANCE;
-        show_check_item_in_assemble = StateAlternativePicking::SELECT_ALTERNATIVE_ASSEMBLE;
+        show_check_item_in_assemble = StateAlternativePicking::CHECK_ALTERNATIVES_ASSEMBLE; // Check in Assemble if similar item exists
     }
                 
 }

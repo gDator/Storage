@@ -18,6 +18,11 @@ BUGS
 + B-10: Nachdem ich nach C gefiltert hatte und bei einem Bauteil den Preis geändert hatte wurde die Kategorie von allein auf R geändert ?? Konkret ID14, 15
         Auch der MOSFET ID 4 hat von allein seine Kategorie auf R geändert?? -> GuiDatabase.cpp:602: p_selected_item->category = g_categories[item_current_idx]; 
         -> Kategorie wurde immer auf R geändert
++ B-11: Changing Assemble doesnt change window title: title in showBOM() is not static
++ B-12: ItemDatabase.cpp:365: searchItemInAssemble(): Changing units per Assemble is not possible due to sql-query-error -> SELECT .... Lager.Lagerort ....
++ B-13: Beim Import funktioniert µ nicht -> falsch gespeichert von LibreOffice
++ B-14: abbruch beim import macht, dass in der aktuellen Session kein Import mehr durchgeführt werden kann.  -> fehler in State-machine
++ B-15: Item kann beim importieren doppelt hinzugefügt werden. -> Assemble check funktioniert nicht. -> FEhlerhafte SQl-Abfrage ohne Oberkategorie
 
 TODO
 =======================================================================
@@ -92,3 +97,26 @@ x Neue datenbank erstellen selektiert diese direkt (auch in ini file)
 
 -------------------------v0.5---------------------------
 +category settings per ini file
+
+-------------------------v0.6---------------------------
++ Dont log search
++ negative reservation possible with warning
++ B-11
++ B-12
++ toleranz bei suche 
++ item auflösen
++ B-13
++ B-14
++ B-15
+
+
+-------------------------v0.7---------------------------
+- auto update
+- rework: better code structure: 
+			- nicht alles in draw function
+			- Filter-Item vorgehen?
+			- State-Machine für Import/Alternativauswahl
+- web api: farnell, mouser, digikey (curl, libjson)
+	- bestellung
+	- Buchung 
+	- automatische Formularausfüllung

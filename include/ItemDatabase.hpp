@@ -26,6 +26,7 @@ class ItemDatabase
         const std::deque<Item>& searchItem();
         const std::deque<Item>& searchItem(Item i);
         const std::deque<Item>& searchItemByID(int id);
+        bool removeItem(int id);
         void addAssemble(Assemble a);
         void updateItemInAssemble(Assemble a, Item i, int count);
         bool itemExistsInAssemble(Assemble a, Item i);

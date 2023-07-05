@@ -78,7 +78,7 @@ std::string Item::serializeCSV() const
 bool Item::deserializeCSV(Item& i, std::vector<std::string> data)
 {
     i.clear();
-    if(data.size() != 17)
+    if(data.size() != 16)
     {
         LOG_ERROR("CSV data has not right amount of columns: " << data.size());
         return false;
@@ -93,19 +93,20 @@ bool Item::deserializeCSV(Item& i, std::vector<std::string> data)
     i.manufactor_number = data[7];
     i.distributor = data[8];
     i.shop_number = data[9];
-    i.storage_place = data[14];
-    i.datasheet = data[15];
-    i.unit = data[16];
+    i.storage_place = data[13];
+    i.datasheet = data[14];
+    i.unit = data[15];
     try
     {
         i.vpe = std::stoi(data[10]);
         i.price = std::stof(data[11]);
-        i.price_per_unit = std::stof(data[12]);
-        i.count = std::stoi(data[13]);
+        i.price_per_unit = i.price / i.vpe;
+        i.count = std::stoi(data[12]);
     }
     catch(const std::exception& e)
     {
         LOG_ERROR("couldnt import price or count");
+        return false;
     }        
     return true;
 }

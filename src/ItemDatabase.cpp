@@ -116,7 +116,7 @@ const std::deque<Item>& ItemDatabase::searchItem()
     try
     {
         m_list.clear();
-        SQLite::Statement query(m_database, "SELECT * FROM Lager");
+        SQLite::Statement query(m_database, "SELECT * FROM Lager ORDER BY id DESC");
         
         while (query.executeStep())
         {
@@ -149,7 +149,7 @@ const std::deque<Item>& ItemDatabase::searchItem()
         std::cerr << e.what() << '\n';
         LOG_ERROR(e.what());
     }
-    LOG_HISTORY(username << ": searches all items" );
+    // LOG_HISTORY(username << ": searches all items" );
     return m_list;
 }
 
@@ -158,7 +158,7 @@ const std::deque<Item>& ItemDatabase::searchItemByID(int id)
     try
     {
         m_list.clear();
-        SQLite::Statement query(m_database, "SELECT * FROM Lager WHERE id=:id");
+        SQLite::Statement query(m_database, "SELECT * FROM Lager WHERE id=:id ORDER BY id DESC");
         query.bind(":id", id);
         while (query.executeStep())
         {
@@ -191,7 +191,7 @@ const std::deque<Item>& ItemDatabase::searchItemByID(int id)
         std::cerr << e.what() << '\n';
         LOG_ERROR(e.what());
     }
-    LOG_HISTORY(username << ": searches item with id: " << id);
+    // LOG_HISTORY(username << ": searches item with id: " << id);
     return m_list;
 }
 
@@ -218,15 +218,15 @@ const std::deque<Item>& ItemDatabase::searchItem(Item item)
         }
         if(item.value.compare("") != 0)
         {
-            condition += std::string(" AND Value LIKE '");
+            condition += std::string(" AND Value LIKE '%");
             condition += item.value;
-            condition += std::string("'");
+            condition += std::string("%'");
         }
         if(item.value_2.compare("") != 0)
         {
-            condition += std::string(" AND Value2 LIKE '");
+            condition += std::string(" AND Value2 LIKE '%");
             condition += item.value_2;
-            condition += std::string("'");
+            condition += std::string("%'");
         }            
         if(item.category.compare("None") != 0)
         {
@@ -236,39 +236,39 @@ const std::deque<Item>& ItemDatabase::searchItem(Item item)
         }
         if(item.package.compare("") != 0)
         {
-            condition += std::string(" AND Package LIKE '");
+            condition += std::string(" AND Package LIKE '%");
             condition += item.package;
-            condition += std::string("'");
+            condition += std::string("%'");
         }
         if(item.description.compare("") != 0)
         {
-            condition += std::string(" AND Eigenschaften LIKE '");
+            condition += std::string(" AND Eigenschaften LIKE '%");
             condition += item.description;
-            condition += std::string("'");
+            condition += std::string("%'");
         }
         if(item.manufactor.compare("") != 0)
         {
-            condition += std::string(" AND Hersteller LIKE '");
+            condition += std::string(" AND Hersteller LIKE '%");
             condition += item.manufactor;
-            condition += std::string("'");
+            condition += std::string("%'");
         }
         if(item.manufactor_number.compare("") != 0)
         {
-            condition += std::string(" AND Herstellernummer LIKE '");
+            condition += std::string(" AND Herstellernummer LIKE '%");
             condition += item.manufactor_number;
-            condition += std::string("'");
+            condition += std::string("%'");
         }
         if(item.distributor.compare("") != 0)
         {
-            condition += std::string(" AND Distributor LIKE '");
+            condition += std::string(" AND Distributor LIKE '%");
             condition += item.distributor;
-            condition += std::string("'");
+            condition += std::string("%'");
         }
         if(item.shop_number.compare("") != 0)
         {
-            condition += std::string(" AND Bestellnummer LIKE '");
+            condition += std::string(" AND Bestellnummer LIKE '%");
             condition += item.shop_number;
-            condition += std::string("'");
+            condition += std::string("%'");
         }
         if(item.vpe > 0)
         {
@@ -290,13 +290,60 @@ const std::deque<Item>& ItemDatabase::searchItem(Item item)
         }
         m_list.clear();
         SQLite::Statement query(m_database, condition);
-        
+        condition += " ORDER BY id DESC";
         while (query.executeStep())
         {
             Item res;
             res.id                = query.getColumn(0).getInt();
             res.value             = query.getColumn(1).getText();
             res.value_2           = query.getColumn(2).getText();
+            res.category          = query.getColumn(3).getText();
+            res.package           = query.getColumn(4).getText();
+            res.description       = query.getColumn(5).getText();
+            res.count             = query.getColumn(6).getInt();
+            res.manufactor        = query.getColumn(7).getText();
+            res.manufactor_number = query.getColumn(8).getText();
+            res.distributor       = query.getColumn(9).getText();
+            res.shop_number       = query.getColumn(10).getText();
+            res.vpe               = query.getColumn(11).getInt();
+            res.price             = query.getColumn(12).getDouble();
+            res.storage_place     = query.getColumn(13).getText();
+            res.datasheet         = query.getColumn(14).getText();
+            // res.reserved            = query.getColumn(15).getInt();
+            res.unit              = query.getColumn(16).getText();
+            res.main_category     = query.getColumn(17).getText();
+            res.price_per_unit    = res.price/res.vpe;
+            res.reserved          += getReservationsFromAssembles(res);
+            m_list.push_back(res);
+        }        
+    }
+    catch(const std::exception& e)
+    {
+       cmsg("[error]" + std::string(e.what()));
+       LOG_ERROR(e.what());
+    }
+    // LOG_HISTORY(username << ": searches items:" << condition);
+    return m_list;
+}
+
+bool ItemDatabase::removeItem(int id)
+{
+    try
+    {
+        std::string condition("SELECT Lager.id, Lager.Value, Lager.Value2, Lager.Kategorie, Lager.Package, Lager.Eigenschaften, Lager.Anzahl, Lager.Hersteller, Lager.Herstellernummer, Lager.Distributor, Lager.Bestellnummer, Lager.Verpackungseinheit, Lager.Preis, Lager.Lagerort, Lager.Datenblatt, Lager.Reserviert, Lager.Einheit, Lager.Oberkategorie ");
+        condition += "FROM Link_Lager_Baugruppen ";
+        condition += "INNER JOIN Lager ON Link_Lager_baugruppen.id = Lager.id ";
+        condition += "INNER JOIN Baugruppen ON Baugruppen.id_bg = Link_Lager_Baugruppen.id_bg ";
+        condition += "WHERE Lager.id = :id";
+        m_list.clear();
+        SQLite::Statement query(m_database, condition);
+        query.bind(":id", id);
+        while (query.executeStep())
+        {
+            Item res;
+            res.id                = query.getColumn(0).getInt();
+            res.value             = query.getColumn(1).getText();
+            res.value_2             = query.getColumn(2).getText();
             res.category          = query.getColumn(3).getText();
             res.package           = query.getColumn(4).getText();
             res.description         = query.getColumn(5).getText();
@@ -309,21 +356,82 @@ const std::deque<Item>& ItemDatabase::searchItem(Item item)
             res.price             = query.getColumn(12).getDouble();
             res.storage_place     = query.getColumn(13).getText();
             res.datasheet         = query.getColumn(14).getText();
-            // res.reserved            = query.getColumn(15).getInt();
-            res.unit                = query.getColumn(16).getText();
-            res.main_category       = query.getColumn(17).getText();
+            // res.reserved          = query.getColumn(15).getInt();
+            res.unit              = query.getColumn(16).getText();
+            res.main_category     = query.getColumn(17).getText();
             res.price_per_unit    = res.price/res.vpe;
             res.reserved          += getReservationsFromAssembles(res);
+            if(res.reserved != 0)
+            {
+                cmsg("[error] Item is reserved. Cant be deleted");
+                return false;
+            }
+            if(res.count != 0)
+            {
+                cmsg("[error] Cant be deleted. Storage contains this item.");
+                return false;
+            }
             m_list.push_back(res);
-        }        
+        }
+        if(m_list.size() > 0)
+        {
+            cmsg("[error] Item is linked with assemble. Cant be deleted");
+            return false;
+        }
     }
     catch(const std::exception& e)
     {
        cmsg("[error]" + std::string(e.what()));
        LOG_ERROR(e.what());
     }
-    LOG_HISTORY(username << ": searches items:" << condition);
-    return m_list;
+
+
+    try
+    {
+        SQLite::Transaction transaction(m_database);
+        SQLite::Statement query(m_database, "DELETE FROM Link_Lager_Baugruppen WHERE id = :id");
+        query.bind(":id", id);    
+        query.exec();
+        transaction.commit();
+        m_updated = true;
+    }
+    catch(const std::exception& e)
+    {
+        cmsg("[error]" + std::string(e.what()));
+        LOG_ERROR(e.what());
+    }
+
+    try
+    {
+        SQLite::Transaction transaction(m_database);
+        SQLite::Statement query(m_database, "DELETE FROM Reservierung WHERE id = :id");
+        query.bind(":id", id);    
+        query.exec();
+        transaction.commit();
+        m_updated = true;
+    }
+    catch(const std::exception& e)
+    {
+        cmsg("[error]" + std::string(e.what()));
+        LOG_ERROR(e.what());
+    }
+
+    try
+    {
+        SQLite::Transaction transaction(m_database);
+        SQLite::Statement query(m_database, "DELETE FROM Lager WHERE id = :id");
+        query.bind(":id", id);    
+        query.exec();
+        transaction.commit();
+        m_updated = true;
+    }
+    catch(const std::exception& e)
+    {
+        cmsg("[error]" + std::string(e.what()));
+        LOG_ERROR(e.what());
+    }
+    // LOG_HISTORY(username << ": searches item with id " << item.id << " in assemble " << assemble.name);
+    return true;
 }
 
 void ItemDatabase::addAssemble(Assemble assamble)
@@ -366,7 +474,7 @@ const std::deque<Item>& ItemDatabase::searchItemInAssemble(Assemble assemble, It
 {
     try
     {
-        std::string condition("SELECT Lager.id, Lager.Value, Lager.Value2, Lager.Kategorie, Lager.Package, Lager.Eigenschaften, Lager.Anzahl, Lager.Hersteller, Lager.Herstellernummer, Lager.Distributor, Lager.Bestellnummer, Lager.Verpackungseinheit, Lager.Preis, Lager.Datenblatt, Lager.Reserviert, Lager.Einheit, Lager.Oberkategorie ");
+        std::string condition("SELECT Lager.id, Lager.Value, Lager.Value2, Lager.Kategorie, Lager.Package, Lager.Eigenschaften, Lager.Anzahl, Lager.Hersteller, Lager.Herstellernummer, Lager.Distributor, Lager.Bestellnummer, Lager.Verpackungseinheit, Lager.Preis, Lager.Lagerort, Lager.Datenblatt, Lager.Reserviert, Lager.Einheit, Lager.Oberkategorie ");
         condition += "FROM Link_Lager_Baugruppen ";
         condition += "INNER JOIN Lager ON Link_Lager_Baugruppen.id = Lager.id ";
         condition += "INNER JOIN Baugruppen ON Baugruppen.id_bg = Link_Lager_Baugruppen.id_bg ";
@@ -374,15 +482,15 @@ const std::deque<Item>& ItemDatabase::searchItemInAssemble(Assemble assemble, It
 
         if(item.value.compare("") != 0)
         {
-            condition += std::string(" AND Lager.Value LIKE '");
+            condition += std::string(" AND Lager.Value LIKE '%");
             condition += item.value;
-            condition += std::string("'");
+            condition += std::string("%'");
         }
         if(item.value_2.compare("") != 0)
         {
-            condition += std::string(" AND Lager.Value2 LIKE '");
+            condition += std::string(" AND Lager.Value2 LIKE '%");
             condition += item.value_2;
-            condition += std::string("'");
+            condition += std::string("%'");
         }
             
         if(item.category.compare("None") != 0)
@@ -393,39 +501,39 @@ const std::deque<Item>& ItemDatabase::searchItemInAssemble(Assemble assemble, It
         }
         if(item.package.compare("") != 0)
         {
-            condition += std::string(" AND Lager.Package LIKE '");
+            condition += std::string(" AND Lager.Package LIKE '%");
             condition += item.package;
-            condition += std::string("'");
+            condition += std::string("%'");
         }
         if(item.description.compare("") != 0)
         {
-            condition += std::string(" AND Lager.Eigenschaften LIKE '");
+            condition += std::string(" AND Lager.Eigenschaften LIKE '%");
             condition += item.description;
-            condition += std::string("'");
+            condition += std::string("%'");
         }
         if(item.manufactor.compare("") != 0)
         {
-            condition += std::string(" AND Lager.Hersteller LIKE '");
+            condition += std::string(" AND Lager.Hersteller LIKE '%");
             condition += item.manufactor;
-            condition += std::string("'");
+            condition += std::string("%'");
         }
         if(item.manufactor_number.compare("") != 0)
         {
-            condition += std::string(" AND Lager.Herstellernummer LIKE '");
+            condition += std::string(" AND Lager.Herstellernummer LIKE '%");
             condition += item.manufactor_number;
-            condition += std::string("'");
+            condition += std::string("%'");
         }
         if(item.distributor.compare("") != 0)
         {
-            condition += std::string(" AND Lager.Distributor LIKE '");
+            condition += std::string(" AND Lager.Distributor LIKE '%");
             condition += item.distributor;
-            condition += std::string("'");
+            condition += std::string("%'");
         }
         if(item.shop_number.compare("") != 0)
         {
-            condition += std::string(" AND Lager.Bestellnummer LIKE '");
+            condition += std::string(" AND Lager.Bestellnummer LIKE '%");
             condition += item.shop_number;
-            condition += std::string("'");
+            condition += std::string("%'");
         }
         if(item.vpe > 0)
         {
@@ -480,7 +588,7 @@ const std::deque<Item>& ItemDatabase::searchItemInAssemble(Assemble assemble, It
        cmsg("[error]" + std::string(e.what()));
        LOG_ERROR(e.what());
     }
-    LOG_HISTORY(username << ": searches item: " << item.serializeCSV() << " in assemble " << assemble.name);
+    // LOG_HISTORY(username << ": searches item: " << item.serializeCSV() << " in assemble " << assemble.name);
     return m_list;
 }
 
@@ -488,7 +596,7 @@ const std::deque<Item>& ItemDatabase::searchItemInAssembleByID(Assemble assemble
 {
     try
     {
-        std::string condition("SELECT Lager.id, Lager.Value, Lager.Value2, Lager.Kategorie, Lager.Package, Lager.Eigenschaften, Lager.Anzahl, Lager.Hersteller, Lager.Herstellernummer, Lager.Distributor, Lager.Bestellnummer, Lager.Verpackungseinheit, Lager.Preis, Lager.Datenblatt, Lager.Reserviert, Lager.Einheit ");
+        std::string condition("SELECT Lager.id, Lager.Value, Lager.Value2, Lager.Kategorie, Lager.Package, Lager.Eigenschaften, Lager.Anzahl, Lager.Hersteller, Lager.Herstellernummer, Lager.Distributor, Lager.Bestellnummer, Lager.Verpackungseinheit, Lager.Preis, Lager.Lagerort, Lager.Datenblatt, Lager.Reserviert, Lager.Einheit, Lager.Oberkategorie ");
         condition += "FROM Link_Lager_Baugruppen ";
         condition += "INNER JOIN Lager ON Link_Lager_baugruppen.id = Lager.id ";
         condition += "INNER JOIN Baugruppen ON Baugruppen.id_bg = Link_Lager_Baugruppen.id_bg ";
@@ -528,7 +636,7 @@ const std::deque<Item>& ItemDatabase::searchItemInAssembleByID(Assemble assemble
        cmsg("[error]" + std::string(e.what()));
        LOG_ERROR(e.what());
     }
-    LOG_HISTORY(username << ": searches item with id " << item.id << " in assemble " << assemble.name);
+    // LOG_HISTORY(username << ": searches item with id " << item.id << " in assemble " << assemble.name);
     return m_list;
 }
 
@@ -630,7 +738,7 @@ const Assemble ItemDatabase::searchAssemble(Assemble assemble)
         cmsg("[error]" + std::string(e.what()));
         LOG_ERROR(e.what());
     }
-    LOG_HISTORY(username << ": searches bom of assemble" << assemble.name);
+    // LOG_HISTORY(username << ": searches bom of assemble" << assemble.name);
     return assemble;
 }
 
@@ -653,7 +761,7 @@ const std::deque<Assemble>& ItemDatabase::searchAssembles()
         cmsg("[error]" + std::string(e.what()));
         LOG_ERROR(e.what());
     }
-    LOG_HISTORY(username << ": searches assemble list");
+    // LOG_HISTORY(username << ": searches assemble list");
     return m_assemble_list;
 }
 
@@ -693,7 +801,7 @@ void ItemDatabase::reserveItemToAssemble(int id, Item item, int count, bool stac
     {
         if(stack_reservation)
         {
-            cmsg("[warning] Bauteil existiert bereits. Anzahl hinzugefügt");
+            // cmsg("[warning] Bauteil existiert bereits. Anzahl hinzugefügt");
             if(n+count >= 0)
             {
                 updateItemInReservation(id, item, n+count);
