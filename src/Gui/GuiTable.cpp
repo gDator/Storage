@@ -66,7 +66,7 @@ if(ImGui::BeginTable("search_results", 19, table_flags))
                 unsigned int id = content[row_n].id;
                 bool selected = selection.contains(id);
                 ImGui::TableSetColumnIndex(0);
-                //ImGui::Text(std::get<0>(content.at(row_n))->getName().c_str());                     
+                //ImGui::TextUnformatted(std::get<0>(content.at(row_n))->getName().c_str());                     
                 if (ImGui::Selectable(std::to_string(id).c_str(), selected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap, ImVec2(0, 0)))
                 {
                     if (ImGui::GetIO().KeyCtrl)

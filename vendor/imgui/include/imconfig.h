@@ -14,11 +14,25 @@
 
 #pragma once
 
-
 #include <iostream>
 
+// #define IM_VEC2_CLASS_EXTRA           \
+// template <typename T> \       
+//     ImVec2(const glm::vec<2, T, glm::defaultp>& v){        \
+//         x = static_cast<float>(v.x);  \
+//         y = static_cast<float>(v.y);  \
+//     }                                 \
+// template <typename T>                                      \        
+//     operator glm::vec<2, T, glm::defaultp>() const { \
+//         return glm::vec<2, T, glm::defaultp>(x, y);  \
+//     }
 
-#define ImTextureID unsigned int
+// #define IM_VEC4_CLASS_EXTRA     \                                                               
+//     ImVec4(const Vector4f& c) : x(c.r), y(c.g), z(c.b), w(c.a) {} \
+//     operator Vector4f() const {      \
+//         return Vector4f(x, y , z, w);    \
+//     }
+
 
 //---- Define assertion handler. Defaults to calling assert().
 // If your macro uses multiple statements, make sure is enclosed in a 'do { .. } while (0)' block so it can be used as a single statement.

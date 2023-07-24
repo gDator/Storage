@@ -28,11 +28,11 @@ ifeq ($(origin AR), default)
   AR = ar
 endif
 DEFINES += -DDEBUG
-INCLUDES += -Iinclude -Ivendor/imgui/include -Ivendor/Logger -Ivendor/stb -ID:/DEV/boost_1_82_0 -Ivendor/GL -Ivendor/sqlite -Ivendor -Ivendor/simpleini
+INCLUDES += -Iinclude -Ivendor/imgui/include -Ivendor/cpr/include -Ivendor/Logger -Ivendor/stb -ID:/DEV/boost_1_82_0 -Ivendor/GL -Ivendor/sqlite -Ivendor -Ivendor/simpleini
 FORCE_INCLUDE +=
 ALL_CPPFLAGS += $(CPPFLAGS) -MD -MP $(DEFINES) $(INCLUDES)
 ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-LIBS += -lglew32s -lopengl32 -lole32 -loleaut32 -limm32 -lversion -liconv -lpthread -lz -lsqlite3 -lSQLiteCpp -lcomdlg32 -lgdi32 -lglfw3 -lboost_log-mt-x64 -lboost_thread-mt-x64 -lboost_regex-mt-x64 -lboost_filesystem-mt-x64 -lboost_log_setup-mt-x64 -lboost_atomic-mt-x64 -lboost_chrono-mt-x64
+LIBS += -lglew32s -lopengl32 -lole32 -loleaut32 -limm32 -lversion -liconv -lpthread -lz -lsqlite3 -lSQLiteCpp -lcomdlg32 -lgdi32 -lglfw3 -lboost_log-mt-x64 -lboost_thread-mt-x64 -lboost_regex-mt-x64 -lboost_filesystem-mt-x64 -lboost_log_setup-mt-x64 -lboost_atomic-mt-x64 -lboost_chrono-mt-x64 -lcurl -lcpr
 LDDEPS +=
 define PREBUILDCMDS
 endef
@@ -117,11 +117,13 @@ GENERATED += $(OBJDIR)/GuiTable.o
 GENERATED += $(OBJDIR)/Item.o
 GENERATED += $(OBJDIR)/ItemDatabase.o
 GENERATED += $(OBJDIR)/ProgramStateDatabase.o
+GENERATED += $(OBJDIR)/WebConnection.o
 GENERATED += $(OBJDIR)/imgui.o
 GENERATED += $(OBJDIR)/imgui_demo.o
 GENERATED += $(OBJDIR)/imgui_draw.o
 GENERATED += $(OBJDIR)/imgui_impl_glfw.o
 GENERATED += $(OBJDIR)/imgui_impl_opengl3.o
+GENERATED += $(OBJDIR)/imgui_spectrum.o
 GENERATED += $(OBJDIR)/imgui_stdlib.o
 GENERATED += $(OBJDIR)/imgui_tables.o
 GENERATED += $(OBJDIR)/imgui_widgets.o
@@ -141,11 +143,13 @@ OBJECTS += $(OBJDIR)/GuiTable.o
 OBJECTS += $(OBJDIR)/Item.o
 OBJECTS += $(OBJDIR)/ItemDatabase.o
 OBJECTS += $(OBJDIR)/ProgramStateDatabase.o
+OBJECTS += $(OBJDIR)/WebConnection.o
 OBJECTS += $(OBJDIR)/imgui.o
 OBJECTS += $(OBJDIR)/imgui_demo.o
 OBJECTS += $(OBJDIR)/imgui_draw.o
 OBJECTS += $(OBJDIR)/imgui_impl_glfw.o
 OBJECTS += $(OBJDIR)/imgui_impl_opengl3.o
+OBJECTS += $(OBJDIR)/imgui_spectrum.o
 OBJECTS += $(OBJDIR)/imgui_stdlib.o
 OBJECTS += $(OBJDIR)/imgui_tables.o
 OBJECTS += $(OBJDIR)/imgui_widgets.o
@@ -243,6 +247,9 @@ $(OBJDIR)/ItemDatabase.o: src/ItemDatabase.cpp
 $(OBJDIR)/ProgramStateDatabase.o: src/ProgramStateDatabase.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(PERFILE_FLAGS_0) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/WebConnection.o: src/WebConnection.cpp
+	@echo "$(notdir $<)"
+	$(SILENT) $(CXX) $(PERFILE_FLAGS_0) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/main.o: src/main.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(PERFILE_FLAGS_0) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
@@ -268,6 +275,9 @@ $(OBJDIR)/imgui_impl_glfw.o: vendor/imgui/src/imgui_impl_glfw.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(PERFILE_FLAGS_0) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/imgui_impl_opengl3.o: vendor/imgui/src/imgui_impl_opengl3.cpp
+	@echo "$(notdir $<)"
+	$(SILENT) $(CXX) $(PERFILE_FLAGS_0) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/imgui_spectrum.o: vendor/imgui/src/imgui_spectrum.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(PERFILE_FLAGS_0) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/imgui_stdlib.o: vendor/imgui/src/imgui_stdlib.cpp

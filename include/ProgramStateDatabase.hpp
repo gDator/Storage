@@ -3,7 +3,6 @@
 
 #include "imgui.h"
 #include "imgui_internal.h"
-#include "implot.h"
 #include "ProgramState.hpp"
 #include "Console.hpp"
 #include "Gui/GuiDatabase.hpp"

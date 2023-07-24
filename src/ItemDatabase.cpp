@@ -332,12 +332,14 @@ bool ItemDatabase::removeItem(int id)
     {
         std::string condition("SELECT Lager.id, Lager.Value, Lager.Value2, Lager.Kategorie, Lager.Package, Lager.Eigenschaften, Lager.Anzahl, Lager.Hersteller, Lager.Herstellernummer, Lager.Distributor, Lager.Bestellnummer, Lager.Verpackungseinheit, Lager.Preis, Lager.Lagerort, Lager.Datenblatt, Lager.Reserviert, Lager.Einheit, Lager.Oberkategorie ");
         condition += "FROM Link_Lager_Baugruppen ";
-        condition += "INNER JOIN Lager ON Link_Lager_baugruppen.id = Lager.id ";
+        condition += "INNER JOIN Lager ON Link_Lager_Baugruppen.id = Lager.id ";
         condition += "INNER JOIN Baugruppen ON Baugruppen.id_bg = Link_Lager_Baugruppen.id_bg ";
         condition += "WHERE Lager.id = :id";
         m_list.clear();
         SQLite::Statement query(m_database, condition);
         query.bind(":id", id);
+
+        std::cout << condition << std::endl;
         while (query.executeStep())
         {
             Item res;
@@ -360,17 +362,7 @@ bool ItemDatabase::removeItem(int id)
             res.unit              = query.getColumn(16).getText();
             res.main_category     = query.getColumn(17).getText();
             res.price_per_unit    = res.price/res.vpe;
-            res.reserved          += getReservationsFromAssembles(res);
-            if(res.reserved != 0)
-            {
-                cmsg("[error] Item is reserved. Cant be deleted");
-                return false;
-            }
-            if(res.count != 0)
-            {
-                cmsg("[error] Cant be deleted. Storage contains this item.");
-                return false;
-            }
+            res.reserved          = getReservationsFromAssembles(res);
             m_list.push_back(res);
         }
         if(m_list.size() > 0)
@@ -383,6 +375,43 @@ bool ItemDatabase::removeItem(int id)
     {
        cmsg("[error]" + std::string(e.what()));
        LOG_ERROR(e.what());
+       return false;
+    }
+
+    try
+    {
+        std::string condition("SELECT Anzahl ");
+        condition += "FROM Lager ";
+        // condition += "INNER JOIN Baugruppen ON Baugruppen.id_bg = Link_Lager_Baugruppen.id_bg ";
+        condition += "WHERE id = :id";
+        m_list.clear();
+        SQLite::Statement query(m_database, condition);
+        query.bind(":id", id);
+
+        std::cout << condition << std::endl;
+        while (query.executeStep())
+        {
+            Item res;
+            res.count             = query.getColumn(0).getInt();
+            res.reserved          = getReservationsFromAssembles(res);
+            if(res.reserved != 0)
+            {
+                cmsg("[error] Item is reserved. Cant be deleted");
+                return false;
+            }
+            if(res.count != 0)
+            {
+                cmsg("[error] Cant be deleted. Storage contains this item.");
+                return false;
+            }
+            m_list.push_back(res);
+        }
+    }
+    catch(const std::exception& e)
+    {
+       cmsg("[error]" + std::string(e.what()));
+       LOG_ERROR(e.what());
+       return false;
     }
 
 

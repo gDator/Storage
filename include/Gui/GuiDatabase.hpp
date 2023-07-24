@@ -12,6 +12,7 @@
 #include "ItemDatabase.hpp"
 #include "SimpleIni.h"
 #include "logger.hpp"
+#include <queue>
 
 class GuiDatabase
 {
@@ -55,7 +56,7 @@ class GuiDatabase
         Console* p_console;
         std::unique_ptr<ItemDatabase> p_database;
 
-        std::vector<Item> import_csv{0};
+        std::queue<Item> import_csv;
 
         void showConsole();
         void showSearch();

@@ -11,6 +11,7 @@ project "STORAGE"
 	files {"**.hpp", "**.h", "**.c", "**.cpp", "**.cc", "**.idl"}
 	includedirs{"include",
 	"./vendor/imgui/include",
+	"./vendor/cpr/include",
 	"./vendor/Logger",
 	"./vendor/stb",
 	"D:/DEV/boost_1_82_0",
@@ -39,7 +40,9 @@ project "STORAGE"
 	"boost_filesystem-mt-x64",	
 	"boost_log_setup-mt-x64",
 	"boost_atomic-mt-x64",
-	"boost_chrono-mt-x64"}
+	"boost_chrono-mt-x64",
+	"curl",
+	"cpr"}
 	linkoptions{}
 	libdirs{"lib", 
 	"D:/DEV/boost_1_82_0/stage/lib"}

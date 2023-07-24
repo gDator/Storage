@@ -167,7 +167,7 @@ void Console::draw()
         else if (strstr(item, "[info]")) { color = ImVec4(0, 0.4f , 0.5f, 1.0f); has_color = true; }
         if (has_color)
             ImGui::PushStyleColor(ImGuiCol_Text, color);
-        ImGui::Text(item);
+        ImGui::TextUnformatted(item);
         if (has_color)
             ImGui::PopStyleColor();
     }

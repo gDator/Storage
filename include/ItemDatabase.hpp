@@ -52,7 +52,11 @@ class ItemDatabase
             GetUserName(username, &username_len);
             LOG_HISTORY("User " << username <<  "logged in Database " << filename);
         }
-        ~ItemDatabase() {}
+
+        ~ItemDatabase() 
+        {
+            LOG_HISTORY("User " << username <<  "logged out from Database " << m_filename);
+        }
 };
 
 #endif /*ITEM_DATABASE_HPP*/

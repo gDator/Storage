@@ -1,8 +1,3 @@
-HISTORY - BUGFIXES
-=======================================================================
-v0.1: 2023/04/01: Erstversion
-v0.2: 2023/04/28: transform to glfw; Deal with csv import
-
 
 BUGS
 =======================================================================
@@ -37,7 +32,10 @@ TODO
 + neue Schriftart
 + Link table
 
-
+HISTORY - BUGFIXES
+=======================================================================
+v0.1: 2023/04/01: Erstversion
+v0.2: 2023/04/28: transform to glfw; Deal with csv import
 -------------------------v0.1---------------------------
 + überprüfen ob bauteil bereits in baugruppe exisiert
 x Neue datenbank erstellen selektiert diese direkt (auch in ini file)

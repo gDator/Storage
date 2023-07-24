@@ -1,7 +1,7 @@
 #include "ProgramStateDatabase.hpp"
 #include "utils.hpp"
 #include "Item.hpp"
-
+#include "imgui_spectrum.h"
 namespace xgl
 {
 namespace program
@@ -12,8 +12,11 @@ ProgramStateDatabase::ProgramStateDatabase()
     //DEB(lg, trace) << "ProgramStateDatabase::ProgramStateDatabase()";
     //createTree();
     ImGuiIO io = ImGui::GetIO();
-    ImFont* ubuntu = io.Fonts->AddFontFromFileTTF("./res/UbuntuMono.ttf", 15);
-    assert(ubuntu != NULL);
+    ImGui::GetIO().Fonts->Clear();
+    ImGui::Spectrum::LoadFont();
+    // ImFont* ubuntu = io.Fonts->AddFontFromFileTTF("./res/UbuntuMono.ttf", 15);
+    // assert(ubuntu != NULL);
+    ImGui::Spectrum::StyleColorsSpectrumDark();
 
     p_gui = new GuiDatabase(&console);
     console_open = true;
