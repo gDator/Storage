@@ -1100,12 +1100,13 @@ void GuiDatabase::showBOM()
                         
                         ImVec4 color (0.0f, 0.0f, 0.0f, 1.0f);
                     
-                        if(std::get<1>(bom_content[row_n]) > std::get<0>(bom_content[row_n]).count + std::get<0>(bom_content[row_n]).reserved)
+                        //red has priority
+                        if(std::get<0>(bom_content[row_n]).reserved > std::get<0>(bom_content[row_n]).count)
                         {
                             color = ImVec4(.7f, .3f, .3f, .5f);
                             ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, ImGui::GetColorU32(color));
                         }                            
-                        else if(std::get<1>(bom_content[row_n]) == std::get<0>(bom_content[row_n]).count + std::get<0>(bom_content[row_n]).reserved)
+                        else if(std::get<1>(bom_content[row_n]) > std::get<0>(bom_content[row_n]).count)
                         {
                             color = ImVec4(.7f, 0.7f, 0.3f, .5f);
                             ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, ImGui::GetColorU32(color));
@@ -1352,7 +1353,10 @@ void GuiDatabase::addItemToStorageWithCheck()
         else //content.size() <= 0
         {
             auto n = item_to_check.count;
-            item_to_check.count = 0;
+            //If we add the item to assembly, the imported count is for the amount in the assembly
+            //The amount of the item is not imported, so set it to 0
+            if(show_check_item_in_assemble != StateAlternativePicking::NONE)
+                item_to_check.count = 0;
             item_to_check.id = p_database->addItem(item_to_check); 
             show_check_item = StateAlternativePicking::FINISHED; //State 5 in addItemToAssembleWithCheck
             item_to_check.count = n;
