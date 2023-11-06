@@ -42,7 +42,8 @@ project "STORAGE"
 	"boost_atomic-mt-x64",
 	"boost_chrono-mt-x64",
 	"curl",
-	"cpr"}
+	"cpr", 
+	"shell32"}
 	linkoptions{}
 	libdirs{"lib", 
 	"D:/DEV/boost_1_82_0/stage/lib"}

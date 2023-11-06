@@ -1,6 +1,9 @@
 #include "Gui/GuiTable.hpp"
 #include "imgui.h"
 #include "imgui_stdlib.h"
+#include "Windows.h"
+#include <shellapi.h>
+#include "Global.hpp"
 
 void GuiTable::draw(std::deque<Item>& content, ImVector<unsigned int>& selection, Item*& selected_item)
 {
@@ -30,7 +33,7 @@ if(ImGui::BeginTable("search_results", 19, table_flags))
     ImGui::TableSetupColumn("Preis/VPE [Euro]", ImGuiTableColumnFlags_DefaultSort);
     ImGui::TableSetupColumn("Preis/Stück [Euro]", ImGuiTableColumnFlags_DefaultSort);
     ImGui::TableSetupColumn("Lagerort", ImGuiTableColumnFlags_NoSort);
-    ImGui::TableSetupColumn("Datenblatt", ImGuiTableColumnFlags_NoSort);
+    ImGui::TableSetupColumn("RoHs/REACH", ImGuiTableColumnFlags_NoSort);
     ImGui::TableSetupScrollFreeze(0, 1); // Make row always visible
     ImGui::TableHeadersRow();
     // Sorting
@@ -118,7 +121,31 @@ if(ImGui::BeginTable("search_results", 19, table_flags))
                 ImGui::TableSetColumnIndex(17);
                 ImGui::TextUnformatted(content[row_n].storage_place.c_str());
                 ImGui::TableSetColumnIndex(18);
-                ImGui::TextUnformatted(content[row_n].datasheet.c_str());
+                if(content[row_n].datasheet == "")
+                    ImGui::TextUnformatted(content[row_n].datasheet.c_str());
+                else
+                    if(ImGui::SmallButton(content[row_n].datasheet.c_str()))
+                    {
+                        //open pdf with standard program
+                        try
+                        {
+                            ShellExecute(0,0 , std::string(g_settings.path_to_datasheet + "\\" + content[row_n].datasheet).c_str(), 0, 0, SW_SHOW);
+                        }
+                        catch(const std::exception& e)
+                        {
+                                if(!std::filesystem::exists(std::string(g_settings.path_to_datasheet + "\\" + content[row_n].datasheet)))
+                                {
+                                    cmsg("[Error] File not found");
+                                    LOG_ERROR("Could not open File:" + std::string(g_settings.path_to_datasheet + "\\" + content[row_n].datasheet));
+                                }
+                                else
+                                {
+                                    cmsg("[Error] No pdf Program!");
+                                    LOG_ERROR("No Program");
+                                }
+                        }
+                    }
+                              
             }
     }
     ImGui::EndTable();

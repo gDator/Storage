@@ -15,6 +15,11 @@ namespace xgl
 {
     namespace program
     {
+        struct Settings
+        {
+            std::string path_to_datasheet = "";
+        };
+        
         class ProgramStateDatabase : public ProgramState
         {
             friend class GuiDatabase;

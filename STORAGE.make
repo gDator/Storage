@@ -32,7 +32,7 @@ INCLUDES += -Iinclude -Ivendor/imgui/include -Ivendor/cpr/include -Ivendor/Logge
 FORCE_INCLUDE +=
 ALL_CPPFLAGS += $(CPPFLAGS) -MD -MP $(DEFINES) $(INCLUDES)
 ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-LIBS += -lglew32s -lopengl32 -lole32 -loleaut32 -limm32 -lversion -liconv -lpthread -lz -lsqlite3 -lSQLiteCpp -lcomdlg32 -lgdi32 -lglfw3 -lboost_log-mt-x64 -lboost_thread-mt-x64 -lboost_regex-mt-x64 -lboost_filesystem-mt-x64 -lboost_log_setup-mt-x64 -lboost_atomic-mt-x64 -lboost_chrono-mt-x64 -lcurl -lcpr
+LIBS += -lglew32s -lopengl32 -lole32 -loleaut32 -limm32 -lversion -liconv -lpthread -lz -lsqlite3 -lSQLiteCpp -lcomdlg32 -lgdi32 -lglfw3 -lboost_log-mt-x64 -lboost_thread-mt-x64 -lboost_regex-mt-x64 -lboost_filesystem-mt-x64 -lboost_log_setup-mt-x64 -lboost_atomic-mt-x64 -lboost_chrono-mt-x64 -lcurl -lcpr -lshell32
 LDDEPS +=
 define PREBUILDCMDS
 endef

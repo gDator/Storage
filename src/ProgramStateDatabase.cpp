@@ -2,6 +2,8 @@
 #include "utils.hpp"
 #include "Item.hpp"
 #include "imgui_spectrum.h"
+#include "Global.hpp"
+
 namespace xgl
 {
 namespace program
@@ -57,7 +59,7 @@ void ProgramStateDatabase::draw(const float dt, GLFWwindow *window)
     //program->getRenderWindow().clear(xgl::graphics::getXglImguiColors(xgl::graphics::WindowBg));
     p_gui->draw();
     // ImPlot::ShowDemoWindow();
-    // ImGui::ShowDemoWindow();
+    //ImGui::ShowDemoWindow();
 }
 
 /*
@@ -190,9 +192,11 @@ void ProgramStateDatabase::init()
         }
     }
 
-    //
-
-    
+    result = ini.GetValue("Settings", "Datasheet_Path", "");
+    if(result != "")
+    {
+        g_settings.path_to_datasheet = result;
+    }
 }
 }
 }

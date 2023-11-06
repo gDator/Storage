@@ -3,6 +3,8 @@
 #include "CSV.hpp"
 #include "Gui/GuiTable.hpp"
 #include "imgui_spectrum.h"
+#include "Global.hpp"
+
 void GuiDatabase::draw()
 {
     ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
@@ -1082,7 +1084,7 @@ void GuiDatabase::showBOM()
             ImGui::TableSetupColumn("Verpackungseinheit", ImGuiTableColumnFlags_NoSort);
             ImGui::TableSetupColumn("Preis/VPE [Euro]", ImGuiTableColumnFlags_NoSort);
             ImGui::TableSetupColumn("Lagerort", ImGuiTableColumnFlags_NoSort);
-            ImGui::TableSetupColumn("Datenblatt", ImGuiTableColumnFlags_NoSort);
+            ImGui::TableSetupColumn("RoHs/REACH", ImGuiTableColumnFlags_NoSort);
             
             ImGui::TableSetupScrollFreeze(0, 1); // Make row always visible
             ImGui::TableHeadersRow();
@@ -1168,7 +1170,31 @@ void GuiDatabase::showBOM()
                         ImGui::TextUnformatted(std::get<0>(bom_content[row_n]).storage_place.c_str());
                         ImGui::TableSetColumnIndex(18);
                         ImGui::TextUnformatted(std::get<0>(bom_content[row_n]).datasheet.c_str());
-                    }
+                        if(std::get<0>(bom_content[row_n]).datasheet == "")
+                            ImGui::TextUnformatted(std::get<0>(bom_content[row_n]).datasheet.c_str());
+                        else
+                            if(ImGui::SmallButton(std::get<0>(bom_content[row_n]).datasheet.c_str()))
+                            {
+                                //open pdf with standard program
+                                try
+                                {
+                                    ShellExecute(0,0 , std::string(g_settings.path_to_datasheet + "\\" + std::get<0>(bom_content[row_n]).datasheet).c_str(), 0, 0, SW_SHOW);
+                                }
+                                catch(const std::exception& e)
+                                {
+                                        if(!std::filesystem::exists(std::string(g_settings.path_to_datasheet + "\\" + std::get<0>(bom_content[row_n]).datasheet)))
+                                        {
+                                            cmsg("[Error] File not found");
+                                            LOG_ERROR("Could not open File:" + std::string(g_settings.path_to_datasheet + "\\" + std::get<0>(bom_content[row_n]).datasheet));
+                                        }
+                                        else
+                                        {
+                                            cmsg("[Error] No pdf Program!");
+                                            LOG_ERROR("No Program");
+                                        }
+                                }
+                            }
+                        }
             }
             ImGui::EndTable();
         }
@@ -1330,7 +1356,12 @@ void GuiDatabase::addItemToStorageWithCheck()
                 ImGui::SameLine();
                 if(ImGui::Button("Neu anlegen"))
                 {
-                    item_to_check.count = 0;
+                    //if we add item only to storage, we add the amount, which is entered by user
+                    //otherwise (item gets also added to assembly) we dont want the count as amount in storage
+                    //becuase count means count per assembly
+                    //TODO: test
+                    if(show_check_item_in_assemble != StateAlternativePicking::NONE)
+                        item_to_check.count = 0;
                     cmsg("[warning] Added Item with 0 count");
                     item_to_check.id = p_database->addItem(item_to_check);
                     ImGui::CloseCurrentPopup();
