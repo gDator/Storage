@@ -39,7 +39,7 @@ HOW TO USE
 
 CONFIGURATION
 -------------------------------------------
-![Typical Configuration File](images/Setting.JPG)
+![Typical Configuration File](images/Settings.JPG)
 - Settings-Database: automaticly stores last connection to database
 - Settings-Units: Possible Units inside the application
 - settings-Main_Categories: Create your own possible main categories (in example (E)lectrical, (M)echanical, (K)abel (german word for cables))
