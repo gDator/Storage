@@ -81,6 +81,7 @@ bool Item::deserializeCSV(Item& i, std::vector<std::string> data)
     if(data.size() != 16)
     {
         LOG_ERROR("CSV data has not right amount of columns: " << data.size());
+        cmsg("[Error] CSV data has not right amount of columns: " + std::to_string(data.size()));
         return false;
     }
     i.main_category = data[0];   

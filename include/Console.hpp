@@ -5,7 +5,7 @@
 #include "imgui_internal.h"
 #include "imgui_stdlib.h"
 #include <boost/circular_buffer.hpp>
-
+#include <vector>
 
 class Console;
 class Command

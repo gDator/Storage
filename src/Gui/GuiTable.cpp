@@ -1,9 +1,14 @@
 #include "Gui/GuiTable.hpp"
 #include "imgui.h"
 #include "imgui_stdlib.h"
+#include "Language/Language.hpp"
+#include "Global.hpp"
+
+#ifdef _WIN32
 #include "Windows.h"
 #include <shellapi.h>
-#include "Global.hpp"
+#elif __linux__
+#endif
 
 void GuiTable::draw(std::deque<Item>& content, ImVector<unsigned int>& selection, Item*& selected_item)
 {
@@ -15,25 +20,25 @@ static ImGuiTableFlags table_flags =
 
 if(ImGui::BeginTable("search_results", 19, table_flags))
 {
-    ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_DefaultSort);
-    ImGui::TableSetupColumn("Oberkategorie", ImGuiTableColumnFlags_DefaultSort);
-    ImGui::TableSetupColumn("Kategorie", ImGuiTableColumnFlags_DefaultSort);
-    ImGui::TableSetupColumn("Value 1", ImGuiTableColumnFlags_DefaultSort);
-    ImGui::TableSetupColumn("Value 2", ImGuiTableColumnFlags_DefaultSort);
-    ImGui::TableSetupColumn("Package ", ImGuiTableColumnFlags_DefaultSort);
-    ImGui::TableSetupColumn("Beschreibung ", ImGuiTableColumnFlags_DefaultSort);
-    ImGui::TableSetupColumn("Einheit", ImGuiTableColumnFlags_DefaultSort);
-    ImGui::TableSetupColumn("Anzahl", ImGuiTableColumnFlags_DefaultSort);
-    ImGui::TableSetupColumn("Reserviert", ImGuiTableColumnFlags_DefaultSort);
-    ImGui::TableSetupColumn("Hersteller", ImGuiTableColumnFlags_DefaultSort);
-    ImGui::TableSetupColumn("Hersteller-Nr.", ImGuiTableColumnFlags_DefaultSort);
-    ImGui::TableSetupColumn("Distributor", ImGuiTableColumnFlags_DefaultSort);
-    ImGui::TableSetupColumn("Bestell-Nr.", ImGuiTableColumnFlags_DefaultSort);
-    ImGui::TableSetupColumn("Verpackungseinheit", ImGuiTableColumnFlags_DefaultSort);
-    ImGui::TableSetupColumn("Preis/VPE [Euro]", ImGuiTableColumnFlags_DefaultSort);
-    ImGui::TableSetupColumn("Preis/Stück [Euro]", ImGuiTableColumnFlags_DefaultSort);
-    ImGui::TableSetupColumn("Lagerort", ImGuiTableColumnFlags_NoSort);
-    ImGui::TableSetupColumn("RoHs/REACH", ImGuiTableColumnFlags_NoSort);
+    ImGui::TableSetupColumn(L_ID, ImGuiTableColumnFlags_DefaultSort);
+    ImGui::TableSetupColumn(L_MAIN_CATEGORY, ImGuiTableColumnFlags_DefaultSort);
+    ImGui::TableSetupColumn(L_CATEGORY, ImGuiTableColumnFlags_DefaultSort);
+    ImGui::TableSetupColumn(L_VALUE_FIRST, ImGuiTableColumnFlags_DefaultSort);
+    ImGui::TableSetupColumn(L_VALUE_SECOND, ImGuiTableColumnFlags_DefaultSort);
+    ImGui::TableSetupColumn(L_PACKAGE, ImGuiTableColumnFlags_DefaultSort);
+    ImGui::TableSetupColumn(L_DESCRIPTION, ImGuiTableColumnFlags_DefaultSort);
+    ImGui::TableSetupColumn(L_UNIT, ImGuiTableColumnFlags_DefaultSort);
+    ImGui::TableSetupColumn(L_COUNT, ImGuiTableColumnFlags_DefaultSort);
+    ImGui::TableSetupColumn(L_RESERVED, ImGuiTableColumnFlags_DefaultSort);
+    ImGui::TableSetupColumn(L_MANUFACTOR, ImGuiTableColumnFlags_DefaultSort);
+    ImGui::TableSetupColumn(L_MANUFACTOR_NO, ImGuiTableColumnFlags_DefaultSort);
+    ImGui::TableSetupColumn(L_DISTRIBUTOR, ImGuiTableColumnFlags_DefaultSort);
+    ImGui::TableSetupColumn(L_DISTRIBUTOR_NO, ImGuiTableColumnFlags_DefaultSort);
+    ImGui::TableSetupColumn(L_PACKAGING, ImGuiTableColumnFlags_DefaultSort);
+    ImGui::TableSetupColumn(L_PRICE_PER_PACKAGING, ImGuiTableColumnFlags_DefaultSort);
+    ImGui::TableSetupColumn(L_PRICE_PER_PIECE, ImGuiTableColumnFlags_DefaultSort);
+    ImGui::TableSetupColumn(L_STORAGE_PLACE, ImGuiTableColumnFlags_NoSort);
+    ImGui::TableSetupColumn(L_DOCUMENT_LINK, ImGuiTableColumnFlags_NoSort);
     ImGui::TableSetupScrollFreeze(0, 1); // Make row always visible
     ImGui::TableHeadersRow();
     // Sorting
@@ -129,7 +134,9 @@ if(ImGui::BeginTable("search_results", 19, table_flags))
                         //open pdf with standard program
                         try
                         {
-                            ShellExecute(0,0 , std::string(g_settings.path_to_datasheet + "\\" + content[row_n].datasheet).c_str(), 0, 0, SW_SHOW);
+                            #ifdef _WIN32
+                                ShellExecute(0,0 , std::string(g_settings.path_to_datasheet + "\\" + content[row_n].datasheet).c_str(), 0, 0, SW_SHOW);
+                            #endif
                         }
                         catch(const std::exception& e)
                         {

@@ -1,7 +1,6 @@
 #ifndef PROGRAMM_STATE_HPP
 #define PROGRAMM_STATE_HPP
 
-#include "SFML/Graphics.hpp"
 #include "program.hpp"
 namespace xgl
 {

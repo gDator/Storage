@@ -27,12 +27,11 @@ endif
 ifeq ($(origin AR), default)
   AR = ar
 endif
-DEFINES += -DDEBUG
+DEFINES += -DENGLISH -DDEBUG
 INCLUDES += -Iinclude -Ivendor/imgui/include -Ivendor/cpr/include -Ivendor/Logger -Ivendor/stb -ID:/DEV/boost_1_82_0 -Ivendor/GL -Ivendor/sqlite -Ivendor -Ivendor/simpleini
 FORCE_INCLUDE +=
 ALL_CPPFLAGS += $(CPPFLAGS) -MD -MP $(DEFINES) $(INCLUDES)
 ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-LIBS += -lglew32s -lopengl32 -lole32 -loleaut32 -limm32 -lversion -liconv -lpthread -lz -lsqlite3 -lSQLiteCpp -lcomdlg32 -lgdi32 -lglfw3 -lboost_log-mt-x64 -lboost_thread-mt-x64 -lboost_regex-mt-x64 -lboost_filesystem-mt-x64 -lboost_log_setup-mt-x64 -lboost_atomic-mt-x64 -lboost_chrono-mt-x64 -lcurl -lcpr -lshell32
 LDDEPS +=
 define PREBUILDCMDS
 endef
@@ -47,6 +46,7 @@ TARGET = $(TARGETDIR)/storage.exe
 OBJDIR = obj/Win64/Debug
 ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -g -g3 -fdata-sections -ffunction-sections
 ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -g -g3 -fdata-sections -ffunction-sections
+LIBS += -lglew32s -lopengl32 -lole32 -loleaut32 -limm32 -lversion -liconv -lpthread -lz -lsqlite3 -lSQLiteCpp -lcomdlg32 -lgdi32 -lglfw3 -lboost_log-mt-x64 -lboost_thread-mt-x64 -lboost_regex-mt-x64 -lboost_filesystem-mt-x64 -lboost_log_setup-mt-x64 -lboost_atomic-mt-x64 -lboost_chrono-mt-x64 -lcurl -lcpr -lshell32
 ALL_LDFLAGS += $(LDFLAGS) -Llib -LD:/DEV/boost_1_82_0/stage/lib -L/usr/lib64 -m64
 LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
 
@@ -56,6 +56,7 @@ TARGET = $(TARGETDIR)/storage.lib
 OBJDIR = obj/Static/Debug
 ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -g -g3 -fdata-sections -ffunction-sections
 ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -g -g3 -fdata-sections -ffunction-sections
+LIBS +=
 ALL_LDFLAGS += $(LDFLAGS) -Llib -LD:/DEV/boost_1_82_0/stage/lib
 LINKCMD = $(AR) -rcs "$@" $(OBJECTS)
 
@@ -65,7 +66,18 @@ TARGET = $(TARGETDIR)/storage.exe
 OBJDIR = obj/Shared/Debug
 ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -g -g3 -fdata-sections -ffunction-sections
 ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -g -g3 -fdata-sections -ffunction-sections
+LIBS +=
 ALL_LDFLAGS += $(LDFLAGS) -Llib -LD:/DEV/boost_1_82_0/stage/lib
+LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
+
+else ifeq ($(config),debug_linux)
+TARGETDIR = .
+TARGET = $(TARGETDIR)/storage
+OBJDIR = obj/Linux/Debug
+ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -g -g3 -fdata-sections -ffunction-sections
+ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -g -g3 -fdata-sections -ffunction-sections
+LIBS += -lglew32s -lpthread -lsqlite3 -lSQLiteCpp -lglfw3 -lboost_log -lboost_thread -lboost_regex -lboost_filesystem -lboost_log_setup -lboost_atomic -lboost_chrono
+ALL_LDFLAGS += $(LDFLAGS) -Llib -LD:/DEV/boost_1_82_0/stage/lib -L/usr/lib64 -m64
 LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
 
 else ifeq ($(config),release_win64)
@@ -74,6 +86,7 @@ TARGET = $(TARGETDIR)/storage.exe
 OBJDIR = obj/Win64/Release
 ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -fdata-sections -ffunction-sections -m64 -Wall -Wextra -pthread
 ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -fdata-sections -ffunction-sections -m64 -Wall -Wextra -pthread
+LIBS += -lglew32s -lopengl32 -lole32 -loleaut32 -limm32 -lversion -liconv -lpthread -lz -lsqlite3 -lSQLiteCpp -lcomdlg32 -lgdi32 -lglfw3 -lboost_log-mt-x64 -lboost_thread-mt-x64 -lboost_regex-mt-x64 -lboost_filesystem-mt-x64 -lboost_log_setup-mt-x64 -lboost_atomic-mt-x64 -lboost_chrono-mt-x64 -lcurl -lcpr -lshell32
 ALL_LDFLAGS += $(LDFLAGS) -Llib -LD:/DEV/boost_1_82_0/stage/lib -L/usr/lib64 -m64 -mwindows -fno-exceptions -fno-rtti -fPIC
 LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
 
@@ -83,6 +96,7 @@ TARGET = $(TARGETDIR)/storage.lib
 OBJDIR = obj/Static/Release
 ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -O2 -fdata-sections -ffunction-sections -m64 -Wall -Wextra -pthread
 ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -O2 -fdata-sections -ffunction-sections -m64 -Wall -Wextra -pthread
+LIBS +=
 ALL_LDFLAGS += $(LDFLAGS) -Llib -LD:/DEV/boost_1_82_0/stage/lib -fno-exceptions -fno-rtti -fPIC
 LINKCMD = $(AR) -rcs "$@" $(OBJECTS)
 
@@ -92,7 +106,18 @@ TARGET = $(TARGETDIR)/storage.exe
 OBJDIR = obj/Shared/Release
 ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -O2 -fdata-sections -ffunction-sections -m64 -Wall -Wextra -pthread
 ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -O2 -fdata-sections -ffunction-sections -m64 -Wall -Wextra -pthread
+LIBS +=
 ALL_LDFLAGS += $(LDFLAGS) -Llib -LD:/DEV/boost_1_82_0/stage/lib -mwindows -fno-exceptions -fno-rtti -fPIC
+LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
+
+else ifeq ($(config),release_linux)
+TARGETDIR = .
+TARGET = $(TARGETDIR)/storage
+OBJDIR = obj/Linux/Release
+ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -fdata-sections -ffunction-sections -m64 -Wall -Wextra -pthread
+ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -fdata-sections -ffunction-sections -m64 -Wall -Wextra -pthread
+LIBS += -lglew32s -lpthread -lsqlite3 -lSQLiteCpp -lglfw3 -lboost_log -lboost_thread -lboost_regex -lboost_filesystem -lboost_log_setup -lboost_atomic -lboost_chrono
+ALL_LDFLAGS += $(LDFLAGS) -Llib -LD:/DEV/boost_1_82_0/stage/lib -L/usr/lib64 -m64 -fno-exceptions -fno-rtti -fPIC
 LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
 
 endif

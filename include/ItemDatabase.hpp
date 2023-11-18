@@ -4,9 +4,14 @@
 #include <deque>
 #include "Item.hpp"
 #include "Assemble.hpp"
+#include "logger.hpp"
+
+#ifdef _WIN32
 #include <windows.h>
 #include <Lmcons.h>
-#include "logger.hpp"
+#elif __linux__
+#include <unistd.h>
+#endif
 
 class ItemDatabase
 {
@@ -15,7 +20,7 @@ class ItemDatabase
         SQLite::Database m_database;
         std::deque<Item> m_list;
         std::deque<Assemble> m_assemble_list;
-        char username[UNLEN+1];
+        char username[256];
         bool m_updated = true;
         int m_id; //tracks intern id 
     public:
@@ -48,8 +53,15 @@ class ItemDatabase
 
         ItemDatabase(std::string filename) : m_filename(filename), m_database(m_filename, SQLite::OPEN_READWRITE|SQLite::OPEN_CREATE)
         {
-            DWORD username_len = UNLEN+1;
-            GetUserName(username, &username_len);
+            #ifdef _WIN32
+                DWORD username_len = 256+1;
+                GetUserName(username, &username_len);
+                
+            #elif __linux__
+                char name [256]; 
+                int getlogin_r(char *name, size_t 256);
+                username = std::to_string(name);
+            #endif
             LOG_HISTORY("User " << username <<  "logged in Database " << filename);
         }
 

@@ -4,15 +4,16 @@
 #include "Gui/GuiTable.hpp"
 #include "imgui_spectrum.h"
 #include "Global.hpp"
+#include "Language/Language.hpp"
 
 void GuiDatabase::draw()
 {
     ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
     if(ImGui::BeginMainMenuBar())
     {
-        if(ImGui::BeginMenu("Datei"))
+        if(ImGui::BeginMenu(L_FILE))
         {
-            if(ImGui::MenuItem("Neue Datenbank..."))
+            if(ImGui::MenuItem(L_NEW_DATABASE))
             {
                 std::string path = FileDialog::SaveFile("Database (*.db)\0\*.db\0");
                 if(path != "")
@@ -25,7 +26,7 @@ void GuiDatabase::draw()
                 // file_explorer.PickFile(std::filesystem::absolute(std::filesystem::current_path()), [&](const std::filesystem::path& selected_path) {/*Store data*/});
             }
 
-            if(ImGui::MenuItem("Datenbank laden..."))
+            if(ImGui::MenuItem(L_LOAD_DATABASE))
             {
                 std::string path = FileDialog::OpenFile("Database (*.db)\0\*.db\0");
                 if(path != "")
@@ -65,9 +66,9 @@ void GuiDatabase::draw()
                 }
                 ImGui::EndMenu();
             }*/
-            if(ImGui::BeginMenu("Exportieren"))   //whole storage
+            if(ImGui::BeginMenu(L_EXPORT))   //whole storage
             {
-                if(ImGui::MenuItem("CSV")) 
+                if(ImGui::MenuItem(L_CSV)) 
                 {
                     std::string path = FileDialog::SaveFile("CSV (*.csv)\0*.csv");
                     if(path != "" && p_database != nullptr)
@@ -78,7 +79,7 @@ void GuiDatabase::draw()
                         {
                             result.push_back(content[i].serializeCSV());
                         }
-                        CSV::exportCSV(path, result, {"Kategorie", "Value 1", "Value 2", "Package", "Beschreibung", "Hersteller", "Hersteller-Nr.", "Distributor", "Bestellnummer", "Verpackungseinheit", "Preis", "Preis/Stck", "Anzahl"});
+                        CSV::exportCSV(path, result, {L_CATEGORY, L_VALUE_FIRST, L_VALUE_SECOND, L_PACKAGE, L_DESCRIPTION, L_MANUFACTOR, L_MANUFACTOR_NO, L_DISTRIBUTOR, L_DISTRIBUTOR_NO, L_PACKAGING, L_PRICE, L_PRICE_PER_PIECE, L_COUNT});
                     }
                 }
                 ImGui::EndMenu();
@@ -86,52 +87,61 @@ void GuiDatabase::draw()
             ImGui::EndMenu();
         }
 
-        if(ImGui::BeginMenu("Bearbeiten"))
+        if(ImGui::BeginMenu(L_EDIT))
         {
-            if(ImGui::BeginMenu("Bauteil"))
+            if(ImGui::BeginMenu(L_COMPONENT))
             {
-                if(ImGui::MenuItem("Neu")) {show_new_item = true;}
+                if(ImGui::MenuItem(L_NEW)) {show_new_item = true;}
                 if(p_selected_item != nullptr)
                 {
-                    if(ImGui::MenuItem("Aktualisieren")) 
+                    if(ImGui::MenuItem(L_UPDATE)) 
                     {
                         show_change_item = true; 
                         m_item_action = ItemAction::UPDATE_ITEM;
                     }
                     
-                    if(ImGui::MenuItem("Reservieren")) 
+                    if(ImGui::MenuItem(L_RESERVE_COMPONENT)) 
                     {
                         show_remove = true; 
                         m_count_action = CountAction::RESERVE_ITEM;
                     }
-                    if(ImGui::MenuItem("Reservierung verbraucht")) 
+                    if(ImGui::MenuItem(L_CONSUME_COMPONENT_RESERVATION)) 
                     {
                         show_remove = true; 
                         m_count_action = CountAction::RESET_ITEM_RESERVATION;
                     }
-                    if(ImGui::MenuItem("Reserviereung frei geben")) 
+                    if(ImGui::MenuItem(L_RELEASE_COMPONENT_RESERVATION)) 
                     {
                         show_remove = true; 
                         m_count_action = CountAction::RELEASE_ITEM_RESERVATION;
                     }
-                    if(ImGui::MenuItem("->Lager")) 
+                    if(ImGui::MenuItem(L_ADD_COMPONENT_TO_STORAGE)) 
                     {
                         show_remove = true; 
                         m_count_action = CountAction::INCREASE_ITEM;
                     }
-                    if(ImGui::MenuItem("<-Lager"))
+                    if(ImGui::MenuItem(L_REMOVE_COMPONENT_FROM_STORAGE))
                     {
                         show_remove = true; 
                         m_count_action = CountAction::DECREASE_ITEM;
+                    }
+                    if(ImGui::MenuItem(L_DISAPEAR))
+                    {
+                        if(p_selected_item != nullptr)
+                            if(p_database->removeItem(p_selected_item->id))
+                            {
+                                p_selected_item = nullptr;
+                                cmsg("[info] Item deleted.");
+                            }           
                     }
                 }
                 ImGui::EndMenu();
             }
             
-            if(ImGui::BeginMenu("Baugruppe"))
+            if(ImGui::BeginMenu(L_ASSEMBLY))
             {
-                if(ImGui::MenuItem("Neu")) {show_assemble = true;}
-                if(ImGui::MenuItem("Bauteil->"))
+                if(ImGui::MenuItem(L_NEW)) {show_assemble = true;}
+                if(ImGui::MenuItem(L_ADD_COMPONENT_TO_STORAGE_AND_ASSEMBLY))
                 {
                     if(p_selected_assemble != nullptr)
                     {
@@ -139,7 +149,7 @@ void GuiDatabase::draw()
                         show_new_item = true;
                     }
                 }
-                if(ImGui::MenuItem("Baugruppe->")) 
+                if(ImGui::MenuItem(L_PRODUCE_ASSEMBLY)) 
                 {
                     if(p_selected_assemble != nullptr)
                     {
@@ -149,7 +159,7 @@ void GuiDatabase::draw()
                     else
                         cmsg("[warning] No Assemble selected");
                 }
-                if(ImGui::MenuItem("Lager->"))
+                if(ImGui::MenuItem(L_ADD_COMPONENT_TO_ASSEMBLY))
                 {
                     if(p_selected_item != nullptr)
                     {
@@ -172,13 +182,13 @@ void GuiDatabase::draw()
             
             ImGui::EndMenu();
         }
-        if(ImGui::BeginMenu("Ansicht"))
+        if(ImGui::BeginMenu(L_VIEW))
         {
-            if(ImGui::MenuItem("Lager", NULL ,&show_search)) {m_gui_database_updated = false;}
-            if(ImGui::MenuItem("Baugruppen", NULL, &show_assemble_list)) {m_gui_database_updated = false;}
-            if(ImGui::MenuItem("Konsole", NULL, &show_console)) {}
-            if(ImGui::MenuItem("Info Box", NULL, &show_info)) {}
-            if(ImGui::MenuItem("BOM")) 
+            if(ImGui::MenuItem(L_STORAGE, NULL ,&show_search)) {m_gui_database_updated = false;}
+            if(ImGui::MenuItem(L_ASSEMBLY_LIST, NULL, &show_assemble_list)) {m_gui_database_updated = false;}
+            if(ImGui::MenuItem(L_CONSOLE, NULL, &show_console)) {}
+            if(ImGui::MenuItem(L_INFO_BOX, NULL, &show_info)) {}
+            if(ImGui::MenuItem(L_BOM)) 
             {
                 if(p_selected_assemble != nullptr)
                 {
@@ -187,14 +197,14 @@ void GuiDatabase::draw()
             }
             ImGui::EndMenu();
         }
-        if(ImGui::BeginMenu("Options"))
+        if(ImGui::BeginMenu(L_OPTIONS))
         {
             // if(ImGui::MenuItem("Vollbild", NULL, &fullscreen)) 
             // {
             // }
             ImGui::Separator();
-            if(ImGui::MenuItem("Darkmode", NULL, &m_dark_mode)) {m_dark_mode? ImGui::Spectrum::StyleColorsSpectrumDark() : ImGui::Spectrum::StyleColorsSpectrumLight(); }
-            if(ImGui::MenuItem("Über...")) {}
+            if(ImGui::MenuItem(L_DARKMODE, NULL, &m_dark_mode)) {m_dark_mode? ImGui::Spectrum::StyleColorsSpectrumDark() : ImGui::Spectrum::StyleColorsSpectrumLight(); }
+            if(ImGui::MenuItem(L_ABOUT)) {}
             ImGui::EndMenu();
         }        
         ImGui::EndMainMenuBar();
@@ -249,7 +259,7 @@ void GuiDatabase::showConsole()
 void GuiDatabase::showSearch()
 {
     // ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar;
-    if(ImGui::Begin("Lager", &show_search))
+    if(ImGui::Begin(L_STORAGE, &show_search))
     {
         static std::deque<Item> content;
         static ImVector<unsigned int> selection;
@@ -258,7 +268,7 @@ void GuiDatabase::showSearch()
         static GuiTable table;
         static std::vector<uint8_t> category_filter(g_categories.size()); 
         ImGui::SameLine();
-        if(ImGui::Button("Aktualisieren"))
+        if(ImGui::Button(L_UPDATE))
         {
             content.resize(0);
             selection.resize(0);
@@ -278,18 +288,9 @@ void GuiDatabase::showSearch()
             content = p_database->searchItem(filter);
             filter.main_category = save;
         }
+
         ImGui::SameLine();
-        if(ImGui::Button("Auflösen"))
-        {
-            if(p_selected_item != nullptr)
-                if(p_database->removeItem(p_selected_item->id))
-                {
-                    p_selected_item = nullptr;
-                    cmsg("[info] Item deleted.");
-                }           
-        }
-        ImGui::SameLine();
-        if(ImGui::TreeNode("Filter"))
+        if(ImGui::TreeNode(L_FILTER))
         {
             int i = 0;
             for(auto& cat : g_categories)
@@ -299,7 +300,7 @@ void GuiDatabase::showSearch()
                 i++;
             }
             ImGui::NewLine();
-            if (ImGui::BeginCombo("Oberkategorie", filter.main_category.c_str()))
+            if (ImGui::BeginCombo(L_MAIN_CATEGORY, filter.main_category.c_str()))
             {
                 for (auto& cat : g_categories)
                 {
@@ -313,7 +314,7 @@ void GuiDatabase::showSearch()
                 }
                 ImGui::EndCombo();
             }
-            if (ImGui::BeginCombo("Kategorie", (g_categories[filter.main_category])[filter.category].c_str()))
+            if (ImGui::BeginCombo(L_CATEGORY, (g_categories[filter.main_category])[filter.category].c_str()))
             {
                 for (auto& cat : g_categories[filter.main_category])
                 {
@@ -327,18 +328,18 @@ void GuiDatabase::showSearch()
                 }
                 ImGui::EndCombo();
             }
-            ImGui::InputText("Value 1", &filter.value);
-            ImGui::InputText("Value 2", &filter.value_2);
-            ImGui::InputText("Package", &filter.package);
-            ImGui::InputText("Beschreibung", &filter.description);
-            ImGui::InputText("Hersteller", &filter.manufactor);
-            ImGui::InputText("Hersteller-Nr.", &filter.manufactor_number);
-            ImGui::InputText("Distributor", &filter.distributor);
-            ImGui::InputText("Distributor-Nr.", &filter.shop_number);
-            ImGui::InputInt("Verpackungseinheit", &filter.vpe);
-            ImGui::InputInt("Anzahl", &filter.count);
-            ImGui::InputDouble("Preis/VPE [Euro]", &filter.price, 0.01f, 1.0f, "%.3f");
-            if (ImGui::BeginCombo("Lager-X", g_storage_x[storage_current_x_idx].c_str()))
+            ImGui::InputText(L_VALUE_FIRST, &filter.value);
+            ImGui::InputText(L_VALUE_SECOND, &filter.value_2);
+            ImGui::InputText(L_PACKAGE, &filter.package);
+            ImGui::InputText(L_DESCRIPTION, &filter.description);
+            ImGui::InputText(L_MANUFACTOR, &filter.manufactor);
+            ImGui::InputText(L_MANUFACTOR_NO, &filter.manufactor_number);
+            ImGui::InputText(L_DISTRIBUTOR, &filter.distributor);
+            ImGui::InputText(L_DISTRIBUTOR_NO, &filter.shop_number);
+            ImGui::InputInt(L_PACKAGING, &filter.vpe);
+            ImGui::InputInt(L_COUNT, &filter.count);
+            ImGui::InputDouble(L_PRICE_PER_PACKAGING, &filter.price, 0.01f, 1.0f, "%.3f");
+            if (ImGui::BeginCombo(L_STORAGE_PLACE_X, g_storage_x[storage_current_x_idx].c_str()))
             {
                 for (int n = 0; n < g_storage_x.size(); n++)
                 {
@@ -355,7 +356,7 @@ void GuiDatabase::showSearch()
             }
 
             ImGui::NewLine();
-            if (ImGui::BeginCombo("Lager-Y", g_storage_y[storage_current_y_idx].c_str()))
+            if (ImGui::BeginCombo(L_STORAGE_PLACE_Y, g_storage_y[storage_current_y_idx].c_str()))
             {
                 for (int n = 0; n < g_storage_y.size(); n++)
                 {
@@ -397,19 +398,19 @@ void GuiDatabase::showNewItem()
     static unsigned int storage_current_y_idx = 0;
     static int amount;
     static bool enter_price_per_unit;
-    if(ImGui::Begin("Bauteil"))
+    if(ImGui::Begin(L_COMPONENT))
     {
         if(m_item_action == ItemAction::ADD_ITEM_TO_ASSEMBLE_AND_STORAGE)
         {
-            ImGui::TextUnformatted("Dieses Bauteil wird zum Lager und zur Baugruppe '");
+            ImGui::TextUnformatted(L_NOTE_COMPONENT_ADDITION_1);
             ImGui::SameLine();
             ImGui::TextUnformatted(p_selected_assemble->name.c_str());
             ImGui::SameLine();
-            ImGui::TextUnformatted("' hinzugefügt");
-            ImGui::InputInt("Anzahl (Baugruppe)", &amount);
+            ImGui::TextUnformatted(L_NOTE_COMPONENT_ADDITION_2);
+            ImGui::InputInt(std::string(std::string(L_COUNT) + "(" + std::string(L_ASSEMBLY) + ")").c_str(), &amount);      
         }
 
-        if (ImGui::BeginCombo("Oberkategorie", item.main_category.c_str()))
+        if (ImGui::BeginCombo(L_MAIN_CATEGORY, item.main_category.c_str()))
         {
             for (auto& cat : g_categories)
             {
@@ -424,7 +425,7 @@ void GuiDatabase::showNewItem()
             ImGui::EndCombo();
         }
 
-        if (ImGui::BeginCombo("Kategorie", (g_categories[item.main_category])[item.category].c_str()))
+        if (ImGui::BeginCombo(L_CATEGORY, (g_categories[item.main_category])[item.category].c_str()))
         {
             for (auto& cat : g_categories[item.main_category])
             {
@@ -441,42 +442,49 @@ void GuiDatabase::showNewItem()
 
         if(g_filter_hints.count(std::make_tuple(item.main_category, item.category)) > 0) //if there is an hint entry
         {
-            ImGui::InputTextWithHint("Value 1", std::get<0>(g_filter_hints.at(std::make_tuple(item.main_category, item.category))).c_str(), &item.value);
-            ImGui::InputTextWithHint("Value 2", std::get<1>(g_filter_hints.at(std::make_tuple(item.main_category, item.category))).c_str(), &item.value_2);
-            ImGui::InputTextWithHint("Package", std::get<2>(g_filter_hints.at(std::make_tuple(item.main_category, item.category))).c_str() ,&item.package);
-            ImGui::InputTextWithHint("Beschreibung", std::get<3>(g_filter_hints.at(std::make_tuple(item.main_category, item.category))).c_str(), &item.description);
+            ImGui::InputTextWithHint(L_VALUE_FIRST, std::get<0>(g_filter_hints.at(std::make_tuple(item.main_category, item.category))).c_str(), &item.value);
+            ImGui::InputTextWithHint(L_VALUE_SECOND, std::get<1>(g_filter_hints.at(std::make_tuple(item.main_category, item.category))).c_str(), &item.value_2);
+            ImGui::InputTextWithHint(L_PACKAGE, std::get<2>(g_filter_hints.at(std::make_tuple(item.main_category, item.category))).c_str() ,&item.package);
+            ImGui::InputTextWithHint(L_DESCRIPTION, std::get<3>(g_filter_hints.at(std::make_tuple(item.main_category, item.category))).c_str(), &item.description);
         }
         else
         {
-            ImGui::InputText("Value 1", &item.value);
-            ImGui::InputText("Value 2", &item.value_2);
-            ImGui::InputText("Package" ,&item.package);
-            ImGui::InputText("Beschreibung", &item.description);
+            ImGui::InputText(L_VALUE_FIRST, &item.value);
+            ImGui::InputText(L_VALUE_SECOND, &item.value_2);
+            ImGui::InputText(L_PACKAGE ,&item.package);
+            ImGui::InputText(L_DESCRIPTION, &item.description);
         }
         
-        ImGui::InputText("Hersteller", &item.manufactor);
-        ImGui::InputText("Hersteller-Nr.", &item.manufactor_number);
-        ImGui::InputText("Distributor", &item.distributor);
-        ImGui::InputText("Distributor-Nr.", &item.shop_number);
-        ImGui::Checkbox("Eingabe: Preis/Stück", &enter_price_per_unit);
+        ImGui::InputText(L_MANUFACTOR, &item.manufactor);
+        ImGui::InputText(L_MANUFACTOR_NO, &item.manufactor_number);
+        ImGui::InputText(L_DISTRIBUTOR, &item.distributor);
+        ImGui::InputText(L_DISTRIBUTOR_NO, &item.shop_number);
+        ImGui::Checkbox(L_SWITCH_PRICE_PACKING_PIECE, &enter_price_per_unit);
         if(enter_price_per_unit)
         {
-            ImGui::InputInt("Verpackungseinheit", &item.vpe, 1, 10);
-            ImGui::TextUnformatted(std::string("Preis/VPE [Euro]: " + std::to_string(item.price_per_unit*item.vpe)).c_str());
-            ImGui::InputDouble("Preis/Stk [Euro]", &item.price_per_unit, 0.01f, 1.0f, "%.4f");
+            ImGui::InputInt(L_PACKAGING, &item.vpe, 1, 10);
+            ImGui::TextUnformatted(L_PRICE_PER_PACKAGING);
+            ImGui::SameLine();
+            ImGui::TextUnformatted(" :");
+            ImGui::SameLine();
+            ImGui::TextUnformatted(std::to_string(item.price_per_unit*item.vpe).c_str());
+            ImGui::SameLine();
+            ImGui::InputDouble(L_PRICE_PER_PIECE, &item.price_per_unit, 0.01f, 1.0f, "%.4f");
         }
         else
         {
-            ImGui::InputInt("Verpackungseinheit", &item.vpe, 1, 10);
-            ImGui::InputDouble("Preis/VPE [Euro]", &item.price, 0.01f, 1.0f, "%.4f");
-            ImGui::TextUnformatted(std::string("Preis/Stk [Euro]:").c_str());
+            ImGui::InputInt(L_PACKAGING, &item.vpe, 1, 10);
+            ImGui::InputDouble(L_PRICE_PER_PACKAGING, &item.price, 0.01f, 1.0f, "%.4f");
+            ImGui::TextUnformatted(std::string(L_PRICE_PER_PIECE).c_str());
+            ImGui::SameLine();
+            ImGui::TextUnformatted(" :");
             ImGui::SameLine();
             ImGui::TextUnformatted(item.vpe == 0?"-":std::to_string(item.price/item.vpe).c_str());
         }    
 
-        ImGui::InputInt("Anzahl", &item.count);
+        ImGui::InputInt(L_COUNT, &item.count);
 
-        if (ImGui::BeginCombo("Einheit", item.unit.c_str()))
+        if (ImGui::BeginCombo(L_UNIT, item.unit.c_str()))
         {
             for (auto& cat : g_units)
             {
@@ -491,7 +499,7 @@ void GuiDatabase::showNewItem()
             ImGui::EndCombo();
         }
 
-        if (ImGui::BeginCombo("Lager-X", g_storage_x[storage_current_x_idx].c_str()))
+        if (ImGui::BeginCombo(L_STORAGE_PLACE_X, g_storage_x[storage_current_x_idx].c_str()))
         {
             for (int n = 0; n < g_storage_x.size(); n++)
             {
@@ -506,7 +514,7 @@ void GuiDatabase::showNewItem()
             ImGui::EndCombo();
         }
 
-        if (ImGui::BeginCombo("Lager-Y", g_storage_y[storage_current_y_idx].c_str()))
+        if (ImGui::BeginCombo(L_STORAGE_PLACE_Y, g_storage_y[storage_current_y_idx].c_str()))
         {
             for (int n = 0; n < g_storage_y.size(); n++)
             {
@@ -520,13 +528,13 @@ void GuiDatabase::showNewItem()
             }
             ImGui::EndCombo();
         }
-        ImGui::InputText("Datenblatt", &item.datasheet);
+        ImGui::InputText(L_DOCUMENT_LINK, &item.datasheet);
         ImGui::SameLine();
-        if(ImGui::Button("Datenblatt..."))
+        if(ImGui::Button(L_DOCUMENT_LINK))
         {
             item.datasheet = FileDialog::OpenFile("pdf (*.pdf), Word-Dokument (*.docx)\0*.pdf\0*.doc\0*.odt\0*.docx\0");
         }
-        if(ImGui::Button("OK")) 
+        if(ImGui::Button(L_OK)) 
         {   
             if(enter_price_per_unit)
             {
@@ -547,10 +555,11 @@ void GuiDatabase::showNewItem()
             show_new_item = false; // close if ready?
         }
         ImGui::SameLine();
-        if(ImGui::Button("Schließen")) 
+        if(ImGui::Button(L_CLOSE)) 
         {
             item.clear();
             show_new_item = false;
+            m_item_action = ItemAction::NONE;
         }
     }
     ImGui::End();
@@ -559,9 +568,9 @@ void GuiDatabase::showNewItem()
 void GuiDatabase::showChangeItem()
 {
     static bool enter_price_per_unit;
-    if(ImGui::Begin("Bauteil"))
+    if(ImGui::Begin(L_COMPONENT))
     {
-        if (ImGui::BeginCombo("Oberkategorie", p_selected_item->main_category.c_str()))
+        if (ImGui::BeginCombo(L_MAIN_CATEGORY, p_selected_item->main_category.c_str()))
         {
             for (auto& cat : g_categories)
             {
@@ -575,7 +584,7 @@ void GuiDatabase::showChangeItem()
             }
             ImGui::EndCombo();
         }
-        if (ImGui::BeginCombo("Kategorie", (g_categories[p_selected_item->main_category])[p_selected_item->category].c_str()))
+        if (ImGui::BeginCombo(L_CATEGORY, (g_categories[p_selected_item->main_category])[p_selected_item->category].c_str()))
         {
             for (auto& cat : g_categories[p_selected_item->main_category])
             {
@@ -589,29 +598,36 @@ void GuiDatabase::showChangeItem()
             }
             ImGui::EndCombo();
         }
-        ImGui::InputText("Value 1", &p_selected_item->value);
-        ImGui::InputText("Value 2", &p_selected_item->value_2);
-        ImGui::InputText("Package", &p_selected_item->package);
-        ImGui::InputText("Beschreibung", &p_selected_item->description);
-        ImGui::InputText("Hersteller", &p_selected_item->manufactor);
-        ImGui::InputText("Hersteller-Nr.", &p_selected_item->manufactor_number);
-        ImGui::InputText("Distributor", &p_selected_item->distributor);
-        ImGui::InputText("Distributor-Nr.", &p_selected_item->shop_number);
-        ImGui::Checkbox("Eingabe: Preis/Stück", &enter_price_per_unit);
+        ImGui::InputText(L_VALUE_FIRST, &p_selected_item->value);
+        ImGui::InputText(L_VALUE_SECOND, &p_selected_item->value_2);
+        ImGui::InputText(L_PACKAGE, &p_selected_item->package);
+        ImGui::InputText(L_DESCRIPTION, &p_selected_item->description);
+        ImGui::InputText(L_MANUFACTOR, &p_selected_item->manufactor);
+        ImGui::InputText(L_MANUFACTOR_NO, &p_selected_item->manufactor_number);
+        ImGui::InputText(L_DISTRIBUTOR, &p_selected_item->distributor);
+        ImGui::InputText(L_DISTRIBUTOR_NO, &p_selected_item->shop_number);
+        ImGui::Checkbox(L_SWITCH_PRICE_PACKING_PIECE, &enter_price_per_unit);
         if(enter_price_per_unit)
         {
-            ImGui::InputInt("Verpackungseinheit", &p_selected_item->vpe, 1, 10);
-            ImGui::TextUnformatted(std::string("Preis/VPE [Euro]: " + std::to_string(p_selected_item->price_per_unit*p_selected_item->vpe)).c_str());
-            ImGui::InputDouble("Preis/Stk [Euro]", &p_selected_item->price_per_unit, 0.01f, 1.0f, "%.4f");
+            ImGui::InputInt(L_PACKAGING, &p_selected_item->vpe, 1, 10);
+            ImGui::TextUnformatted(L_PRICE_PER_PACKAGING);
+            ImGui::SameLine();
+            ImGui::TextUnformatted(": ");
+            ImGui::SameLine();
+            ImGui::TextUnformatted(std::to_string(p_selected_item->price_per_unit*p_selected_item->vpe).c_str());
+            ImGui::SameLine();
+            ImGui::InputDouble(L_PRICE_PER_PIECE, &p_selected_item->price_per_unit, 0.01f, 1.0f, "%.4f");
         }
         else
         {
-            ImGui::InputInt("Verpackungseinheit", &p_selected_item->vpe, 1, 10);
-            ImGui::InputDouble("Preis/VPE [Euro]", &p_selected_item->price, 0.01f, 1.0f, "%.4f");
-            ImGui::TextUnformatted(std::string("Preis/Stk [Euro]:" + p_selected_item->vpe== 0?"-":std::to_string(p_selected_item->price/p_selected_item->vpe)).c_str());
+            ImGui::InputInt(L_PACKAGING, &p_selected_item->vpe, 1, 10);
+            ImGui::InputDouble(L_PRICE_PER_PACKAGING, &p_selected_item->price, 0.01f, 1.0f, "%.4f");
+            ImGui::TextUnformatted(L_PRICE_PER_PIECE);
+            ImGui::SameLine();
+            ImGui::TextUnformatted(": " + p_selected_item->vpe== 0?"-":std::to_string(p_selected_item->price/p_selected_item->vpe).c_str());
         }        
-        ImGui::InputInt("Anzahl", &p_selected_item->count);
-        if (ImGui::BeginCombo("Einheit", p_selected_item->unit.c_str()))
+        ImGui::InputInt(L_COUNT, &p_selected_item->count);
+        if (ImGui::BeginCombo(L_UNIT, p_selected_item->unit.c_str()))
         {
             for (auto& cat : g_units)
             {
@@ -625,14 +641,14 @@ void GuiDatabase::showChangeItem()
             }
             ImGui::EndCombo();
         }
-        ImGui::InputText("Lager", &p_selected_item->storage_place);
-        ImGui::InputText("Datenblatt", &p_selected_item->datasheet);
+        ImGui::InputText(L_STORAGE, &p_selected_item->storage_place);
+        ImGui::InputText(L_DOCUMENT_LINK, &p_selected_item->datasheet);
         ImGui::SameLine();
-        if(ImGui::Button("Datenblatt..."))
+        if(ImGui::Button(L_DOCUMENT_LINK))
         {
             p_selected_item->datasheet = FileDialog::OpenFile("pdf (*.pdf), Word-Dokument (*.docx)\0*.pdf\0*.doc\0*.odt\0*docx\0");
         }
-        if(ImGui::Button("OK")) 
+        if(ImGui::Button(L_OK)) 
         {   
             if(enter_price_per_unit)
             {
@@ -643,7 +659,7 @@ void GuiDatabase::showChangeItem()
             m_item_action = ItemAction::NONE;
         }
         ImGui::SameLine();
-        if(ImGui::Button("Schließen")) 
+        if(ImGui::Button(L_CLOSE)) 
         {
             show_change_item = false;
             m_item_action = ItemAction::NONE;
@@ -655,17 +671,17 @@ void GuiDatabase::showChangeItem()
 void GuiDatabase::showAssemble()
 {
     static Assemble assemble;
-    if(ImGui::Begin("Bauteil"))
+    if(ImGui::Begin(L_ASSEMBLY))
     {
-        ImGui::InputText("Name", &assemble.name);
+        ImGui::InputText(L_ASSEMBLY_NAME, &assemble.name);
         ImGui::NewLine();
-        if(ImGui::Button("OK")) 
+        if(ImGui::Button(L_OK)) 
         {
             p_database->addAssemble(assemble);
             show_assemble = false;
         }
         ImGui::SameLine();
-        if(ImGui::Button("Schließen")) 
+        if(ImGui::Button(L_CLOSE)) 
         {
             show_assemble = false;
         }
@@ -675,20 +691,27 @@ void GuiDatabase::showAssemble()
 
 void GuiDatabase::showInfo()
 {
-    if(ImGui::Begin("Info", &show_info))
+    if(ImGui::Begin(L_INFO_BOX, &show_info))
     {
         if(p_database != nullptr)
         {
-            ImGui::TextUnformatted("Aktuelle Datenbank: ");
+            ImGui::TextUnformatted(L_DATABASE_PATH);
             ImGui::SameLine();
             ImGui::TextUnformatted(p_database->getDatabasePath().c_str());
         }
         else
-            ImGui::TextUnformatted("Aktuelle Datenbank: -");
+        {
+            ImGui::TextUnformatted(L_DATABASE_PATH);
+            ImGui::SameLine(); 
+            ImGui::TextUnformatted(": -");
+        }
+            
             
         if(p_selected_item != nullptr)
         {
-            ImGui::TextUnformatted("Ausgewähltes Bauteil: [");
+            ImGui::TextUnformatted(L_SELECTED_COMPONENT);
+            ImGui::SameLine();
+            ImGui::TextUnformatted(": [");
             ImGui::SameLine();
             ImGui::TextUnformatted(p_selected_item->category.c_str());
             ImGui::SameLine();
@@ -697,21 +720,32 @@ void GuiDatabase::showInfo()
             ImGui::TextUnformatted(p_selected_item->description.c_str());
         }
         else
-            ImGui::TextUnformatted("Ausgewähltes Bauteil: -");
+        {
+            ImGui::TextUnformatted(L_SELECTED_COMPONENT);
+            ImGui::SameLine();
+            ImGui::TextUnformatted(" : -");
+        }
+           
 
         ImGui::NewLine();
         if(p_selected_assemble != nullptr)
         {
-            ImGui::TextUnformatted("Ausgewählte Gruppe: ");
+            ImGui::TextUnformatted(L_SELECTED_ASSEMBLY);
+            ImGui::SameLine();
+            ImGui::TextUnformatted(": [");
             ImGui::SameLine();
             ImGui::TextUnformatted(p_selected_assemble->name.c_str());
         }
             
         else
-            ImGui::TextUnformatted("Ausgewählte Baugruppe: -");
+        {
+            ImGui::TextUnformatted(L_SELECTED_ASSEMBLY);
+            ImGui::SameLine();
+            ImGui::TextUnformatted(": -");
+        }
 
         ImGui::NewLine();
-        if(ImGui::Button("Schließen")) 
+        if(ImGui::Button(L_CLOSE)) 
         {
             show_info = false;
         }
@@ -727,31 +761,31 @@ void GuiDatabase::showRemove()
     static int tolerance = 0;
     if(m_count_action == CountAction::NONE)
         return;
-    if(ImGui::Begin("Anzahl ändern", &show_remove))
+    if(ImGui::Begin(L_WINDOW_TITLE_CHANGE_COUNT, &show_remove))
     {
         if(m_count_action == CountAction::DECREASE_ITEM)
-            ImGui::TextUnformatted("Bauteil entfernen");
+            ImGui::TextUnformatted(L_NOTE_REMOVE_COMPONENT);
         if(m_count_action == CountAction::INCREASE_ITEM)
-            ImGui::TextUnformatted("Bauteil hinzufügen");
+            ImGui::TextUnformatted(L_NOTE_ADD_COMPONENT);
         if(m_count_action == CountAction::RESERVE_ITEM)
-            ImGui::TextUnformatted("Bauteil reservieren");
+            ImGui::TextUnformatted(L_RESERVE_COMPONENT);
         if(m_count_action == CountAction::RESET_ITEM_RESERVATION)
-            ImGui::TextUnformatted("Reservierung verbraucht");
+            ImGui::TextUnformatted(L_CONSUME_COMPONENT_RESERVATION);
         if(m_count_action == CountAction::RELEASE_ITEM_RESERVATION)
-            ImGui::TextUnformatted("Reservierung freigeben");
+            ImGui::TextUnformatted(L_RELEASE_COMPONENT_RESERVATION);
         else if (m_count_action == CountAction::UPDATE_ASSEMBLE)
-            ImGui::TextUnformatted("Gerät produziert");
+            ImGui::TextUnformatted(L_NOTE_PRODUCE_ASSEMBLY);
         else if (m_count_action == CountAction::ADD_ITEM_TO_ASSEMBLE)
-            ImGui::TextUnformatted("Bauteile zur Baugruppe hinzufügen");
+            ImGui::TextUnformatted(L_NOTE_ADD_COMPONENT_TO_ASSEMBLY);
         else if(m_count_action == CountAction::RESERVE_ITEM_TO_ASSEMBLE)
-            ImGui::TextUnformatted("Markierte Bauteile zur Baugruppen-Reservierung hinzufügen");
+            ImGui::TextUnformatted(L_NOTE_ASSEMBLY_RESERVATION);
         else
             ImGui::TextUnformatted("");
-        ImGui::InputInt("Anzahl", &amount);
+        ImGui::InputInt(L_COUNT, &amount);
 
         if(m_count_action == CountAction::RESERVE_ITEM_TO_ASSEMBLE)
-            ImGui::DragInt("Toleranz", &tolerance, 1, 0, 100, "%d%%", ImGuiSliderFlags_AlwaysClamp);
-        if(ImGui::Button("OK")) 
+            ImGui::DragInt(L_TOLERANCE, &tolerance, 1, 0, 100, "%d%%", ImGuiSliderFlags_AlwaysClamp);
+        if(ImGui::Button(L_OK)) 
         {
             if(p_selected_assemble != nullptr && p_selected_item != nullptr && m_count_action == CountAction::ADD_ITEM_TO_ASSEMBLE)
             {
@@ -843,7 +877,7 @@ void GuiDatabase::showRemove()
             m_count_action = CountAction::NONE;
         }
         ImGui::SameLine();
-        if(ImGui::Button("Schließen"))
+        if(ImGui::Button(L_CLOSE))
         {
             show_remove = false;
             amount = 0;
@@ -856,7 +890,7 @@ void GuiDatabase::showRemove()
 void GuiDatabase::showAssembleList()
 {
     // ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar;
-    if(ImGui::Begin("Baugruppen", &show_assemble_list))
+    if(ImGui::Begin(L_ASSEMBLY_LIST, &show_assemble_list))
     {
         static ImGuiTableFlags table_flags =
             ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable
@@ -868,7 +902,7 @@ void GuiDatabase::showAssembleList()
         static ImVector<unsigned int> selection;
         static std::string status = ""; 
         ImGui::SameLine();
-        if(ImGui::Button("Aktualisieren"))
+        if(ImGui::Button(L_UPDATE))
         {
             Assemble filter;
             content.resize(0);
@@ -883,8 +917,8 @@ void GuiDatabase::showAssembleList()
         
         if(ImGui::BeginTable("search_results", 2, table_flags))
         {
-            ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_NoSort);
-            ImGui::TableSetupColumn("Name ", ImGuiTableColumnFlags_NoSort);
+            ImGui::TableSetupColumn(L_ID, ImGuiTableColumnFlags_NoSort);
+            ImGui::TableSetupColumn(L_ASSEMBLY_NAME, ImGuiTableColumnFlags_NoSort);
             ImGui::TableSetupScrollFreeze(0, 1); // Make row always visible
             ImGui::TableHeadersRow();
 
@@ -939,18 +973,18 @@ void GuiDatabase::showBOM()
     
     static ImVector<unsigned int> selection;
     static std::string status = "";
-    std::string title = "BOM - " + p_selected_assemble->name;
+    std::string title = std::string(L_BOM) + " - " + p_selected_assemble->name;
 
 
     if(ImGui::Begin(title.c_str(), &show_bom))
     {
-        if(ImGui::Button("Aktualisieren"))
+        if(ImGui::Button(L_UPDATE))
         {
             bom_content = p_database->searchAssemble(*p_selected_assemble).bom;
             bom_export_selection.resize(bom_content.size());
         }
         ImGui::SameLine();
-        if(ImGui::Button("Entfernen"))
+        if(ImGui::Button(L_REMOVE))
         {
             if(selection.size() != 0)
             {
@@ -961,7 +995,7 @@ void GuiDatabase::showBOM()
             }
         }
         ImGui::SameLine();
-        if(ImGui::Button("CSV exportieren"))
+        if(ImGui::Button(L_EXPORT_CSV))
         {
             std::string path = FileDialog::SaveFile("CSV (*.csv)\0*.csv");
             if(path != "")
@@ -972,12 +1006,12 @@ void GuiDatabase::showBOM()
                     if(bom_export_selection[i])
                         result.push_back(std::get<0>(bom_content[i]).serializeCSV());
                 }
-                CSV::exportCSV(path, result, {"Kategorie", "Value 1", "Value 2", "Package", "Beschreibung", "Hersteller", "Hersteller-Nr.", "Distributor", "Bestellnummer", "Verpackungseinheit", "Preis", "Preis/Stck", "Anzahl"});
+                CSV::exportCSV(path, result, {L_CATEGORY, L_VALUE_FIRST, L_VALUE_SECOND, L_PACKAGE, L_DESCRIPTION, L_MANUFACTOR, L_MANUFACTOR_NO, L_DISTRIBUTOR, L_DISTRIBUTOR_NO, L_PACKAGING, L_PRICE, L_PRICE_PER_PIECE, L_COUNT});
             }
             
         }
         ImGui::SameLine();
-        if(ImGui::Button("CSV importieren"))
+        if(ImGui::Button(L_IMPORT_CSV))
         {
             std::string path = FileDialog::OpenFile("CSV (*.csv)\0*.csv");
             if(path != "")
@@ -997,17 +1031,17 @@ void GuiDatabase::showBOM()
             }
         }
         ImGui::SameLine();
-        if(ImGui::Button("Reservieren"))
+        if(ImGui::Button(L_RESERVE_COMPONENT))
         {
             m_count_action = CountAction::RESERVE_ITEM_TO_ASSEMBLE;
             show_remove = true;
         }
 
         if (ImGui::IsItemHovered())
-            ImGui::SetTooltip("Reservierung von markierten Bauteilen mit Toleranzangabe bei Fertigung");
+            ImGui::SetTooltip(L_HINT_TOLERANCE);
         
         ImGui::SameLine();
-        if(ImGui::Button("Reservierung aufheben"))
+        if(ImGui::Button(L_RELEASE_COMPONENT_RESERVATION))
         {
             for(size_t i = 0; i < bom_content.size(); i++)
             {
@@ -1016,7 +1050,7 @@ void GuiDatabase::showBOM()
             }
         }
         ImGui::SameLine();
-        if(ImGui::Button("Reservierung ausbuchen"))
+        if(ImGui::Button(L_CONSUME_COMPONENT_RESERVATION))
         {
             for(size_t i = 0; i < bom_content.size(); i++)
             {
@@ -1025,9 +1059,9 @@ void GuiDatabase::showBOM()
             }
         }
         if (ImGui::IsItemHovered())
-            ImGui::SetTooltip("Reservierung von markierten Bauteilen ausbuchen");
+            ImGui::SetTooltip(L_HINT_CONSUME_RESERVATION);
 
-        if(ImGui::Button("Alle markieren"))
+        if(ImGui::Button(L_MARK_ALL))
         {
             for(size_t i = 0; i < bom_export_selection.size(); i++)
             {
@@ -1035,7 +1069,7 @@ void GuiDatabase::showBOM()
             }
         }
         ImGui::SameLine();
-        if(ImGui::Button("Alle demarkieren"))
+        if(ImGui::Button(L_MARK_NONE))
         {
             for(size_t i = 0; i < bom_export_selection.size(); i++)
             {
@@ -1043,7 +1077,7 @@ void GuiDatabase::showBOM()
             }
         }
         ImGui::SameLine();
-        if(ImGui::Button("Auswahl umkehren"))
+        if(ImGui::Button(L_MARK_REVERSE))
         {
             for(size_t i = 0; i < bom_export_selection.size(); i++)
             {
@@ -1066,25 +1100,25 @@ void GuiDatabase::showBOM()
         
         if(ImGui::BeginTable("search_results", 19, table_flags))
         {
-            ImGui::TableSetupColumn("Pos", ImGuiTableColumnFlags_NoSort);
-            ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_NoSort);
-            ImGui::TableSetupColumn("Exp?", ImGuiTableColumnFlags_NoSort);
-            ImGui::TableSetupColumn("Kategorie", ImGuiTableColumnFlags_DefaultSort);
-            ImGui::TableSetupColumn("Value 1", ImGuiTableColumnFlags_NoSort);
-            ImGui::TableSetupColumn("Value 2", ImGuiTableColumnFlags_NoSort);
-            ImGui::TableSetupColumn("Package ", ImGuiTableColumnFlags_NoSort);
-            ImGui::TableSetupColumn("Beschreibung ", ImGuiTableColumnFlags_NoSort);
-            ImGui::TableSetupColumn("Reserviert (dieses Projekt)", ImGuiTableColumnFlags_NoSort);
-            ImGui::TableSetupColumn("Anzahl (benötigt)", ImGuiTableColumnFlags_NoSort);
-            ImGui::TableSetupColumn("Anzahl (vorhanden)", ImGuiTableColumnFlags_NoSort);
-            ImGui::TableSetupColumn("Hersteller", ImGuiTableColumnFlags_NoSort);
-            ImGui::TableSetupColumn("Hersteller-Nr.", ImGuiTableColumnFlags_NoSort);
-            ImGui::TableSetupColumn("Distributor", ImGuiTableColumnFlags_NoSort);
-            ImGui::TableSetupColumn("Bestell-Nr.", ImGuiTableColumnFlags_NoSort);
-            ImGui::TableSetupColumn("Verpackungseinheit", ImGuiTableColumnFlags_NoSort);
-            ImGui::TableSetupColumn("Preis/VPE [Euro]", ImGuiTableColumnFlags_NoSort);
-            ImGui::TableSetupColumn("Lagerort", ImGuiTableColumnFlags_NoSort);
-            ImGui::TableSetupColumn("RoHs/REACH", ImGuiTableColumnFlags_NoSort);
+            ImGui::TableSetupColumn(L_POSITION, ImGuiTableColumnFlags_NoSort);
+            ImGui::TableSetupColumn(L_ID, ImGuiTableColumnFlags_NoSort);
+            ImGui::TableSetupColumn("?", ImGuiTableColumnFlags_NoSort);
+            ImGui::TableSetupColumn(L_CATEGORY, ImGuiTableColumnFlags_DefaultSort);
+            ImGui::TableSetupColumn(L_VALUE_FIRST, ImGuiTableColumnFlags_NoSort);
+            ImGui::TableSetupColumn(L_VALUE_SECOND, ImGuiTableColumnFlags_NoSort);
+            ImGui::TableSetupColumn(L_PACKAGE, ImGuiTableColumnFlags_NoSort);
+            ImGui::TableSetupColumn(L_DESCRIPTION, ImGuiTableColumnFlags_NoSort);
+            ImGui::TableSetupColumn(L_RESERVED_BOM, ImGuiTableColumnFlags_NoSort);
+            ImGui::TableSetupColumn(L_COUNT_BOM, ImGuiTableColumnFlags_NoSort);
+            ImGui::TableSetupColumn(L_COUNT, ImGuiTableColumnFlags_NoSort);
+            ImGui::TableSetupColumn(L_MANUFACTOR, ImGuiTableColumnFlags_NoSort);
+            ImGui::TableSetupColumn(L_MANUFACTOR_NO, ImGuiTableColumnFlags_NoSort);
+            ImGui::TableSetupColumn(L_DISTRIBUTOR, ImGuiTableColumnFlags_NoSort);
+            ImGui::TableSetupColumn(L_DISTRIBUTOR_NO, ImGuiTableColumnFlags_NoSort);
+            ImGui::TableSetupColumn(L_PACKAGING, ImGuiTableColumnFlags_NoSort);
+            ImGui::TableSetupColumn(L_PRICE_PER_PACKAGING, ImGuiTableColumnFlags_NoSort);
+            ImGui::TableSetupColumn(L_STORAGE_PLACE, ImGuiTableColumnFlags_NoSort);
+            ImGui::TableSetupColumn(L_DOCUMENT_LINK, ImGuiTableColumnFlags_NoSort);
             
             ImGui::TableSetupScrollFreeze(0, 1); // Make row always visible
             ImGui::TableHeadersRow();
@@ -1178,7 +1212,11 @@ void GuiDatabase::showBOM()
                                 //open pdf with standard program
                                 try
                                 {
-                                    ShellExecute(0,0 , std::string(g_settings.path_to_datasheet + "\\" + std::get<0>(bom_content[row_n]).datasheet).c_str(), 0, 0, SW_SHOW);
+                                    #if _WIN32
+                                        ShellExecute(0,0 , std::string(g_settings.path_to_datasheet + "\\" + std::get<0>(bom_content[row_n]).datasheet).c_str(), 0, 0, SW_SHOW);
+                                    #elif __linux__
+                                        
+                                    #endif
                                 }
                                 catch(const std::exception& e)
                                 {
@@ -1245,10 +1283,10 @@ void GuiDatabase::addItemToStorageWithCheck()
         } // go to state 0
         if (ImGui::BeginPopupModal("Error", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
-            ImGui::TextUnformatted("Es existiert bereits ein Bauteil vom Hersteller '");
+            ImGui::TextUnformatted(L_NOTE_EXISTING_COMPONENT_1);
             ImGui::SameLine();
             ImGui::TextUnformatted(item_to_check.manufactor.c_str());
-            ImGui::TextUnformatted("' und mit der Herstellernummer'");
+            ImGui::TextUnformatted(L_NOTE_EXISTING_COMPONENT_2);
             ImGui::SameLine();
             ImGui::TextUnformatted(item_to_check.manufactor_number.c_str());
             ImGui::SameLine();
@@ -1275,14 +1313,14 @@ void GuiDatabase::addItemToStorageWithCheck()
             ImGui::TextUnformatted(")");
             ImGui::Separator();
 
-            if (ImGui::Button("Abbrechen", ImVec2(120, 0))) 
+            if (ImGui::Button(L_ABORT, ImVec2(120, 0))) 
             { 
                 ImGui::CloseCurrentPopup(); 
                 show_check_item = StateAlternativePicking::NONE; 
                 show_check_item_in_assemble = StateAlternativePicking::NONE;
             } // go to state 0
             ImGui::SameLine();
-            if (ImGui::Button("Trotzdem hinzufügen", ImVec2(150, 0))) 
+            if (ImGui::Button(L_ADD_ANYWAY, ImVec2(150, 0))) 
             { 
                 ImGui::CloseCurrentPopup(); 
                 show_check_item = StateAlternativePicking::CHECK_ALTERNATIVES;
@@ -1301,7 +1339,7 @@ void GuiDatabase::addItemToStorageWithCheck()
         search.value = item_to_check.value;
         content = p_database->searchItem(search);
         show_check_item = StateAlternativePicking::SELECT_ALTERNATIVE;
-        ImGui::OpenPopup("Bauteilvorschläge");
+        ImGui::OpenPopup(L_RECOMMENDATION);
     }
 
     if(show_check_item == StateAlternativePicking::SELECT_ALTERNATIVE) //State 4: Select alternative
@@ -1311,9 +1349,9 @@ void GuiDatabase::addItemToStorageWithCheck()
         
         if(content.size() > 0) //Recommondations
         {
-            if (ImGui::BeginPopupModal("Bauteilvorschläge", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+            if (ImGui::BeginPopupModal(L_RECOMMENDATION, NULL, ImGuiWindowFlags_AlwaysAutoResize))
             {
-                ImGui::TextUnformatted("Es existiern ähnliche Bauteile im Lager (");
+                ImGui::TextUnformatted(L_NOTE_SIMILIAR_COMPONENTS);
                 ImGui::SameLine();
                 ImGui::TextUnformatted(item_to_check.category.c_str());
                 ImGui::SameLine();
@@ -1335,7 +1373,7 @@ void GuiDatabase::addItemToStorageWithCheck()
                 ImGui::SameLine();
                 ImGui::TextUnformatted(")");
                 ImGui::Separator();
-                if (ImGui::Button("OK", ImVec2(120, 0))) 
+                if (ImGui::Button(L_OK, ImVec2(120, 0))) 
                 { 
                     //select Item()
                     if(selection.size()>0)
@@ -1350,11 +1388,11 @@ void GuiDatabase::addItemToStorageWithCheck()
                     }
                     else
                     {
-                        cmsg("[error] Kein Alternativbauteil ausgewählt");
+                        cmsg("[error] No alternative component selected");
                     }
                 }
                 ImGui::SameLine();
-                if(ImGui::Button("Neu anlegen"))
+                if(ImGui::Button(L_NEW))
                 {
                     //if we add item only to storage, we add the amount, which is entered by user
                     //otherwise (item gets also added to assembly) we dont want the count as amount in storage
@@ -1368,7 +1406,7 @@ void GuiDatabase::addItemToStorageWithCheck()
                     show_check_item = StateAlternativePicking::FINISHED; //go to state 5 in 
                 }
                 ImGui::SameLine();
-                if(ImGui::Button("Abbrechen"))
+                if(ImGui::Button(L_ABORT))
                 {
                     show_check_item = StateAlternativePicking::FINISHED;
                     show_check_item_in_assemble = StateAlternativePicking::NONE;
@@ -1417,7 +1455,7 @@ void GuiDatabase::addItemToAssembleWithCheck()
         content = p_database->searchItemByID(item_to_check.id);
         if(content.size() <= 0) //Add the "real" Item (Correct ID)
         {
-            cmsg("[error] Bauelement konnte nicht hinzugefügt werden");
+            cmsg("[error] Could not add component");
             show_check_item = StateAlternativePicking::NONE;
             return;
         }
@@ -1429,8 +1467,8 @@ void GuiDatabase::addItemToAssembleWithCheck()
         search.value = item_to_check.value;
         content = p_database->searchItemInAssemble(*p_selected_assemble, search);
         show_check_item_in_assemble = StateAlternativePicking::SELECT_ALTERNATIVE_ASSEMBLE;
-        ImGui::OpenPopup("Bauteilvorschläge");
-        cmsg("[info] Suche nach Alternativen");
+        ImGui::OpenPopup(L_RECOMMENDATION);
+        cmsg("[info] Searching for alternatives");
     }
 
     if(show_check_item_in_assemble == StateAlternativePicking::SELECT_ALTERNATIVE_ASSEMBLE) //State 4: Select alternative
@@ -1440,9 +1478,9 @@ void GuiDatabase::addItemToAssembleWithCheck()
         
         if(content.size() > 0) //Recommondations
         {
-            if (ImGui::BeginPopupModal("Bauteilvorschläge", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+            if (ImGui::BeginPopupModal(L_RECOMMENDATION, NULL, ImGuiWindowFlags_AlwaysAutoResize))
             {
-                ImGui::TextUnformatted("Es existiern ähnliche Bauteile in Baugruppe (");
+                ImGui::TextUnformatted(L_NOTE_SIMILIAR_COMPONENTS_ASSEMBLY);
                 ImGui::SameLine();
                 ImGui::TextUnformatted(item_to_check.category.c_str());
                 ImGui::SameLine();
@@ -1464,7 +1502,7 @@ void GuiDatabase::addItemToAssembleWithCheck()
                 ImGui::SameLine();
                 ImGui::TextUnformatted(")");
                 ImGui::Separator();
-                if (ImGui::Button("OK", ImVec2(120, 0))) 
+                if (ImGui::Button(L_OK, ImVec2(120, 0))) 
                 { 
                     //select Item()
                     if(selection.size()>0)
@@ -1478,11 +1516,11 @@ void GuiDatabase::addItemToAssembleWithCheck()
                     }
                     else
                     {
-                        cmsg("[error] Kein Alternativbauteil ausgewählt");
+                        cmsg("[error] No alternative component selected");
                     }
                 }
                 ImGui::SameLine();
-                if(ImGui::Button("Neu anlegen"))
+                if(ImGui::Button(L_NEW))
                 {
                     if(!p_database->itemExistsInAssemble(*p_selected_assemble, item_to_check))
                     {
@@ -1502,7 +1540,7 @@ void GuiDatabase::addItemToAssembleWithCheck()
                     
                 }
                 ImGui::SameLine();
-                if(ImGui::Button("Abbrechen"))
+                if(ImGui::Button(L_ABORT))
                 {
                     show_check_item_in_assemble = StateAlternativePicking::NONE;
                     show_check_item == StateAlternativePicking::NONE;
