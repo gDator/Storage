@@ -33,7 +33,7 @@ void ItemDatabase::initStorage(bool new_database)
         }
         m_id = ++i; //next free id
     }
-    LOG_HISTORY("ID count" << m_id);
+    //LOG_HISTORY("ID count" << m_id);
     
 }
 

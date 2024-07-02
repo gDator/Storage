@@ -1203,7 +1203,6 @@ void GuiDatabase::showBOM()
                         ImGui::TableSetColumnIndex(17);
                         ImGui::TextUnformatted(std::get<0>(bom_content[row_n]).storage_place.c_str());
                         ImGui::TableSetColumnIndex(18);
-                        ImGui::TextUnformatted(std::get<0>(bom_content[row_n]).datasheet.c_str());
                         if(std::get<0>(bom_content[row_n]).datasheet == "")
                             ImGui::TextUnformatted(std::get<0>(bom_content[row_n]).datasheet.c_str());
                         else

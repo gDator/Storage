@@ -62,12 +62,12 @@ class ItemDatabase
                 int getlogin_r(char *name, size_t 256);
                 username = std::to_string(name);
             #endif
-            LOG_HISTORY("User " << username <<  "logged in Database " << filename);
+            LOG_HISTORY("User " << username <<  " logged in Database " << filename);
         }
 
         ~ItemDatabase() 
         {
-            LOG_HISTORY("User " << username <<  "logged out from Database " << m_filename);
+            LOG_HISTORY("User " << username <<  " logged out from Database " << m_filename);
         }
 };
 

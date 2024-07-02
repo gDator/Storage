@@ -1,6 +1,7 @@
 #ifndef LOG_HPP
 #define LOG_HPP
 
+#define BOOST_USE_WINAPI_VERSION BOOST_WINAPI_VERSION_WIN6
 #include <fstream>
 #include <locale>
 #include <boost/log/core.hpp>
