@@ -70,13 +70,14 @@ int ItemDatabase::addItem(Item item)
         cmsg("[error]" + std::string(e.what()));
         LOG_ERROR(e.what());
     }
-    LOG_HISTORY(username << ": add item:" << item.id << ":" << item.serializeCSV());
+    LOG_HISTORY(username << ":added item:" << item.serializeCSV());
     m_id++;
     return (m_id-1);
 }
 
 void ItemDatabase::updateItem(Item item)
 {
+    Item old = item;
     try
     {
         SQLite::Transaction transaction(m_database);
@@ -108,7 +109,7 @@ void ItemDatabase::updateItem(Item item)
         cmsg("[error]" + std::string(e.what()));
         LOG_ERROR(e.what());
     }
-    LOG_HISTORY(username << ": updated item:" << item.id << item.serializeCSV());
+    LOG_HISTORY(username << ": updated item from " << old.serializeCSV() << " to " << item.serializeCSV());
 }
 
 const std::deque<Item>& ItemDatabase::searchItem()
@@ -459,7 +460,7 @@ bool ItemDatabase::removeItem(int id)
         cmsg("[error]" + std::string(e.what()));
         LOG_ERROR(e.what());
     }
-    // LOG_HISTORY(username << ": searches item with id " << item.id << " in assemble " << assemble.name);
+    LOG_HISTORY(username << ": removed item " << id << "from database");
     return true;
 }
 
@@ -495,7 +496,7 @@ bool ItemDatabase::itemExistsInAssemble(Assemble assemble, Item item)
         LOG_ERROR("Multiple existance of same Element");
     if(count == 1)
         return true;
-    LOG_HISTORY("Item " << item.id << "does not exist in " << assemble.name);
+    //LOG_HISTORY("Item " << item.id << "does not exist in " << assemble.name);
     return false;
 }
 
@@ -688,7 +689,7 @@ void ItemDatabase::updateItemInAssemble(Assemble assemble, Item item, int count)
         cmsg("[error]" + std::string(e.what()));
         LOG_ERROR(e.what());
     }
-    LOG_HISTORY(username << ": updated item: " << item.serializeCSV() << " in assemble " << assemble.name << "to amount of " << count);
+    LOG_HISTORY(username << ": updated item: " << item.id << " in assemble " << assemble.name << " to " << count);
 }
 
 void ItemDatabase::addItemToAssemble(Assemble assemble, Item item, int count)
@@ -718,7 +719,7 @@ void ItemDatabase::addItemToAssemble(Assemble assemble, Item item, int count)
         cmsg("[error]" + std::string(e.what()));
         LOG_ERROR(e.what());
     }
-    LOG_HISTORY(username << ": added item: " << item.serializeCSV() << " to assemble " << assemble.name << "with amount" << count);
+    LOG_HISTORY(username << ": add item " << item.id << " to assemble " << assemble.name << " with amount " << count);
 }
 
 const Assemble ItemDatabase::searchAssemble(Assemble assemble)
@@ -758,7 +759,7 @@ const Assemble ItemDatabase::searchAssemble(Assemble assemble)
             res.main_category       = query.getColumn(17).getText();
             int amount          = query.getColumn(18).getInt();
             res.price_per_unit    = res.price/res.vpe;
-            res.reserved          = itemIsReservedFromAssemble(assemble.id, res);
+            res.reserved          = itemReservationInAssemble(assemble.id, res);
             assemble.bom.push_back(std::make_tuple(res, amount));
         }        
     }
@@ -812,7 +813,7 @@ void ItemDatabase::deleteItemFromAssemble(Assemble assemble, Item item)
         cmsg("[error]" + std::string(e.what()));
         LOG_ERROR(e.what());
     }
-    LOG_HISTORY(username << ": deleted item " <<  item.id << "from assemble " << assemble.name);
+    LOG_HISTORY(username << ": deleted item " <<  item.id << " from assemble " << assemble.name);
 }
 
 void ItemDatabase::reserveItemToAssemble(int id, Item item, int count, bool stack_reservation)
@@ -820,14 +821,13 @@ void ItemDatabase::reserveItemToAssemble(int id, Item item, int count, bool stac
     auto items = searchItemByID(item.id);
     if(items.size() <= 0)
     {
-        cmsg("[error] Etwas ist schiefgelaufen");
+        cmsg("[error] item doesnt exist");
         return;
     }
-
-    item = items[0]; 
-    int n = itemIsReservedFromAssemble(id, item);
-    if(n > 0)
+    item = items[0];
+    if(itemIsReservedFromAssemble(id, item))
     {
+        int n = itemReservationInAssemble(id, item);
         if(stack_reservation)
         {
             // cmsg("[warning] Bauteil existiert bereits. Anzahl hinzugefügt");
@@ -836,18 +836,17 @@ void ItemDatabase::reserveItemToAssemble(int id, Item item, int count, bool stac
                 updateItemInReservation(id, item, n+count);
             }
             else
-                cmsg("[error] Keine negative Reservierung möglich");
+                cmsg("[error] negative reservation not possible");
             
             return;
         }
         else
         {
-            cmsg("[warning] Bauteil existiert bereits. Anzahl aktualisiert");
+            cmsg("[warning] item already exists, amount updated");
             updateItemInReservation(id, item, count);
             return;
         }
 
-        
     }
     try
     {
@@ -869,7 +868,7 @@ void ItemDatabase::reserveItemToAssemble(int id, Item item, int count, bool stac
         cmsg("[error]" + std::string(e.what()));
         LOG_ERROR(e.what());
     }
-    LOG_HISTORY(username << ": added item: " << item.serializeCSV() << " to reservation " << id << "with amount" << count);
+    LOG_HISTORY(username << ": reserved item: " << item.id << " in " << id << " with amount " << count);
 }
 
 void ItemDatabase::removeReservationFromAssemble(int id, Item item)
@@ -890,12 +889,12 @@ void ItemDatabase::removeReservationFromAssemble(int id, Item item)
         cmsg("[error]" + std::string(e.what()));
         LOG_ERROR(e.what());
     }
-    LOG_HISTORY(username << ": deleted item " <<  item.id << "from reservation: " << id);
+    LOG_HISTORY(username << ": deleted reservation " <<  item.id << " from " << id);
 }
 
 void ItemDatabase::removeReservationFromAssemblePartial(int assemble_id, Item item, int count)
 {
-    int old_count = itemIsReservedFromAssemble(assemble_id, item); 
+    int old_count = itemReservationInAssemble(assemble_id, item);
     count = old_count - count; 
     try
     {
@@ -916,7 +915,7 @@ void ItemDatabase::removeReservationFromAssemblePartial(int assemble_id, Item it
         cmsg("[error]" + std::string(e.what()));
         LOG_ERROR(e.what());
     }
-    LOG_HISTORY(username << ": reduced item " <<  item.id << "from reservation with amount " << count);
+    LOG_HISTORY(username << ": updated reservation: " << item.id << " in " << assemble_id << " from " << old_count <<"  to "<< count);
 }
 
 int ItemDatabase::getReservationsFromAssembles(Item item)
@@ -940,20 +939,47 @@ int ItemDatabase::getReservationsFromAssembles(Item item)
     return count;
 }
 
-int ItemDatabase::itemIsReservedFromAssemble(int assemble_id, Item item)
+bool ItemDatabase::itemIsReservedFromAssemble(int assemble_id, Item item)
 {
-    int n = 0;   
+    int n = 0;
+    int counter = 0;
     try
     {
         SQLite::Transaction transaction(m_database);
         SQLite::Statement query(m_database, "SELECT Anzahl FROM Reservierung WHERE id = :id AND id_bg = :id_bg");
         query.bind(":id", item.id);
         query.bind(":id_bg", assemble_id); 
-        
+
+        while (query.executeStep())
+        {
+            ++counter;
+            n += query.getColumn(0).getInt();
+        } 
+        transaction.commit();
+        m_updated = true;
+    }
+    catch(const std::exception& e)
+    {
+        cmsg("[error]" + std::string(e.what()));
+        LOG_ERROR(e.what());
+    }
+    return counter>0?true:false;
+}
+
+int ItemDatabase::itemReservationInAssemble(int assemble_id, Item item)
+{
+    int n = 0;
+    try
+    {
+        SQLite::Transaction transaction(m_database);
+        SQLite::Statement query(m_database, "SELECT Anzahl FROM Reservierung WHERE id = :id AND id_bg = :id_bg");
+        query.bind(":id", item.id);
+        query.bind(":id_bg", assemble_id);
+
         while (query.executeStep())
         {
             n += query.getColumn(0).getInt();
-        } 
+        }
         transaction.commit();
         m_updated = true;
     }
@@ -965,9 +991,10 @@ int ItemDatabase::itemIsReservedFromAssemble(int assemble_id, Item item)
     return n;
 }
 
+
 void ItemDatabase::updateItemInReservation(int assemble_id, Item item, int count)
 {
-    int old_count = itemIsReservedFromAssemble(assemble_id, item); 
+    int old_count = itemReservationInAssemble(assemble_id, item);
     int diff = count - old_count; 
     
     try
@@ -990,5 +1017,5 @@ void ItemDatabase::updateItemInReservation(int assemble_id, Item item, int count
         cmsg("[error]" + std::string(e.what()));
         LOG_ERROR(e.what());
     }
-    LOG_HISTORY(username << ": updated item: " << item.serializeCSV() << " in reservation " << assemble_id << "to amount of " << count);
+    LOG_HISTORY(username << ": updated reservation: " << item.id << " in " << assemble_id << " from " << old_count <<"  to "<< count);
 }

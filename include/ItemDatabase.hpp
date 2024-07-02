@@ -46,7 +46,8 @@ class ItemDatabase
         void removeReservationFromAssemble(int id, Item item);
         void removeReservationFromAssemblePartial(int assemble_id, Item item, int count);
         int getReservationsFromAssembles(Item item);
-        int itemIsReservedFromAssemble(int assemble_id, Item item);
+        bool itemIsReservedFromAssemble(int assemble_id, Item item);
+        int itemReservationInAssemble(int assemble_id, Item item);
         void updateItemInReservation(int assemble_id, Item item, int count);
          //this fucntion delivers all assembles  without it items
         const std::deque<Assemble>& searchAssembles();

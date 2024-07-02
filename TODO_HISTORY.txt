@@ -19,6 +19,7 @@ BUGS
 + B-14: abbruch beim import macht, dass in der aktuellen Session kein Import mehr durchgeführt werden kann.  -> fehler in State-machine
 + B-15: Item kann beim importieren doppelt hinzugefügt werden. -> Assemble check funktioniert nicht. -> FEhlerhafte SQl-Abfrage ohne Oberkategorie
 + B-16: GuiDatabase.cpp:1358: New Item always with amount 0: addItemToStorageWithCheck:           ->  if(show_check_item_in_assemble != StateAlternativePicking::NONE)        item_to_check.count = 0;
++ B-17: ItemDatabase.cpp: Problems in removeReservationFromAssemblePartial() and reserveItemToAssemble(): multiple entries and also negative ones
 
 TODO
 =======================================================================
@@ -123,3 +124,8 @@ x Neue datenbank erstellen selektiert diese direkt (auch in ini file)
 	- bestellung
 	- Buchung 
 	- automatische Formularausfüllung
+
+-------------------------v0.8---------------------------
++ swicth to cmake
++ B-17
+

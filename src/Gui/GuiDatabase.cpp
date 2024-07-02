@@ -787,6 +787,11 @@ void GuiDatabase::showRemove()
             ImGui::DragInt(L_TOLERANCE, &tolerance, 1, 0, 100, "%d%%", ImGuiSliderFlags_AlwaysClamp);
         if(ImGui::Button(L_OK)) 
         {
+            if(amount < 0)
+            {
+                cmsg("[error] Cant perform action with negative numbers");
+                return;
+            }
             if(p_selected_assemble != nullptr && p_selected_item != nullptr && m_count_action == CountAction::ADD_ITEM_TO_ASSEMBLE)
             {
                 item_to_check = *p_selected_item;
